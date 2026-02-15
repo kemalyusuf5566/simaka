@@ -16,33 +16,24 @@ class NilaiController extends Controller
      * Tampilkan form input nilai per kelas & mapel
      * Guru masuk ke sini
      */
-    public function index($kelasId, $mapelId)
+    public function index($pembelajaranId)
     {
-        $kelas = DataKelas::findOrFail($kelasId);
-        $mapel = DataMapel::findOrFail($mapelId);
+        $pembelajaran = \App\Models\DataPembelajaran::with(['kelas', 'mapel'])
+            ->findOrFail($pembelajaranId);
 
-        $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
+        $kelas = $pembelajaran->kelas;
+        $mapel = $pembelajaran->mapel;
 
-        $siswa = DataSiswa::where('data_kelas_id', $kelas->id)
+        $tahunAktif = \App\Models\DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
+
+        $siswa = \App\Models\DataSiswa::where('data_kelas_id', $kelas->id)
             ->orderBy('nama_siswa')
             ->get();
 
-        $nilai = NilaiMapelSiswa::where([
-            'data_kelas_id' => $kelas->id,
-            'data_mapel_id' => $mapel->id,
-            'data_tahun_pelajaran_id' => $tahunAktif->id,
-        ])
-            ->get()
-            ->keyBy('data_siswa_id');
-
-        return view('guru.nilai.index', compact(
-            'kelas',
-            'mapel',
-            'tahunAktif',
-            'siswa',
-            'nilai'
-        ));
+        // bagian query nilai kamu LANJUTKAN PERSIS seperti sebelumnya
+        // cuma ganti pakai $kelas->id dan $mapel->id
     }
+
 
     /**
      * Simpan / update nilai siswa

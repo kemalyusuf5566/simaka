@@ -20,18 +20,27 @@ class DeskripsiKokurikulerController extends Controller
         }
     }
 
+    /**
+     * Halaman Deskripsi Capaian Kokurikuler
+     * - 1 deskripsi per siswa (ditampilkan dari record kk_nilai pertama yg ditemukan)
+     */
     public function index(KkKelompok $kelompok, KkKegiatan $kegiatan)
     {
         $this->assertKoordinator($kelompok);
 
-        // anggota + siswa
+        // anggota kelompok + relasi siswa
         $anggota = $kelompok->anggota()->with('siswa')->get();
 
-        // nilai per siswa untuk kegiatan ini
+        /**
+         * Ambil semua nilai yg tersimpan untuk kelompok+kegiatan ini,
+         * karena sekarang bisa ada banyak record per siswa (beda kk_capaian_akhir_id).
+         * Untuk tampilan deskripsi: kita cukup pakai "deskripsi pertama" per siswa.
+         */
         $nilaiRows = KkNilai::where('kk_kelompok_id', $kelompok->id)
             ->where('kk_kegiatan_id', $kegiatan->id)
+            ->orderBy('id')
             ->get()
-            ->keyBy('data_siswa_id');
+            ->groupBy('data_siswa_id'); // hasil: [siswaId => Collection<KkNilai>]
 
         return view('guru.kokurikuler.deskripsi.index', [
             'kelompok'  => $kelompok->load(['kelas', 'koordinator']),
@@ -41,27 +50,51 @@ class DeskripsiKokurikulerController extends Controller
         ]);
     }
 
+    /**
+     * Simpan Deskripsi
+     * - Deskripsi 1 siswa harus sama untuk semua capaian profil yg dipilih.
+     * - Jadi: update deskripsi ke SEMUA record kk_nilai milik siswa tsb dalam kelompok+kegiatan.
+     */
     public function update(Request $request, KkKelompok $kelompok, KkKegiatan $kegiatan)
     {
         $this->assertKoordinator($kelompok);
 
         $request->validate([
-            'deskripsi' => 'required|array',
+            'deskripsi' => 'nullable|array',
         ]);
 
-        foreach ($request->input('deskripsi', []) as $siswaId => $text) {
-            // pastikan row kk_nilai ada; kalau belum ada, buat dulu
-            KkNilai::updateOrCreate(
-                [
-                    'kk_kelompok_id' => $kelompok->id,
-                    'kk_kegiatan_id' => $kegiatan->id,
-                    'data_siswa_id'  => (int) $siswaId,
-                ],
-                [
-                    // kolom lain boleh null dulu
-                    'deskripsi' => $text ?: null,
-                ]
-            );
+        $rows = $request->input('deskripsi', []);
+
+        foreach ($rows as $siswaId => $desc) {
+            $siswaId = (int) $siswaId;
+            $desc = is_string($desc) ? trim($desc) : null;
+
+            // Update semua record nilai untuk siswa ini pada kelompok+kegiatan ini
+            $affected = KkNilai::where('kk_kelompok_id', $kelompok->id)
+                ->where('kk_kegiatan_id', $kegiatan->id)
+                ->where('data_siswa_id', $siswaId)
+                ->update([
+                    'deskripsi' => ($desc !== '') ? $desc : null,
+                ]);
+
+            /**
+             * Jika belum ada record nilai sama sekali (misal belum input nilai),
+             * kita buat 1 record placeholder supaya deskripsi tetap tersimpan.
+             *
+             * Catatan:
+             * - kk_capaian_akhir_id diset NULL (harusnya nullable)
+             * - predikat NULL
+             */
+            if ($affected === 0) {
+                KkNilai::create([
+                    'kk_kelompok_id'       => $kelompok->id,
+                    'kk_kegiatan_id'       => $kegiatan->id,
+                    'data_siswa_id'        => $siswaId,
+                    'kk_capaian_akhir_id'  => null,
+                    'predikat'             => null,
+                    'deskripsi'            => ($desc !== '') ? $desc : null,
+                ]);
+            }
         }
 
         return back()->with('success', 'Deskripsi kokurikuler berhasil disimpan.');

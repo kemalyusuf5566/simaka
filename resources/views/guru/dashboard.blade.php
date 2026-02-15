@@ -1,41 +1,25 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Dashboard Guru')
+@section('title','Dashboard Guru')
+@section('page_title','Dashboard')
 
 @section('content')
-<div class="container-fluid">
-
-    <h4 class="mb-4">Dashboard Guru</h4>
-
-    <div class="row">
-
-        <div class="col-md-4">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ $jumlahPembelajaran ?? 0 }}</h3>
-                    <p>Data Pembelajaran</p>
-                </div>
-                <a href="{{ route('guru.pembelajaran.index') }}" class="small-box-footer">
-                    Lihat Pembelajaran <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
+<div class="row">
+  @foreach($cards as $card)
+    <div class="col-lg-3 col-6">
+      <div class="small-box {{ $card['color'] }}">
+        <div class="inner">
+          <h3>{{ $card['count'] }}</h3>
+          <p>{{ $card['title'] }}</p>
         </div>
-
-        @if (!empty($isWaliKelas) && $isWaliKelas)
-        <div class="col-md-4">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>Wali</h3>
-                    <p>Menu Wali Kelas</p>
-                </div>
-                <a href="#" class="small-box-footer">
-                    Kelola Rapor <i class="fas fa-arrow-circle-right"></i>
-                </a>
-            </div>
+        <div class="icon">
+          <i class="{{ $card['icon'] }}"></i>
         </div>
-        @endif
-
+        <a href="{{ $card['route'] }}" class="small-box-footer">
+          Lihat detail <i class="fas fa-arrow-circle-right"></i>
+        </a>
+      </div>
     </div>
-
+  @endforeach
 </div>
 @endsection

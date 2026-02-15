@@ -16,13 +16,12 @@ class NilaiKokurikulerController extends Controller
     private function assertKoordinator(KkKelompok $kelompok): void
     {
         $user = Auth::user();
-
         if (!$user || (int) $kelompok->koordinator_id !== (int) $user->id) {
             abort(403, 'Anda bukan koordinator kelompok ini');
         }
     }
 
-    public function index(KkKelompok $kelompok, KkKegiatan $kegiatan)
+    public function index(Request $request, KkKelompok $kelompok, KkKegiatan $kegiatan)
     {
         $this->assertKoordinator($kelompok);
 
@@ -31,23 +30,33 @@ class NilaiKokurikulerController extends Controller
             ->where('kk_kegiatan_id', $kegiatan->id)
             ->firstOrFail();
 
-        // capaian akhir berdasarkan pivot kelompok-kegiatan (yang kamu buat sudah)
+        // daftar capaian akhir untuk dropdown (capaian profil)
         $capaianAkhir = KkCapaianAkhir::with('dimensi')
             ->where('kk_kelompok_kegiatan_id', $pivot->id)
             ->orderBy('kk_dimensi_id')
             ->orderBy('id')
             ->get();
 
+        // capaian yang sedang dipilih (kalau kosong, default ke item pertama)
+        $selectedCapaianId = (int) $request->get('kk_capaian_akhir_id', 0);
+        if ($selectedCapaianId <= 0) {
+            $selectedCapaianId = (int) ($capaianAkhir->first()->id ?? 0);
+        }
+
         // anggota kelompok + siswa
         $anggota = $kelompok->anggota()->with('siswa')->get();
 
-        // nilai yang sudah tersimpan (jika ada)
+        /**
+         * INI KUNCI:
+         * nilaiRows harus dibedakan per capaian profil.
+         * Jadi ketika dropdown ganti -> data nilai yang ditampilkan ikut ganti.
+         */
         $nilaiRows = KkNilai::where('kk_kelompok_id', $kelompok->id)
             ->where('kk_kegiatan_id', $kegiatan->id)
+            ->when($selectedCapaianId > 0, fn($q) => $q->where('kk_capaian_akhir_id', $selectedCapaianId))
             ->get()
             ->keyBy('data_siswa_id');
 
-        // opsi predikat dropdown (silakan kamu ubah kalau kamu punya standar lain)
         $opsiPredikat = [
             'SB' => 'Sangat Baik',
             'B'  => 'Baik',
@@ -56,13 +65,14 @@ class NilaiKokurikulerController extends Controller
         ];
 
         return view('guru.kokurikuler.nilai.index', [
-            'kelompok'      => $kelompok->load(['kelas', 'koordinator']),
-            'kegiatan'      => $kegiatan,
-            'pivot'         => $pivot,          // kalau nanti kamu butuh tampilkan id pivot
-            'capaianAkhir'  => $capaianAkhir,
-            'anggota'       => $anggota,
-            'nilaiRows'     => $nilaiRows,
-            'opsiPredikat'  => $opsiPredikat,
+            'kelompok'          => $kelompok->load(['kelas', 'koordinator']),
+            'kegiatan'          => $kegiatan,
+            'pivot'             => $pivot,
+            'capaianAkhir'      => $capaianAkhir,
+            'selectedCapaianId' => $selectedCapaianId,
+            'anggota'           => $anggota,
+            'nilaiRows'         => $nilaiRows,
+            'opsiPredikat'      => $opsiPredikat,
         ]);
     }
 
@@ -70,26 +80,37 @@ class NilaiKokurikulerController extends Controller
     {
         $this->assertKoordinator($kelompok);
 
-        // validasi longgar dulu biar kamu bisa jalan (nanti kalau mau diperketat bisa)
         $request->validate([
             'nilai' => 'required|array',
         ]);
 
         foreach ($request->input('nilai', []) as $siswaId => $row) {
-            // kalau tidak dipilih apa-apa, boleh skip
-            $kkCapaianAkhirId = $row['kk_capaian_akhir_id'] ?? null;
+            $kkCapaianAkhirId = isset($row['kk_capaian_akhir_id']) ? (int) $row['kk_capaian_akhir_id'] : 0;
             $predikat         = $row['predikat'] ?? null;
 
+            // kalau capaian tidak dipilih, skip
+            if ($kkCapaianAkhirId <= 0) {
+                continue;
+            }
+
+            /**
+             * Kunci record harus menyertakan kk_capaian_akhir_id
+             * supaya capaian profil 1 & 2 tersimpan masing-masing,
+             * tidak saling overwrite.
+             *
+             * NOTE:
+             * Pastikan UNIQUE di database sudah mencakup:
+             * (kk_kelompok_id, kk_kegiatan_id, data_siswa_id, kk_capaian_akhir_id)
+             */
             KkNilai::updateOrCreate(
                 [
-                    'kk_kelompok_id' => $kelompok->id,
-                    'kk_kegiatan_id' => $kegiatan->id,
-                    'data_siswa_id'  => (int) $siswaId,
+                    'kk_kelompok_id'      => $kelompok->id,
+                    'kk_kegiatan_id'      => $kegiatan->id,
+                    'data_siswa_id'       => (int) $siswaId,
+                    'kk_capaian_akhir_id' => $kkCapaianAkhirId,
                 ],
                 [
-                    // pastikan kolom ini memang ada di tabel kk_nilai kamu
-                    'kk_capaian_akhir_id' => $kkCapaianAkhirId ?: null,
-                    'predikat'            => $predikat ?: null,
+                    'predikat' => $predikat ?: null,
                 ]
             );
         }

@@ -43,19 +43,84 @@ class EkskulAnggotaController extends Controller
         }
     }
 
-    public function index(DataEkstrakurikuler $ekskul)
+    public function index(Request $request, DataEkstrakurikuler $ekskul)
     {
         $this->assertPembina($ekskul);
 
-        $anggota = EkskulAnggota::with('siswa')
+        // untuk dropdown "Tampilkan 10/25/50/100" (opsional)
+        $perPage = (int) $request->get('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
+        // search (opsional) -> dipakai untuk filter nama/nis di tabel
+        $q = trim((string) $request->get('q', ''));
+
+        /**
+         * AMBIL ANGGOTA (yang sudah masuk ekskul)
+         * - paginate biar footer & pagination muncul
+         */
+        $anggotaQuery = EkskulAnggota::query()
+            ->with(['siswa.kelas'])
             ->where('data_ekstrakurikuler_id', $ekskul->id)
-            ->orderBy('id', 'desc')
-            ->get();
+            ->orderBy('id', 'desc');
 
-        // kolom siswa kamu: nama_siswa (bukan nama)
-        $siswa = DataSiswa::with('kelas')->orderBy('nama_siswa')->get();
+        if ($q !== '') {
+            $anggotaQuery->whereHas('siswa', function ($sq) use ($q) {
+                $sq->where('nama_siswa', 'like', "%{$q}%")
+                    ->orWhere('nis', 'like', "%{$q}%");
+            });
+        }
 
-        return view('guru.ekskul.anggota.index', compact('ekskul', 'anggota', 'siswa'));
+        $anggota = $anggotaQuery
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        /**
+         * AMBIL KANDIDAT (yang BELUM jadi anggota ekskul ini)
+         * - ini yang harus dipakai untuk modal "Tambah Anggota"
+         */
+        $anggotaSiswaIds = EkskulAnggota::where('data_ekstrakurikuler_id', $ekskul->id)
+            ->pluck('data_siswa_id')
+            ->unique()
+            ->values()
+            ->all();
+
+        $kandidatQuery = DataSiswa::query()
+            ->with('kelas')
+            ->when(!empty($anggotaSiswaIds), function ($sq) use ($anggotaSiswaIds) {
+                $sq->whereNotIn('id', $anggotaSiswaIds);
+            })
+            ->orderBy('nama_siswa', 'asc');
+
+        // search kandidat (opsional) -> biar modal tambah bisa filter juga lewat q_kandidat
+        $qKandidat = trim((string) $request->get('q_kandidat', ''));
+        if ($qKandidat !== '') {
+            $kandidatQuery->where(function ($sq) use ($qKandidat) {
+                $sq->where('nama_siswa', 'like', "%{$qKandidat}%")
+                    ->orWhere('nis', 'like', "%{$qKandidat}%");
+            });
+        }
+
+        $kandidat = $kandidatQuery
+            ->paginate($perPage, ['*'], 'k_page')
+            ->appends($request->query());
+
+        /**
+         * NOTE:
+         * View yang kamu pakai sebelumnya mengirim variabel $siswa (semua siswa).
+         * Sekarang supaya UI "Tambah" bener (yang tampil hanya kandidat),
+         * kita kirim $kandidat. Kalau blade kamu masih pakai $siswa,
+         * tinggal ganti di blade: $siswa -> $kandidat
+         */
+        return view('guru.ekskul.anggota.index', [
+            'ekskul'   => $ekskul,
+            'anggota'  => $anggota,
+            'kandidat' => $kandidat,
+            'perPage'  => $perPage,
+            'q'        => $q,
+            'qKandidat' => $qKandidat,
+        ]);
     }
 
     public function store(Request $request, DataEkstrakurikuler $ekskul)
@@ -111,7 +176,6 @@ class EkskulAnggotaController extends Controller
 
         return back()->with('success', 'Perubahan anggota berhasil disimpan.');
     }
-
 
     public function destroy(DataEkstrakurikuler $ekskul, EkskulAnggota $anggota)
     {

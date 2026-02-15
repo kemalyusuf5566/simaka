@@ -4,66 +4,126 @@ namespace App\Http\Controllers\Guru\Kokurikuler;
 
 use App\Http\Controllers\Controller;
 use App\Models\KkKelompok;
-use App\Models\KkKelompokAnggota;
+use App\Models\KkKelompokAnggota; // sesuaikan kalau nama model pivot kamu beda
 use App\Models\DataSiswa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AnggotaKelompokController extends Controller
 {
-    private function assertKoordinator(KkKelompok $kelompok): void
+    public function index(Request $request, KkKelompok $kelompok)
     {
-        abort_unless($kelompok->koordinator_id === Auth::id(), 403, 'Bukan koordinator kelompok ini');
-    }
+        // =============================
+        // FILTER & PER PAGE (REAL)
+        // =============================
+        $perPage = (int) $request->get('per_page', 10);
+        if (!in_array($perPage, [10, 25, 50, 100], true)) $perPage = 10;
 
-    public function index(KkKelompok $kelompok)
-    {
-        $this->assertKoordinator($kelompok);
+        $q = trim((string) $request->get('q', ''));
 
-        $anggota = KkKelompokAnggota::with('siswa')
-            ->where('kk_kelompok_id', $kelompok->id)
-            ->orderBy('id')
-            ->get();
+        // =============================
+        // ANGGOTA (PAGINATE)
+        // =============================
+        $anggotaQuery = KkKelompokAnggota::query()
+            ->with(['siswa'])
+            ->where('kk_kelompok_id', $kelompok->id);
 
-        // kandidat: siswa di kelas kelompok yang belum jadi anggota
-        $sudah = $anggota->pluck('data_siswa_id')->toArray();
+        if ($q !== '') {
+            $anggotaQuery->whereHas('siswa', function ($s) use ($q) {
+                $s->where('nama_siswa', 'like', "%{$q}%")
+                    ->orWhere('nis', 'like', "%{$q}%");
+            });
+        }
 
-        $kandidat = DataSiswa::where('data_kelas_id', $kelompok->data_kelas_id)
-            ->whereNotIn('id', $sudah)
-            ->orderBy('nama_siswa')
-            ->get();
+        $anggota = $anggotaQuery
+            ->orderBy('id', 'desc')
+            ->paginate($perPage, ['*'], 'page')
+            ->withQueryString();
 
-        return view('guru.kokurikuler.anggota.index', compact('kelompok', 'anggota', 'kandidat'));
+        // =============================
+        // KANDIDAT (UNTUK MODAL) - PAGINATE juga
+        // =============================
+        // kandidat = siswa yang BELUM jadi anggota kelompok ini
+        $anggotaSiswaIds = KkKelompokAnggota::where('kk_kelompok_id', $kelompok->id)
+            ->pluck('data_siswa_id')
+            ->toArray();
+
+        $kandidatQuery = DataSiswa::query()
+            ->where('data_kelas_id', $kelompok->data_kelas_id) // kalau kandidat memang dibatasi per kelas kelompok
+            ->when(count($anggotaSiswaIds) > 0, fn($qq) => $qq->whereNotIn('id', $anggotaSiswaIds))
+            ->orderBy('nama_siswa');
+
+        // search kandidat dari input modal (pakai parameter berbeda biar aman)
+        $kq = trim((string) $request->get('kq', ''));
+        if ($kq !== '') {
+            $kandidatQuery->where(function ($s) use ($kq) {
+                $s->where('nama_siswa', 'like', "%{$kq}%")
+                    ->orWhere('nis', 'like', "%{$kq}%");
+            });
+        }
+
+        // per page kandidat (boleh sama dengan perPage, biar konsisten)
+        $kandidat = $kandidatQuery
+            ->paginate($perPage, ['*'], 'kpage')
+            ->withQueryString();
+
+        return view('guru.kokurikuler.anggota.index', compact(
+            'kelompok',
+            'anggota',
+            'kandidat',
+            'perPage',
+            'q',
+            'kq'
+        ));
     }
 
     public function store(Request $request, KkKelompok $kelompok)
     {
-        $this->assertKoordinator($kelompok);
-
         $request->validate([
-            'data_siswa_id' => 'required|exists:data_siswa,id',
+            'data_siswa_id' => ['required', 'integer', 'exists:data_siswa,id'],
         ]);
-
-        // pastikan siswa dari kelas yang sama
-        $siswa = DataSiswa::findOrFail($request->data_siswa_id);
-        abort_unless($siswa->data_kelas_id === $kelompok->data_kelas_id, 422, 'Siswa bukan dari kelas kelompok ini');
 
         KkKelompokAnggota::firstOrCreate([
             'kk_kelompok_id' => $kelompok->id,
-            'data_siswa_id'  => $siswa->id,
+            'data_siswa_id'  => (int) $request->data_siswa_id,
         ]);
 
-        return back()->with('success', 'Anggota berhasil ditambahkan');
+        return back()->with('success', 'Anggota berhasil ditambahkan.');
     }
 
     public function destroy(KkKelompok $kelompok, KkKelompokAnggota $anggota)
     {
-        $this->assertKoordinator($kelompok);
-
-        abort_unless($anggota->kk_kelompok_id === $kelompok->id, 404);
+        if ((int) $anggota->kk_kelompok_id !== (int) $kelompok->id) {
+            abort(404);
+        }
 
         $anggota->delete();
 
-        return back()->with('success', 'Anggota berhasil dihapus');
+        return back()->with('success', 'Anggota berhasil dihapus.');
+    }
+
+    /**
+     * OPTIONAL: kalau kamu mau tombol "Tambahkan Semua" beneran jalan
+     * (kalau belum perlu, boleh hapus method ini)
+     */
+    public function addAll(Request $request, KkKelompok $kelompok)
+    {
+        $anggotaSiswaIds = KkKelompokAnggota::where('kk_kelompok_id', $kelompok->id)
+            ->pluck('data_siswa_id')
+            ->toArray();
+
+        $kandidat = DataSiswa::query()
+            ->where('data_kelas_id', $kelompok->data_kelas_id)
+            ->when(count($anggotaSiswaIds) > 0, fn($qq) => $qq->whereNotIn('id', $anggotaSiswaIds))
+            ->pluck('id')
+            ->toArray();
+
+        foreach ($kandidat as $sid) {
+            KkKelompokAnggota::firstOrCreate([
+                'kk_kelompok_id' => $kelompok->id,
+                'data_siswa_id'  => (int) $sid,
+            ]);
+        }
+
+        return back()->with('success', 'Semua kandidat berhasil ditambahkan.');
     }
 }

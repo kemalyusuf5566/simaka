@@ -17,18 +17,19 @@ class EkskulController extends Controller
         $guruRow = DataGuru::where('pengguna_id', $user->id)->first();
         $guruId  = $guruRow?->id;
 
-        // Ambil data ekskul yang dibina guru ini
-        // - cocokkan jika pembina_id disimpan sebagai pengguna.id
-        // - atau jika pembina_id disimpan sebagai data_guru.id
+        // Ambil data ekskul yang dibina guru ini + hitung jumlah anggota
         $ekskul = DataEkstrakurikuler::query()
-            ->where('pembina_id', $user->id)
-            ->when($guruId, function ($q) use ($guruId) {
-                $q->orWhere('pembina_id', $guruId);
-            })
-            ->orderBy('id', 'desc')
-            ->get();
+            ->withCount('anggota') // => menghasilkan kolom anggota_count
+            ->where(function ($q) use ($user, $guruId) {
+                $q->where('pembina_id', $user->id);
 
-        // view yang kamu punya: guru/ekskul/index.blade.php
+                if ($guruId) {
+                    $q->orWhere('pembina_id', $guruId);
+                }
+            })
+            ->orderByDesc('id')
+            ->paginate(10);
+
         return view('guru.ekskul.index', compact('ekskul'));
     }
 }
