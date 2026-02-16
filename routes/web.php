@@ -49,6 +49,7 @@ use App\Http\Controllers\Guru\WaliKelas\KetidakhadiranController;
 use App\Http\Controllers\Guru\WaliKelas\CatatanWaliKelasController;
 use App\Http\Controllers\Guru\Kokurikuler\KegiatanKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\NilaiKokurikulerController;
+use App\Http\Controllers\Guru\WaliKelas\DataSiswaController as WaliKelasDataSiswaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -272,9 +273,13 @@ Route::middleware(['auth', 'role:guru_mapel'])
         */
         Route::prefix('wali-kelas')->name('wali-kelas.')->group(function () {
 
-            // DATA KELAS
-            Route::get('data-kelas', [GuruWaliDataKelasController::class, 'index'])->name('data-kelas.index');
-            Route::get('data-kelas/{kelas}', [GuruWaliDataKelasController::class, 'detail'])->name('data-kelas.detail');
+        // DATA KELAS
+        Route::get('data-kelas', [GuruWaliDataKelasController::class, 'index'])->name('data-kelas.index');
+        Route::get('data-kelas/{kelas}', [GuruWaliDataKelasController::class, 'detail'])->name('data-kelas.detail');
+
+        // EDIT SISWA (dalam konteks kelas)
+        Route::get('data-kelas/siswa/{id}/edit', [GuruWaliDataKelasController::class, 'editSiswa'])->name('data-kelas.siswa.edit');
+        Route::put('data-kelas/siswa/{id}', [GuruWaliDataKelasController::class, 'updateSiswa'])->name('data-kelas.siswa.update');
 
             // KETIDAKHADIRAN
             Route::get('ketidakhadiran', [KetidakhadiranController::class, 'index'])->name('ketidakhadiran.index');

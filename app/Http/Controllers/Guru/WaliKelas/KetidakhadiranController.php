@@ -20,32 +20,50 @@ class KetidakhadiranController extends Controller
             ->where('wali_kelas_id', $user->id)
             ->get();
 
-        return view('guru.wali_kelas.ketidakhadiran.index', compact('kelas'));
+        // ✅ KUNCI: nama wali ambil dari user login (kolom: nama)
+        $namaWali = $user->nama ?? '-';
+
+        return view('guru.wali_kelas.ketidakhadiran.index', compact('kelas', 'namaWali'));
     }
 
     public function kelola($kelasId)
     {
         $user = Auth::user();
 
-        $kelas = DataKelas::where('id', $kelasId)->where('wali_kelas_id', $user->id)->firstOrFail();
+        $kelas = DataKelas::where('id', $kelasId)
+            ->where('wali_kelas_id', $user->id)
+            ->firstOrFail();
+
         $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
 
         $siswa = DataSiswa::where('data_kelas_id', $kelas->id)->get();
 
         $data = DataKetidakhadiran::where('data_tahun_pelajaran_id', $tahunAktif->id)
-            ->where('semester', $tahunAktif->semester) // sesuai tahun aktif
+            ->where('semester', $tahunAktif->semester)
             ->whereIn('data_siswa_id', $siswa->pluck('id'))
             ->get()
             ->keyBy('data_siswa_id');
 
-        return view('guru.wali_kelas.ketidakhadiran.kelola', compact('kelas', 'tahunAktif', 'siswa', 'data'));
+        // ✅ KUNCI: nama wali ambil dari user login (kolom: nama)
+        $namaWali = $user->nama ?? '-';
+
+        return view('guru.wali_kelas.ketidakhadiran.kelola', compact(
+            'kelas',
+            'tahunAktif',
+            'siswa',
+            'data',
+            'namaWali'
+        ));
     }
 
     public function update(Request $request, $kelasId)
     {
         $user = Auth::user();
 
-        $kelas = DataKelas::where('id', $kelasId)->where('wali_kelas_id', $user->id)->firstOrFail();
+        $kelas = DataKelas::where('id', $kelasId)
+            ->where('wali_kelas_id', $user->id)
+            ->firstOrFail();
+
         $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
 
         $sakit = $request->input('sakit', []);

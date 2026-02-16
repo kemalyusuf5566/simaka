@@ -24,12 +24,10 @@ class DataKelas extends Model
         );
     }
 
-    public function waliKelas()
+  
+    public function wali()
     {
-        return $this->belongsTo(
-            User::class,
-            'wali_kelas_id'
-        );
+        return $this->belongsTo(DataGuru::class, 'wali_kelas_id', 'pengguna_id');
     }
 
     public function siswa()

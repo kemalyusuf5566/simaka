@@ -244,7 +244,7 @@
 </div>
 
 <div class="card-footer">
-  <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">Kembali</a>
+  <a href="{{ $back_url ?? route('admin.siswa.index') }}" class="btn btn-secondary">Kembali</a>
   @if($mode !== 'detail')
     <button class="btn btn-primary float-right">Simpan</button>
   @endif

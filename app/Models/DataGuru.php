@@ -19,8 +19,12 @@ class DataGuru extends Model
         'telepon',
     ];
 
+    /**
+     * FIX: foreign key kamu "pengguna_id"
+     * Default Laravel akan cari user_id -> itu bikin nama jadi "-" dan error kolom.
+     */
     public function pengguna()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class, 'pengguna_id');
     }
 }
