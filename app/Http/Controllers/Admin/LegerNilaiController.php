@@ -17,7 +17,7 @@ class LegerNilaiController extends Controller
     public function index()
     {
         $kelas = DataKelas::withCount('siswa')
-            ->with(['waliKelas'])
+            ->with(['wali.pengguna'])
             ->orderBy('tingkat')
             ->orderBy('nama_kelas')
             ->get();
@@ -30,7 +30,7 @@ class LegerNilaiController extends Controller
      */
     public function detail($kelasId)
     {
-        $kelas = DataKelas::with(['waliKelas'])->findOrFail($kelasId);
+        $kelas = DataKelas::with(['wali.pengguna'])->findOrFail($kelasId);
 
         // semua siswa di kelas
         $siswa = DataSiswa::where('data_kelas_id', $kelasId)

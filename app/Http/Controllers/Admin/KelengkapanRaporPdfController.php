@@ -22,7 +22,7 @@ class KelengkapanRaporPdfController extends Controller
         // =========================
         $siswa = DataSiswa::with([
             'kelas',
-            'kelas.waliKelas',
+            'kelas.wali.pengguna',
         ])->findOrFail($siswaId);
 
         $sekolah = DataSekolah::first();

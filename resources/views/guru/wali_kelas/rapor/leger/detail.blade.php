@@ -69,15 +69,9 @@
 
           <tr class="bg-dark text-white">
             @foreach($mapel as $m)
-              @php
-                // Biar mirip screenshot: singkatan otomatis (ambil huruf besar awal kata)
-                $singkat = collect(preg_split('/\s+/', strtoupper($m->nama_mapel ?? '')))
-                  ->filter()
-                  ->map(fn($w) => substr($w, 0, 1))
-                  ->join('');
-                $singkat = $singkat ?: strtoupper(substr($m->nama_mapel ?? '-', 0, 5));
-              @endphp
-              <th class="text-center" style="min-width:70px;">{{ $singkat }}</th>
+              <th class="text-center" style="min-width:70px;">
+                {{ $m->singkatan ?? $m->kode_mapel ?? '-' }}
+              </th>
             @endforeach
           </tr>
         </thead>

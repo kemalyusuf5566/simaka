@@ -47,7 +47,7 @@ class LegerNilaiController extends Controller
         $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
 
         // Semua mapel (11 mapel)
-        $mapel = DataMapel::orderBy('id')->get();
+        $mapel = DataMapel::orderBy('urutan_cetak')->get();
 
         // Semua siswa di kelas ini
         $siswa = DataSiswa::where('data_kelas_id', $kelas->id)
