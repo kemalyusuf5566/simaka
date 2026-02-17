@@ -13,7 +13,10 @@ class DataMapelController extends Controller
     {
         abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
 
-        $mapel = DataMapel::orderBy('nama_mapel')->get();
+        // pagination biar sama seperti gambar
+        $mapel = DataMapel::orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
+            ->orderBy('nama_mapel')
+            ->paginate(10);
 
         return view('admin.mapel.index', compact('mapel'));
     }
@@ -33,7 +36,9 @@ class DataMapelController extends Controller
 
         $data = $request->validate([
             'nama_mapel'     => 'required|string|max:255',
-            'kelompok_mapel' => 'nullable|string|max:255',
+            'singkatan'      => 'required|string|max:30',
+            'urutan_cetak'   => 'required|integer|min:1|max:9999',
+            'kelompok_mapel' => 'required|in:Mata Pelajaran Umum,Mata Pelajaran Pilihan,Muatan Lokal',
         ]);
 
         DataMapel::create($data);
@@ -60,7 +65,9 @@ class DataMapelController extends Controller
 
         $data = $request->validate([
             'nama_mapel'     => 'required|string|max:255',
-            'kelompok_mapel' => 'nullable|string|max:255',
+            'singkatan'      => 'required|string|max:30',
+            'urutan_cetak'   => 'required|integer|min:1|max:9999',
+            'kelompok_mapel' => 'required|in:Mata Pelajaran Umum,Mata Pelajaran Pilihan,Muatan Lokal',
         ]);
 
         $mapel->update($data);
@@ -68,5 +75,17 @@ class DataMapelController extends Controller
         return redirect()
             ->route('admin.mapel.index')
             ->with('success', 'Data mata pelajaran berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+
+        $mapel = DataMapel::findOrFail($id);
+        $mapel->delete();
+
+        return redirect()
+            ->route('admin.mapel.index')
+            ->with('success', 'Data mata pelajaran berhasil dihapus');
     }
 }

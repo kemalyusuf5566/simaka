@@ -297,6 +297,9 @@ Route::middleware(['auth', 'role:guru_mapel'])
                 // LEGER NILAI
                 Route::get('leger', [\App\Http\Controllers\Guru\WaliKelas\Rapor\LegerNilaiController::class, 'index'])
                     ->name('leger.index');
+                Route::get('leger/{kelas}', [\App\Http\Controllers\Guru\WaliKelas\Rapor\LegerNilaiController::class, 'detail'])
+                    ->name('leger.detail');
+
 
                 // CETAK RAPOR
                 Route::get('cetak', [\App\Http\Controllers\Guru\WaliKelas\Rapor\CetakRaporController::class, 'index'])

@@ -10,6 +10,8 @@ class DataMapel extends Model
 
     protected $fillable = [
         'nama_mapel',
+        'singkatan',
+        'urutan_cetak',
         'kelompok_mapel',
     ];
 

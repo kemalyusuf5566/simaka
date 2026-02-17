@@ -10,6 +10,7 @@ class DataKetidakhadiran extends Model
         protected $fillable = [
             'data_siswa_id',
             'data_tahun_pelajaran_id',
+            'semester',
             'sakit',
             'izin',
             'tanpa_keterangan',

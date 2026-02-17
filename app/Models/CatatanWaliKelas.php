@@ -10,6 +10,7 @@ class CatatanWaliKelas extends Model
         protected $fillable = [
             'data_siswa_id',
             'data_tahun_pelajaran_id',
+            'semester',
             'catatan',
             'status_kenaikan_kelas',
         ];

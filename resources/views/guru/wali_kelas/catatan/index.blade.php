@@ -1,5 +1,5 @@
 @extends('layouts.adminlte')
-@section('page_title','Wali Kelas - Catatan')
+@section('title','Wali Kelas - Catatan')
 
 @section('content')
 <div class="container-fluid">
