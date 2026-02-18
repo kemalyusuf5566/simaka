@@ -49,7 +49,6 @@ use App\Http\Controllers\Guru\WaliKelas\KetidakhadiranController;
 use App\Http\Controllers\Guru\WaliKelas\CatatanWaliKelasController;
 use App\Http\Controllers\Guru\Kokurikuler\KegiatanKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\NilaiKokurikulerController;
-use App\Http\Controllers\Guru\WaliKelas\DataSiswaController as WaliKelasDataSiswaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -304,6 +303,15 @@ Route::middleware(['auth', 'role:guru_mapel'])
                 // CETAK RAPOR
                 Route::get('cetak', [\App\Http\Controllers\Guru\WaliKelas\Rapor\CetakRaporController::class, 'index'])
                     ->name('cetak.index');
+
+                Route::get('cetak/{kelas}', [\App\Http\Controllers\Guru\WaliKelas\Rapor\CetakRaporController::class, 'detail'])
+                    ->name('cetak.detail');
+
+                Route::get('pdf/kelengkapan/{siswa}', [\App\Http\Controllers\Guru\WaliKelas\Rapor\RaporKelengkapanPdfController::class, 'show'])
+                    ->name('pdf.kelengkapan');
+
+                Route::get('pdf/semester/{siswa}', [\App\Http\Controllers\Guru\WaliKelas\Rapor\RaporSemesterPdfController::class, 'show'])
+                    ->name('pdf.semester');
             });
         });
     });
