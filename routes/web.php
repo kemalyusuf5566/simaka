@@ -76,7 +76,30 @@ Route::middleware(['auth', 'role:admin'])
         })->name('dashboard');
 
         // MASTER DATA
-        Route::resource('siswa', DataSiswaController::class);
+
+        // ===== SISWA =====
+        Route::get('siswa', [DataSiswaController::class, 'index'])->name('siswa.index');
+        Route::get('siswa/create', [DataSiswaController::class, 'create'])->name('siswa.create');
+        Route::post('siswa', [DataSiswaController::class, 'store'])->name('siswa.store');
+        Route::get('siswa/{id}', [DataSiswaController::class, 'show'])->name('siswa.show');
+        Route::get('siswa/{id}/edit', [DataSiswaController::class, 'edit'])->name('siswa.edit');
+        Route::put('siswa/{id}', [DataSiswaController::class, 'update'])->name('siswa.update');
+        Route::delete('siswa/{id}', [DataSiswaController::class, 'destroy'])->name('siswa.destroy');
+
+        Route::delete('siswa/destroy-multiple', [DataSiswaController::class, 'destroyMultiple'])
+            ->name('siswa.destroyMultiple');
+
+        // ===== IMPORT SISWA (XLSX) =====
+        Route::get('siswa/import/format', [DataSiswaController::class, 'downloadFormatImport'])
+                ->name('siswa.import.format');
+
+        Route::post('siswa/import', [DataSiswaController::class, 'import'])
+            ->name('siswa.import');
+            
+        Route::get('siswa/import', [DataSiswaController::class, 'importCreate'])
+            ->name('siswa.import.create');
+
+
         Route::resource('guru', DataGuruController::class);
         Route::resource('admin', DataAdminController::class);
 

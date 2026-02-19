@@ -7,6 +7,13 @@ use App\Models\DataSiswa;
 use App\Models\DataKelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class DataSiswaController extends Controller
 {
@@ -42,17 +49,30 @@ class DataSiswaController extends Controller
         abort(403);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         if (!$this->isAdmin()) {
             abort(403);
         }
 
-        $siswa = DataSiswa::with('kelas')
-            ->orderBy('nama_siswa')
-            ->get();
+        $limit = (int) $request->get('limit', 10);
+        if (!in_array($limit, [10, 25, 50, 100])) $limit = 10;
 
-        return view('admin.siswa.index', compact('siswa'));
+        $q = trim((string) $request->get('q', ''));
+
+        $siswa = DataSiswa::with('kelas')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($qq) use ($q) {
+                    $qq->where('nama_siswa', 'like', "%{$q}%")
+                        ->orWhere('nis', 'like', "%{$q}%")
+                        ->orWhere('nisn', 'like', "%{$q}%");
+                });
+            })
+            ->orderBy('nama_siswa')
+            ->paginate($limit)
+            ->withQueryString();
+
+        return view('admin.siswa.index', compact('siswa', 'limit', 'q'));
     }
 
     public function create()
@@ -64,7 +84,7 @@ class DataSiswaController extends Controller
         return view('admin.siswa.form', [
             'mode'  => 'create',
             'siswa' => new DataSiswa(),
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
+            'kelas' => DataKelas::orderBy('tingkat')->orderBy('nama_kelas')->get(),
         ]);
     }
 
@@ -92,7 +112,7 @@ class DataSiswaController extends Controller
         return view('admin.siswa.form', [
             'mode'  => 'detail',
             'siswa' => $siswa,
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
+            'kelas' => DataKelas::orderBy('tingkat')->orderBy('nama_kelas')->get(),
         ]);
     }
 
@@ -105,7 +125,7 @@ class DataSiswaController extends Controller
         return view('admin.siswa.form', [
             'mode'  => 'edit',
             'siswa' => $siswa,
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
+            'kelas' => DataKelas::orderBy('tingkat')->orderBy('nama_kelas')->get(),
         ]);
     }
 
@@ -143,6 +163,284 @@ class DataSiswaController extends Controller
             ->with('success', 'Data siswa berhasil dihapus');
     }
 
+    /**
+     * ============================
+     * DOWNLOAD FORMAT IMPORT (XLSX)
+     * ============================
+     */
+    public function downloadFormatImport(): StreamedResponse
+    {
+        if (!$this->isAdmin()) abort(403);
+
+        $headers = [
+            'nama_siswa',
+            'kelas',
+            'nis',
+            'nisn',
+            'tempat_lahir',
+            'tanggal_lahir',      // YYYY-MM-DD
+            'jenis_kelamin',      // L/P
+            'agama',
+            'status_dalam_keluarga',
+            'anak_ke',
+            'alamat',
+            'telepon',
+            'sekolah_asal',
+            'diterima_di_kelas',
+            'tanggal_diterima',   // YYYY-MM-DD
+            'nama_ayah',
+            'pekerjaan_ayah',
+            'nama_ibu',
+            'pekerjaan_ibu',
+            'alamat_orang_tua',
+            'telepon_orang_tua',
+            'nama_wali',
+            'pekerjaan_wali',
+            'alamat_wali',
+            'telepon_wali',
+            'status_siswa',       // AKTIF/TIDAK AKTIF
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header row
+        foreach ($headers as $i => $h) {
+            $col = Coordinate::stringFromColumnIndex($i + 1); // 1->A, 2->B, dst
+            $sheet->setCellValue($col . '1', $h);
+        }
+
+        // Contoh 1 baris (kelas VII A)
+        $sample = [
+            'Aghnia Issabella',
+            'VII A',
+            '5037685438',
+            '0530669602',
+            'Jakarta',
+            '2015-07-18',
+            'L',
+            'Islam',
+            'Anak Kandung',
+            '2',
+            'Jl. Mekarsari No.13',
+            '088896286356',
+            'PAUD NURUL IHSAN',
+            'I',
+            '2023-07-18',
+            'MUKHLIS',
+            'POLRI',
+            'DEDE',
+            'BIDAN',
+            'Jl. HZ Mustofa',
+            '083303993991',
+            '',
+            '',
+            '',
+            '',
+            'AKTIF',
+        ];
+
+        foreach ($headers as $i => $h) {
+            $col = Coordinate::stringFromColumnIndex($i + 1); // 1->A, 2->B, dst
+            $sheet->setCellValue($col . '1', $h);
+        }
+
+        $filename = 'format_import_data_siswa.xlsx';
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * ============================
+     * IMPORT DATA SISWA (XLSX)
+     * ============================
+     */
+    public function import(Request $request)
+    {
+        if (!$this->isAdmin()) abort(403);
+
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx',
+            'confirm' => 'required|accepted',
+        ], [
+            'file.required' => 'File wajib diunggah.',
+            'file.mimes' => 'File harus berformat XLSX.',
+            'confirm.required' => 'Checklist konfirmasi wajib dicentang.',
+            'confirm.accepted' => 'Checklist konfirmasi wajib dicentang.',
+        ]);
+
+        $path = $request->file('file')->getRealPath();
+
+        $spreadsheet = IOFactory::load($path);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
+
+        if (count($rows) < 2) {
+            return back()->with('error', 'File kosong / tidak ada data.');
+        }
+
+        // Ambil header dari baris 1
+        $headerRow = $rows[1];
+        $headers = [];
+        foreach ($headerRow as $col => $name) {
+            $name = trim((string) $name);
+            if ($name !== '') $headers[$col] = $name;
+        }
+
+        $requiredHeaders = [
+            'nama_siswa',
+            'kelas',
+            'tempat_lahir',
+            'tanggal_lahir',
+            'jenis_kelamin',
+            'agama'
+        ];
+
+        foreach ($requiredHeaders as $rh) {
+            if (!in_array($rh, array_values($headers))) {
+                return back()->with('error', "Header '{$rh}' tidak ditemukan. Download format import dan gunakan format tersebut.");
+            }
+        }
+
+        $success = 0;
+        $errors = [];
+
+        DB::beginTransaction();
+        try {
+            // mulai dari baris 2
+            for ($i = 2; $i <= count($rows); $i++) {
+                $row = $rows[$i] ?? null;
+                if (!$row) continue;
+
+                // helper ambil value berdasarkan nama header
+                $get = function (string $key) use ($headers, $row) {
+                    $col = array_search($key, $headers, true);
+                    if ($col === false) return null;
+                    $val = $row[$col] ?? null;
+                    if (is_string($val)) $val = trim($val);
+                    return $val === '' ? null : $val;
+                };
+
+                // skip kalau baris benar2 kosong
+                $nama = $get('nama_siswa');
+                $kelasNama = $get('kelas');
+                if (!$nama && !$kelasNama) continue;
+
+                // wajib
+                $tempatLahir = $get('tempat_lahir');
+                $tglLahirRaw = $get('tanggal_lahir');
+                $jk = $get('jenis_kelamin');
+                $agama = $get('agama');
+
+                if (!$nama || !$kelasNama || !$tempatLahir || !$tglLahirRaw || !$jk || !$agama) {
+                    $errors[] = "Baris {$i}: kolom wajib kosong (nama_siswa/kelas/tempat_lahir/tanggal_lahir/jenis_kelamin/agama).";
+                    continue;
+                }
+
+                // cari kelas by nama_kelas (VII A)
+                $kelas = DataKelas::where('nama_kelas', $kelasNama)->first();
+                if (!$kelas) {
+                    $errors[] = "Baris {$i}: kelas '{$kelasNama}' tidak ditemukan di master Data Kelas.";
+                    continue;
+                }
+
+                // tanggal lahir bisa string atau numeric excel date
+                $tanggalLahir = null;
+                try {
+                    if (is_numeric($tglLahirRaw)) {
+                        $tanggalLahir = ExcelDate::excelToDateTimeObject($tglLahirRaw)->format('Y-m-d');
+                    } else {
+                        $tanggalLahir = date('Y-m-d', strtotime((string) $tglLahirRaw));
+                    }
+                } catch (\Throwable $e) {
+                    $errors[] = "Baris {$i}: tanggal_lahir tidak valid.";
+                    continue;
+                }
+
+                if (!in_array($jk, ['L', 'P'])) {
+                    $errors[] = "Baris {$i}: jenis_kelamin harus L atau P.";
+                    continue;
+                }
+
+                // tanggal diterima optional
+                $tglTerimaRaw = $get('tanggal_diterima');
+                $tanggalDiterima = null;
+                if ($tglTerimaRaw !== null) {
+                    try {
+                        if (is_numeric($tglTerimaRaw)) {
+                            $tanggalDiterima = ExcelDate::excelToDateTimeObject($tglTerimaRaw)->format('Y-m-d');
+                        } else {
+                            $tanggalDiterima = date('Y-m-d', strtotime((string) $tglTerimaRaw));
+                        }
+                    } catch (\Throwable $e) {
+                        $errors[] = "Baris {$i}: tanggal_diterima tidak valid.";
+                        continue;
+                    }
+                }
+
+                $statusSiswa = $get('status_siswa') ?? 'AKTIF';
+                $statusSiswa = strtoupper((string) $statusSiswa);
+                if (!in_array($statusSiswa, ['AKTIF', 'TIDAK AKTIF'])) {
+                    $errors[] = "Baris {$i}: status_siswa harus AKTIF atau TIDAK AKTIF.";
+                    continue;
+                }
+
+                $payload = [
+                    'data_kelas_id' => $kelas->id,
+                    'nama_siswa' => $nama,
+                    'nis' => $get('nis'),
+                    'nisn' => $get('nisn'),
+                    'tempat_lahir' => $tempatLahir,
+                    'tanggal_lahir' => $tanggalLahir,
+                    'jenis_kelamin' => $jk,
+                    'agama' => $agama,
+                    'status_dalam_keluarga' => $get('status_dalam_keluarga'),
+                    'anak_ke' => $get('anak_ke'),
+                    'alamat' => $get('alamat'),
+                    'telepon' => $get('telepon'),
+                    'sekolah_asal' => $get('sekolah_asal'),
+                    'diterima_di_kelas' => $get('diterima_di_kelas'),
+                    'tanggal_diterima' => $tanggalDiterima,
+                    'nama_ayah' => $get('nama_ayah'),
+                    'pekerjaan_ayah' => $get('pekerjaan_ayah'),
+                    'nama_ibu' => $get('nama_ibu'),
+                    'pekerjaan_ibu' => $get('pekerjaan_ibu'),
+                    'alamat_orang_tua' => $get('alamat_orang_tua'),
+                    'telepon_orang_tua' => $get('telepon_orang_tua'),
+                    'nama_wali' => $get('nama_wali'),
+                    'pekerjaan_wali' => $get('pekerjaan_wali'),
+                    'alamat_wali' => $get('alamat_wali'),
+                    'telepon_wali' => $get('telepon_wali'),
+                    'status_siswa' => $statusSiswa,
+                ];
+
+                DataSiswa::create($payload);
+                $success++;
+            }
+
+            // Kalau semua baris gagal, tetap commit tidak apa2, tapi kita balikin error
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->with('error', 'Import gagal: ' . $e->getMessage());
+        }
+
+        if (count($errors) > 0) {
+            // tampilkan maksimal 15 error biar tidak kepanjangan
+            $preview = array_slice($errors, 0, 15);
+            $msg = "Import selesai. Berhasil: {$success}. Gagal: " . count($errors) . ".\n- " . implode("\n- ", $preview);
+            if (count($errors) > 15) $msg .= "\n...dan lainnya.";
+            return back()->with('warning', nl2br(e($msg)));
+        }
+
+        return back()->with('success', "Import berhasil. Total siswa masuk: {$success}");
+    }
+
     private function validatedData(Request $request): array
     {
         return $request->validate([
@@ -173,5 +471,20 @@ class DataSiswaController extends Controller
             'telepon_wali'         => 'nullable|string|max:20',
             'status_siswa'         => 'nullable|string|max:20',
         ]);
+    }
+
+    public function destroyMultiple(Request $request)
+    {
+        if (!$this->isAdmin()) abort(403);
+
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || count($ids) === 0) {
+            return redirect()->back()->with('error', 'Tidak ada siswa yang dipilih.');
+        }
+
+        DataSiswa::whereIn('id', $ids)->delete();
+
+        return redirect()->route('admin.siswa.index')
+            ->with('success', 'Data siswa terpilih berhasil dihapus.');
     }
 }
