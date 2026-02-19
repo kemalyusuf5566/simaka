@@ -110,6 +110,15 @@ table { border-collapse: collapse; width:100%; }
 .spacer{ height:16mm; }
 .name{ font-weight:bold; text-decoration:underline; }
 
+/* ====== TAMBAHAN: tempat & tanggal pengambilan rapor (posisi di atas ttd wali kelas) ====== */
+.ambil-rapor{
+    width:50%;              /* sejajar dengan kolom kanan (wali kelas) */
+    margin-left:50%;        /* geser ke kanan */
+    text-align:center;      /* center di atas "Wali Kelas" */
+    margin-top:2mm;
+    margin-bottom:1mm;
+}
+
 /* ================= FOOTER ================= */
 .footer{
     position:fixed;
@@ -329,6 +338,28 @@ if(($semester ?? 'Ganjil') === 'Genap'){
 
 <div class="box-title">Tanggapan Orang Tua/Wali Murid</div>
 <div class="box-body"></div>
+
+@php
+  // ambil dari tabel tahun pelajaran (yang kamu bilang)
+  $tempatAmbil = $tahun->tempat_pembagian_rapor ?? '';
+  $tglAmbilRaw = $tahun->tanggal_pembagian_rapor ?? '';
+
+  $tglAmbil = '';
+  if($tglAmbilRaw){
+    try {
+      $tglAmbil = \Carbon\Carbon::parse($tglAmbilRaw)->translatedFormat('d F Y');
+    } catch (\Throwable $e) {
+      $tglAmbil = $tglAmbilRaw;
+    }
+  }
+@endphp
+
+{{-- POSISI: di atas kolom ttd Wali Kelas, text center --}}
+@if($tempatAmbil || $tglAmbil)
+  <div class="ambil-rapor">
+    {{ $tempatAmbil }}{{ ($tempatAmbil && $tglAmbil) ? ', ' : '' }}{{ $tglAmbil }}
+  </div>
+@endif
 
 <br>
 

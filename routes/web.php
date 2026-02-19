@@ -100,7 +100,29 @@ Route::middleware(['auth', 'role:admin'])
             ->name('siswa.import.create');
 
 
-        Route::resource('guru', DataGuruController::class);
+        // ===== GURU =====
+        Route::get('guru', [DataGuruController::class, 'index'])->name('guru.index');
+        Route::get('guru/create', [DataGuruController::class, 'create'])->name('guru.create');
+        Route::post('guru', [DataGuruController::class, 'store'])->name('guru.store');
+        Route::get('guru/{id}', [DataGuruController::class, 'show'])->name('guru.show');
+        Route::get('guru/{id}/edit', [DataGuruController::class, 'edit'])->name('guru.edit');
+        Route::put('guru/{id}', [DataGuruController::class, 'update'])->name('guru.update');
+        Route::delete('guru/{id}', [DataGuruController::class, 'destroy'])->name('guru.destroy');
+
+        // modal detail (AJAX)
+        Route::get('guru/{id}/detail', [DataGuruController::class, 'detailModal'])->name('guru.detail.modal');
+
+        // destroy multiple
+        Route::delete('guru/destroy-multiple', [DataGuruController::class, 'destroyMultiple'])
+            ->name('guru.destroyMultiple');
+
+        // ===== IMPORT GURU (XLSX) =====
+        Route::get('guru/import', [DataGuruController::class, 'importCreate'])->name('guru.import.create');
+        Route::get('guru/import/format', [DataGuruController::class, 'downloadFormatImport'])->name('guru.import.format');
+        Route::post('guru/import', [DataGuruController::class, 'import'])->name('guru.import');
+       
+       
+       
         Route::resource('admin', DataAdminController::class);
 
         // ADMINISTRASI

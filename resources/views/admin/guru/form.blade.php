@@ -7,11 +7,13 @@
 
 @section('content')
 @php
+  $guru = $guru ?? null;
   $readonly = $mode === 'detail';
+  $p = $guru?->pengguna;
 @endphp
 
 <div class="card card-dark">
-  <div class="card-header">
+  <div class="card-header bg-primary">
     <h3 class="card-title">
       {{ $mode === 'create' ? 'Tambah Data Guru' :
          ($mode === 'edit' ? 'Edit Data Guru' : 'Detail Data Guru') }}
@@ -35,11 +37,11 @@
         <div class="col-md-6">
 
           <div class="form-group">
-            <label>Nama</label>
+            <label>Nama *</label>
             <input type="text"
                    name="nama"
                    class="form-control"
-                   value="{{ old('nama', $guru->pengguna->nama ?? '') }}"
+                   value="{{ old('nama', $p->nama ?? '') }}"
                    {{ $readonly ? 'readonly' : '' }}
                    required>
           </div>
@@ -81,19 +83,14 @@
           </div>
 
           <div class="form-group">
-            <label>Jenis Kelamin</label>
+            <label>Jenis Kelamin *</label>
             <select name="jenis_kelamin"
                     class="form-control"
-                    {{ $readonly ? 'disabled' : '' }}>
+                    {{ $readonly ? 'disabled' : '' }}
+                    required>
               <option value="">-- Pilih --</option>
-              <option value="L"
-                @selected(old('jenis_kelamin', $guru->jenis_kelamin ?? '') === 'L')>
-                Laki-laki
-              </option>
-              <option value="P"
-                @selected(old('jenis_kelamin', $guru->jenis_kelamin ?? '') === 'P')>
-                Perempuan
-              </option>
+              <option value="L" @selected(old('jenis_kelamin', $guru->jenis_kelamin ?? '') === 'L')>Laki-laki</option>
+              <option value="P" @selected(old('jenis_kelamin', $guru->jenis_kelamin ?? '') === 'P')>Perempuan</option>
             </select>
           </div>
 
@@ -119,33 +116,30 @@
         <div class="col-md-6">
 
           <div class="form-group">
-            <label>Email Akun</label>
-            <input type="email"
-                   name="email"
-                   class="form-control"
-                   value="{{ old('email', $guru->pengguna->email ?? '') }}"
-                   {{ $readonly ? 'readonly' : '' }}
-                   required>
+            <label>Status Guru *</label>
+            @php
+              $statusVal = old('status_aktif', isset($p) ? ((int)$p->status_aktif) : 1);
+            @endphp
+            <select name="status_aktif" class="form-control" {{ $readonly ? 'disabled' : '' }} required>
+              <option value="1" {{ (int)$statusVal === 1 ? 'selected' : '' }}>AKTIF</option>
+              <option value="0" {{ (int)$statusVal === 0 ? 'selected' : '' }}>TIDAK AKTIF</option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label>Username Akun</label>
-            <input type="text"
-                   name="username"
+            <label>Email Akun *</label>
+            <input type="email"
+                   name="email"
                    class="form-control"
-                   value="{{ old('username', $guru->pengguna->username ?? '') }}"
+                   value="{{ old('email', $p->email ?? '') }}"
                    {{ $readonly ? 'readonly' : '' }}
                    required>
           </div>
 
-          {{-- PASSWORD --}}
           @if($mode === 'create')
             <div class="form-group">
-              <label>Password Akun</label>
-              <input type="password"
-                     name="password"
-                     class="form-control"
-                     required>
+              <label>Password Akun *</label>
+              <input type="password" name="password" class="form-control" required>
             </div>
           @endif
 
@@ -156,9 +150,7 @@
                      name="password"
                      class="form-control"
                      placeholder="Kosongkan jika tidak diubah">
-              <small class="text-muted">
-                Isi hanya jika ingin mengganti password
-              </small>
+              <small class="text-muted">Isi hanya jika ingin mengganti password</small>
             </div>
           @endif
 
@@ -169,14 +161,10 @@
 
     <div class="card-footer d-flex justify-content-between">
       @if($mode !== 'detail')
-        <button type="submit" class="btn btn-primary">
-          Simpan
-        </button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
       @endif
 
-      <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">
-        Kembali
-      </a>
+      <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
 
   </form>
