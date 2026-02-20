@@ -14,73 +14,82 @@
     {{-- TOOLBAR ATAS --}}
     <div class="d-flex justify-content-between mb-3">
       <div>
-        <a href="{{ route('admin.kelas.create') }}" class="btn btn-primary btn-sm">
+        {{-- WAJIB ada data-url --}}
+        <button type="button"
+                class="btn btn-primary btn-sm"
+                id="btnTambahKelas"
+                data-url="{{ route('admin.kelas.create') }}">
           <i class="fas fa-plus"></i> Tambah Kelas
-        </a>
-        <button class="btn btn-danger btn-sm" disabled>
-          <i class="fas fa-trash"></i> Hapus Beberapa
         </button>
       </div>
 
       <div>
-        <button class="btn btn-info btn-sm" disabled>
+        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalFilter">
           <i class="fas fa-filter"></i> Filter Data
         </button>
       </div>
     </div>
 
-    {{-- FILTER BAR (SAMA SEPERTI DATA SISWA) --}}
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    {{-- FILTER BAR --}}
+    <form id="formFilterBar" method="GET" action="{{ route('admin.kelas.index') }}"
+          class="d-flex justify-content-between align-items-center mb-2">
 
-      {{-- TAMPILKAN --}}
-      <div class="d-flex align-items-center">
-        <span class="mr-2 text-muted">Tampilkan</span>
-        <select class="form-control form-control-sm" style="width:90px">
-          <option>10</option>
-          <option>25</option>
-          <option>50</option>
-          <option>100</option>
-        </select>
-        <span class="ml-2 text-muted">data</span>
-      </div>
-
-      {{-- SEARCH --}}
       <div>
-        <input type="text"
-               class="form-control form-control-sm"
-               style="width:220px"
-               placeholder="Cari...">
+        <label class="mb-0">
+          Tampilkan
+          <select name="limit" class="custom-select custom-select-sm w-auto" onchange="this.form.submit()">
+            @php $limitVal = (int)($limit ?? 10); @endphp
+            <option value="10"  {{ $limitVal===10 ? 'selected' : '' }}>10</option>
+            <option value="25"  {{ $limitVal===25 ? 'selected' : '' }}>25</option>
+            <option value="50"  {{ $limitVal===50 ? 'selected' : '' }}>50</option>
+            <option value="100" {{ $limitVal===100 ? 'selected' : '' }}>100</option>
+          </select>
+          data
+        </label>
       </div>
 
-    </div>
+      <div class="d-flex">
+        <input type="text" name="q" value="{{ $q ?? '' }}"
+               class="form-control form-control-sm"
+               placeholder="Cari..."
+               style="width:220px">
+        <button class="btn btn-sm btn-secondary ml-2" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </form>
 
     {{-- TABEL --}}
     <table class="table table-bordered table-striped table-hover">
       <thead class="bg-secondary">
         <tr>
-          <th style="width:50px">No</th>
-          <th>ID Kelas</th>
+          <th style="width:60px">No</th>
+          <th style="width:90px">ID Kelas</th>
           <th>Nama Kelas</th>
           <th>Wali Kelas</th>
-          <th class="text-center">Tingkat</th>
-          <th class="text-center">Jumlah Siswa</th>
-          <th style="width:180px" class="text-center">Aksi</th>
+          <th class="text-center" style="width:90px">Tingkat</th>
+          <th class="text-center" style="width:130px">Jumlah Siswa</th>
+          <th class="text-center" style="width:180px">Aksi</th>
         </tr>
       </thead>
+
       <tbody>
         @forelse($kelas as $i => $k)
         <tr>
-          <td>{{ $i + 1 }}</td>
+          <td>{{ $kelas->firstItem() + $i }}</td>
           <td>{{ $k->id }}</td>
           <td>{{ $k->nama_kelas }}</td>
-          <td>{{ $k->waliKelas->nama ?? '-' }}</td>
+          <td>{{ $k->wali->pengguna->nama ?? '-' }}</td>
           <td class="text-center">{{ $k->tingkat }}</td>
           <td class="text-center">{{ $k->siswa_count ?? 0 }}</td>
           <td class="text-center">
-            <a href="{{ route('admin.kelas.edit',$k->id) }}"
-               class="btn btn-warning btn-xs">
+
+            {{-- WAJIB ada data-url --}}
+            <button type="button"
+                    class="btn btn-warning btn-xs btn-edit-kelas"
+                    data-url="{{ route('admin.kelas.edit', $k->id) }}">
               <i class="fas fa-edit"></i> Edit
-            </a>
+            </button>
 
             <form action="{{ route('admin.kelas.destroy',$k->id) }}"
                   method="POST"
@@ -92,6 +101,7 @@
                 <i class="fas fa-trash"></i> Hapus
               </button>
             </form>
+
           </td>
         </tr>
         @empty
@@ -104,7 +114,118 @@
       </tbody>
     </table>
 
+    {{-- PAGINATION RAPI --}}
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="text-muted">
+        Menampilkan {{ $kelas->count() ? $kelas->firstItem() : 0 }} - {{ $kelas->count() ? $kelas->lastItem() : 0 }}
+        dari {{ $kelas->total() }} data
+      </div>
+      <div>
+        {{ $kelas->links() }}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{{-- MODAL FILTER (Tingkat Kelas saja) --}}
+<div class="modal fade" id="modalFilter" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Filter Data</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <form method="GET" action="{{ route('admin.kelas.index') }}">
+        <div class="modal-body">
+          <input type="hidden" name="limit" value="{{ $limit ?? 10 }}">
+          <input type="hidden" name="q" value="{{ $q ?? '' }}">
+
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Tingkat Kelas</span>
+              </div>
+
+              @php $tingkatVal = (string)($tingkat ?? ''); @endphp
+              <select name="tingkat" class="form-control">
+                <option value="" {{ $tingkatVal==='' ? 'selected' : '' }}>-- Pilih --</option>
+                <option value="all" {{ $tingkatVal==='all' ? 'selected' : '' }}>Semua</option>
+                <option value="7" {{ $tingkatVal==='7' ? 'selected' : '' }}>7</option>
+                <option value="8" {{ $tingkatVal==='8' ? 'selected' : '' }}>8</option>
+                <option value="9" {{ $tingkatVal==='9' ? 'selected' : '' }}>9</option>
+              </select>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <a href="{{ route('admin.kelas.index') }}" class="btn btn-secondary">Reset</a>
+          <button class="btn btn-primary">Terapkan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{{-- MODAL TAMBAH / EDIT KELAS --}}
+<div class="modal fade" id="modalKelas" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      {{-- header modal supaya title bisa di-set --}}
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalKelasLabel">Form Kelas</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      {{-- konten form ajax --}}
+      <div id="modalKelasContent">
+        <div class="p-5 text-center text-muted">Memuat...</div>
+      </div>
+
+    </div>
   </div>
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+function openKelasModal(url, title){
+  $('#modalKelasLabel').text(title || 'Form Kelas');
+  $('#modalKelasContent').html('<div class="p-4 text-center text-muted">Memuat...</div>');
+  $('#modalKelas').modal('show');
+
+  $.get(url)
+    .done(function(res){
+      $('#modalKelasContent').html(res);
+    })
+    .fail(function(xhr){
+      // tampilkan error asli biar ketahuan 404/500
+      let msg = '<div class="p-3">';
+      msg += '<div class="text-danger font-weight-bold mb-2">Gagal memuat form (' + xhr.status + ')</div>';
+      msg += '<pre style="white-space:pre-wrap;max-height:300px;overflow:auto;background:#f8f9fa;padding:10px;border:1px solid #ddd;">'
+          + (xhr.responseText || 'Tidak ada responseText')
+          + '</pre></div>';
+      $('#modalKelasContent').html(msg);
+    });
+}
+
+$(document).on('click', '#btnTambahKelas', function(e){
+  e.preventDefault();
+  openKelasModal($(this).data('url'), 'Tambah Data Kelas');
+});
+
+$(document).on('click', '.btn-edit-kelas', function(e){
+  e.preventDefault();
+  openKelasModal($(this).data('url'), 'Edit Data Kelas');
+});
+</script>
+@endpush

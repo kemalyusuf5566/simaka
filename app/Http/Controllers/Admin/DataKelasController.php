@@ -10,19 +10,43 @@ use Illuminate\Http\Request;
 
 class DataKelasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kelas = \App\Models\DataKelas::withCount('siswa')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas')
-            ->get();
+        $limit = (int) $request->get('limit', 10);
+        if (!in_array($limit, [10, 25, 50, 100])) $limit = 10;
 
-        return view('admin.kelas.index', compact('kelas'));
+        $q = trim((string) $request->get('q', ''));
+        $tingkat = (string) $request->get('tingkat', '');
+
+        $query = DataKelas::withCount('siswa')
+            ->with(['wali.pengguna'])
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas');
+
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('nama_kelas', 'like', "%{$q}%")
+                    ->orWhereHas('wali.pengguna', function ($p) use ($q) {
+                        $p->where('nama', 'like', "%{$q}%");
+                    });
+            });
+        }
+
+        if ($tingkat !== '' && $tingkat !== 'all') {
+            $query->where('tingkat', $tingkat);
+        }
+
+        $kelas = $query->paginate($limit)->appends([
+            'limit' => $limit,
+            'q' => $q,
+            'tingkat' => $tingkat,
+        ]);
+
+        return view('admin.kelas.index', compact('kelas', 'limit', 'q', 'tingkat'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // AMBIL TAHUN PELAJARAN AKTIF
         $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->first();
 
         if (!$tahunAktif) {
@@ -31,12 +55,20 @@ class DataKelasController extends Controller
                 ->with('error', 'Tahun pelajaran aktif belum ditentukan');
         }
 
-        return view('admin.kelas.form', [
-            'mode'        => 'create',
-            'kelas'       => null,
-            'tahunAktif'  => $tahunAktif,
-            'wali'        => DataGuru::with('pengguna')->get(),
-        ]);
+        $data = [
+            'mode'       => 'create',
+            'kelas'      => null,
+            'tahunAktif' => $tahunAktif,
+            'wali'       => DataGuru::with('pengguna')->get(),
+        ];
+
+        // kalau dipanggil dari modal (AJAX), return partial modal
+        if ($request->ajax()) {
+            return view('admin.kelas.form-modal', $data);
+        }
+
+        // fallback kalau akses manual
+        return view('admin.kelas.form-modal', $data);
     }
 
     public function store(Request $request)
@@ -46,6 +78,7 @@ class DataKelasController extends Controller
             'nama_kelas'              => 'required',
             'tingkat'                 => 'required|numeric',
             'wali_kelas_id'           => 'nullable|exists:pengguna,id',
+            'yakin'                   => 'required|in:1',
         ]);
 
         DataKelas::create([
@@ -61,16 +94,22 @@ class DataKelasController extends Controller
             ->with('success', 'Data kelas berhasil disimpan');
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $kelas = DataKelas::findOrFail($id);
 
-        return view('admin.kelas.form', [
-            'mode'        => 'edit',
-            'kelas'       => $kelas,
-            'tahunAktif'  => $kelas->tahunPelajaran,
-            'wali'        => DataGuru::with('pengguna')->get(),
-        ]);
+        $data = [
+            'mode'       => 'edit',
+            'kelas'      => $kelas,
+            'tahunAktif' => $kelas->tahunPelajaran,
+            'wali'       => DataGuru::with('pengguna')->get(),
+        ];
+
+        if ($request->ajax()) {
+            return view('admin.kelas.form-modal', $data);
+        }
+
+        return view('admin.kelas.form-modal', $data);
     }
 
     public function update(Request $request, $id)
@@ -82,6 +121,7 @@ class DataKelasController extends Controller
             'nama_kelas'              => 'required',
             'tingkat'                 => 'required|numeric',
             'wali_kelas_id'           => 'nullable|exists:pengguna,id',
+            'yakin'                   => 'required|in:1',
         ]);
 
         $kelas->update($request->only([

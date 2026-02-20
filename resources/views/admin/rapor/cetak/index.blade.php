@@ -26,7 +26,7 @@
           <tr>
             <td>{{ $i + 1 }}</td>
             <td>{{ $k->nama_kelas }}</td>
-            <td>{{ $k->waliKelas->nama ?? '-' }}</td>
+            <td>{{ $k->wali->pengguna->nama ?? '-' }}</td>
             <td class="text-center">{{ $k->tingkat }}</td>
             <td class="text-center">{{ $k->siswa_count ?? 0 }}</td>
             <td class="text-center">
