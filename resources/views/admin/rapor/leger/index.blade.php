@@ -1,6 +1,7 @@
 @extends('layouts.adminlte')
 @section('title','Leger')
 
+
 @section('content')
 <div class="container-fluid">
 

@@ -37,13 +37,13 @@
     <div class="card-body pb-2">
       <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
         <div class="d-flex" style="gap:8px;">
-          <a class="btn btn-light btn-sm"
+          {{-- <a class="btn btn-light btn-sm"
              href="{{ route('admin.rapor.leger.excel', $kelas->id) }}">
             Excel
-          </a>
+          </a> --}}
           <a class="btn btn-light btn-sm"
              href="{{ route('admin.rapor.leger.pdf', $kelas->id) }}">
-            PDF
+            Download Leger PDF
           </a>
         </div>
 

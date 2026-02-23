@@ -12,38 +12,50 @@ use Illuminate\Http\Request;
 
 class LegerNilaiController extends Controller
 {
-    public function index(Request $request)
+    public function index(\Illuminate\Http\Request $request)
     {
-        // per page
+        // =========================
+        // PER PAGE (VALID)
+        // =========================
         $perPage = (int) $request->get('per_page', 10);
-        if (!in_array($perPage, [10, 25, 50, 100], true)) $perPage = 10;
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
 
+        // =========================
+        // FILTER
+        // =========================
+        $tingkat = $request->get('tingkat'); // boleh null / ''
         $q = trim((string) $request->get('q', ''));
-        $tingkat = (string) $request->get('tingkat', '');
 
-        // list tingkat untuk dropdown filter
-        $tingkatList = DataKelas::query()
-            ->select('tingkat')
+        // dropdown tingkat
+        $tingkatList = \App\Models\DataKelas::query()
             ->whereNotNull('tingkat')
+            ->select('tingkat')
             ->groupBy('tingkat')
             ->orderBy('tingkat')
             ->pluck('tingkat')
             ->toArray();
 
-        $kelasQuery = DataKelas::query()
+        // =========================
+        // QUERY UTAMA
+        // =========================
+        $kelasQuery = \App\Models\DataKelas::query()
             ->withCount('siswa')
-            ->with(['wali.pengguna']);
+            ->with(['wali.pengguna']); // sesuai "hanya ada relasi wali()"
 
-        if ($tingkat !== '') {
+        // filter tingkat
+        if (!is_null($tingkat) && $tingkat !== '') {
             $kelasQuery->where('tingkat', $tingkat);
         }
 
+        // search
         if ($q !== '') {
             $kelasQuery->where(function ($qq) use ($q) {
                 $qq->where('nama_kelas', 'like', "%{$q}%")
-                    ->orWhereHas('wali.pengguna', function ($w) use ($q) {
-                        $w->where('nama', 'like', "%{$q}%")
-                            ->orWhere('name', 'like', "%{$q}%");
+                    ->orWhereHas('wali.pengguna', function ($p) use ($q) {
+                        // PENTING: di pengguna hanya ada kolom "nama"
+                        $p->where('nama', 'like', "%{$q}%");
                     });
             });
         }
@@ -78,7 +90,10 @@ class LegerNilaiController extends Controller
             ->get();
 
         // tampilkan SEMUA mapel (bukan hanya yang ada nilai)
-        $mapel = DataMapel::orderBy('nama_mapel')->get();
+        $mapel = DataMapel::query()
+            ->orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
+            ->orderBy('id', 'ASC')
+            ->get();
 
         // ambil nilai untuk kelas + (tahun aktif) + (semester aktif)
         $nilaiQuery = NilaiMapelSiswa::query()
