@@ -1,98 +1,146 @@
 @extends('layouts.adminlte')
-
-@section('page_title','Detail Leger Nilai')
+@section('title','Leger '.$kelas->nama_kelas)
 
 @section('content')
+<div class="container-fluid">
 
-<div class="card card-dark">
-  <div class="card-header">
-    <h3 class="card-title">
-      Leger Nilai Kelas {{ $kelas->nama_kelas }}
-    </h3>
+  {{-- HEADER --}}
+  <div class="d-flex align-items-center mb-3">
+    <a href="{{ route('admin.rapor.leger') }}" class="btn btn-link p-0 mr-2" title="Kembali">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <h4 class="mb-0">Leger {{ $kelas->nama_kelas }}</h4>
+  </div>
 
-    <div class="card-tools">
-      <button class="btn btn-success btn-sm">
-        <i class="fas fa-file-excel"></i> Excel
-      </button>
-      <button class="btn btn-danger btn-sm">
-        <i class="fas fa-file-pdf"></i> PDF
-      </button>
+  @php
+    $waliNama =
+      (optional(optional($kelas->wali)->pengguna)->nama)
+      ?? (optional(optional($kelas->wali)->pengguna)->name)
+      ?? '-';
+  @endphp
+
+  {{-- INFO --}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 font-weight-bold">Nama Kelas</div>
+        <div class="col-md-9">: {{ $kelas->nama_kelas }}</div>
+
+        <div class="col-md-3 font-weight-bold mt-2">Wali Kelas</div>
+        <div class="col-md-9 mt-2">: {{ $waliNama }}</div>
+      </div>
     </div>
   </div>
 
-  <div class="card-body table-responsive p-0">
+  {{-- TOOLBAR --}}
+  <div class="card">
+    <div class="card-body pb-2">
+      <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px;">
+        <div class="d-flex" style="gap:8px;">
+          <a class="btn btn-light btn-sm"
+             href="{{ route('admin.rapor.leger.excel', $kelas->id) }}">
+            Excel
+          </a>
+          <a class="btn btn-light btn-sm"
+             href="{{ route('admin.rapor.leger.pdf', $kelas->id) }}">
+            PDF
+          </a>
+        </div>
 
-    {{-- INFO KELAS --}}
-    <table class="table table-bordered mb-3">
-      <tr>
-        <th width="200">Kelas</th>
-        <td>{{ $kelas->nama_kelas }}</td>
-      </tr>
-      <tr>
-        <th>Wali Kelas</th>
-        <td>{{ $kelas->waliKelas->nama ?? '-' }}</td>
-      </tr>
-    </table>
+        <div class="d-flex align-items-center" style="gap:8px;">
+          <span class="text-muted small">Search:</span>
+          <input type="text" class="form-control form-control-sm" id="searchLeger" style="width:220px;">
+        </div>
+      </div>
+    </div>
 
-    {{-- TABEL LEGER --}}
-    <table class="table table-bordered table-striped">
-      <thead class="bg-secondary text-center">
-        <tr>
-          <th rowspan="2">No</th>
-          <th rowspan="2">NIS</th>
-          <th rowspan="2">Nama</th>
-          <th rowspan="2">L/P</th>
+    <div class="card-body pt-0 table-responsive p-0">
+      <table class="table table-bordered table-sm mb-0" id="tableLeger">
+        <thead>
+          <tr class="bg-dark text-white">
+            <th rowspan="2" style="width:60px;">No.</th>
+            <th rowspan="2" style="width:140px;">NIS</th>
+            <th rowspan="2" style="min-width:200px;">NAMA</th>
+            <th rowspan="2" style="width:70px;">L/P</th>
 
-          @foreach($mapel as $m)
-            <th>{{ $m->nama_mapel }}</th>
-          @endforeach
+            <th colspan="{{ $mapel->count() }}" class="text-center" style="background:#f1c40f; color:#000;">
+              NILAI
+            </th>
 
-          <th rowspan="2">Total</th>
-          <th rowspan="2">Rata-rata</th>
-          <th rowspan="2">Ranking</th>
-        </tr>
-      </thead>
+            <th rowspan="2" style="width:110px;">TOTAL NILAI</th>
+            <th rowspan="2" style="width:110px;">RATA-RATA</th>
+            <th rowspan="2" style="width:90px;">RANKING</th>
+          </tr>
 
-      <tbody>
-        @foreach($siswa as $i => $s)
-        @php
-          $total = 0;
-          $jumlahMapel = 0;
-        @endphp
-        <tr>
-          <td class="text-center">{{ $i + 1 }}</td>
-          <td>{{ $s->nis }}</td>
-          <td>{{ $s->nama_siswa }}</td>
-          <td class="text-center">{{ $s->jenis_kelamin }}</td>
+          <tr class="bg-dark text-white">
+            @foreach($mapel as $m)
+              <th class="text-center" style="min-width:70px;">
+                {{ $m->singkatan ?? $m->kode_mapel ?? '-' }}
+              </th>
+            @endforeach
+          </tr>
+        </thead>
 
-          @foreach($mapel as $m)
+        <tbody>
+          @forelse($rows as $i => $r)
             @php
-              $n = $nilai[$s->id][$m->id][0]->nilai ?? null;
-              if ($n !== null) {
-                $total += $n;
-                $jumlahMapel++;
-              }
+              $s = $r['siswa'];
+              $nama = strtolower($s->nama_siswa ?? '');
+              $nis  = strtolower($s->nis ?? '');
+              $jk   = strtoupper($s->jenis_kelamin ?? '-');
+              $jk   = in_array($jk, ['L','P'], true) ? $jk : '-';
             @endphp
-            <td class="text-center">{{ $n ?? '-' }}</td>
-          @endforeach
+            <tr data-nama="{{ $nama }}" data-nis="{{ $nis }}">
+              <td class="text-center">{{ $i+1 }}</td>
+              <td>{{ $s->nis ?? '-' }}</td>
+              <td>{{ $s->nama_siswa ?? '-' }}</td>
+              <td class="text-center">{{ $jk }}</td>
 
-          <td class="text-center">{{ $total }}</td>
-          <td class="text-center">
-            {{ $jumlahMapel ? number_format($total / $jumlahMapel, 2) : '-' }}
-          </td>
-          <td class="text-center">-</td>
-        </tr>
-        @endforeach
-      </tbody>
-    </table>
+              @foreach($mapel as $m)
+                @php
+                  $v = $nilaiMap[(int)$s->id][(int)$m->id] ?? null;
+                @endphp
+                <td class="text-center">{{ is_numeric($v) ? $v : '-' }}</td>
+              @endforeach
 
+              <td class="text-center font-weight-bold">{{ $r['total'] }}</td>
+              <td class="text-center">{{ is_numeric($r['rata']) ? number_format($r['rata'], 1) : '-' }}</td>
+              <td class="text-center">{{ $r['rank'] ?? '-' }}</td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="{{ 7 + $mapel->count() }}" class="text-center text-muted py-4">
+                Data siswa / nilai belum tersedia.
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="card-footer">
-    <a href="{{ route('admin.rapor.leger') }}" class="btn btn-secondary">
-      Kembali
-    </a>
-  </div>
 </div>
+
+@push('scripts')
+<script>
+(function(){
+  const input = document.getElementById('searchLeger');
+  const table = document.getElementById('tableLeger');
+  if (!input || !table) return;
+
+  input.addEventListener('input', function(){
+    const q = (this.value || '').toLowerCase().trim();
+    const rows = table.querySelectorAll('tbody tr');
+
+    rows.forEach(tr => {
+      const nama = tr.getAttribute('data-nama') || '';
+      const nis  = tr.getAttribute('data-nis') || '';
+      const ok = !q || nama.includes(q) || nis.includes(q);
+      tr.style.display = ok ? '' : 'none';
+    });
+  });
+})();
+</script>
+@endpush
 
 @endsection

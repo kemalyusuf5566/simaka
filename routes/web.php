@@ -206,6 +206,10 @@ Route::middleware(['auth', 'role:admin'])
                     ->name('leger');
                 Route::get('leger/{kelas}', [LegerNilaiController::class, 'detail'])
                     ->name('leger.detail');
+                Route::get('leger', [LegerNilaiController::class, 'index'])->name('leger');
+                Route::get('leger/{kelas}', [LegerNilaiController::class, 'detail'])->name('leger.detail');
+                Route::get('leger/{kelas}/pdf', [LegerNilaiController::class, 'exportPdf'])->name('leger.pdf');
+                Route::get('leger/{kelas}/excel', [LegerNilaiController::class, 'exportExcel'])->name('leger.excel');
 
                 // CETAK RAPOR
                 Route::get('cetak', [CetakRaporController::class, 'index'])
