@@ -10,6 +10,10 @@
   {{-- FONT AWESOME --}}
   <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
+
+  {{-- DATATABLES --}}
+<link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+<link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -391,6 +395,12 @@
 <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
+
+{{-- DATATABLES --}}
+<script src="{{ asset('adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
 
 @stack('scripts')
 </body>

@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\DataEkstrakurikulerController;
 use App\Http\Controllers\Admin\KkDimensiController;
 use App\Http\Controllers\Admin\KkKegiatanController;
 use App\Http\Controllers\Admin\KkKelompokController;
+use App\Http\Controllers\Admin\Kokurikuler\KelompokAnggotaController as AdminKelompokAnggotaController;
+use App\Http\Controllers\Admin\Kokurikuler\KelompokKegiatanController as AdminKelompokKegiatanController;
 
 // RAPOR (TANPA subfolder Rapor)
 use App\Http\Controllers\Admin\LegerNilaiController;
@@ -147,9 +149,16 @@ Route::middleware(['auth', 'role:admin'])
         // ADMINISTRASI LANJUTAN
         Route::resource('kelas', DataKelasController::class);
         Route::resource('mapel', DataMapelController::class);
-        Route::resource('pembelajaran', DataPembelajaranController::class);
-        Route::resource('ekstrakurikuler', DataEkstrakurikulerController::class);
 
+        // PEMBELAJRAN
+        Route::resource('pembelajaran', DataPembelajaranController::class);
+        Route::get('pembelajaran/{id}/json', [DataPembelajaranController::class, 'json'])
+            ->name('pembelajaran.json');
+
+
+        Route::resource('ekstrakurikuler', DataEkstrakurikulerController::class);
+        Route::get('ekstrakurikuler/{id}/json', [DataEkstrakurikulerController::class, 'json'])
+            ->name('ekstrakurikuler.json');
         /*
         |----------------------------------------------------------------------
         | KOKURIKULER
@@ -161,6 +170,26 @@ Route::middleware(['auth', 'role:admin'])
                 Route::resource('dimensi', KkDimensiController::class);
                 Route::resource('kegiatan', KkKegiatanController::class);
                 Route::resource('kelompok', KkKelompokController::class);
+
+
+                Route::get('kelompok/{kelompok}/anggota', [AdminKelompokAnggotaController::class, 'index'])
+                    ->name('kelompok.anggota.index');
+                Route::post('kelompok/{kelompok}/anggota', [AdminKelompokAnggotaController::class, 'store'])
+                    ->name('kelompok.anggota.store');
+                Route::delete('kelompok/{kelompok}/anggota/{anggota}', [AdminKelompokAnggotaController::class, 'destroy'])
+                    ->name('kelompok.anggota.destroy');
+
+                // OPTIONAL kalau mau tombol "Tambahkan Semua" beneran jalan
+                Route::post('kelompok/{kelompok}/anggota/add-all', [AdminKelompokAnggotaController::class, 'addAll'])
+                    ->name('kelompok.anggota.addAll');
+
+                Route::get('kelompok/{kelompok}/kegiatan', [AdminKelompokKegiatanController::class, 'index'])
+                    ->name('kelompok.kegiatan.index');
+                Route::post('kelompok/{kelompok}/kegiatan', [AdminKelompokKegiatanController::class, 'store'])
+                    ->name('kelompok.kegiatan.store');
+                Route::delete('kelompok/{kelompok}/kegiatan/{pivot}', [AdminKelompokKegiatanController::class, 'destroy'])
+                    ->name('kelompok.kegiatan.destroy');
+            
             });
 
         /*

@@ -16,11 +16,17 @@ class DataPembelajaranController extends Controller
     {
         abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
 
-        $pembelajaran = DataPembelajaran::with(['kelas','mapel','guru'])
+        $pembelajaran = DataPembelajaran::with(['kelas', 'mapel', 'guru'])
             ->orderBy('data_kelas_id')
             ->get();
 
-        return view('admin.pembelajaran.index', compact('pembelajaran'));
+        return view('admin.pembelajaran.index', [
+            'pembelajaran' => $pembelajaran,
+            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
+            'mapel' => DataMapel::orderBy('nama_mapel')->get(),
+            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
+                ->orderBy('nama')->get(),
+        ]);
     }
 
     public function create()
@@ -67,6 +73,20 @@ class DataPembelajaranController extends Controller
             'mapel' => DataMapel::orderBy('nama_mapel')->get(),
             'guru'  => User::whereHas('peran', fn($q)=>$q->where('nama_peran','guru_mapel'))
                         ->orderBy('nama')->get(),
+        ]);
+    }
+
+    public function json($id)
+    {
+        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+
+        $p = DataPembelajaran::findOrFail($id);
+
+        return response()->json([
+            'id' => $p->id,
+            'data_kelas_id' => $p->data_kelas_id,
+            'data_mapel_id' => $p->data_mapel_id,
+            'guru_id' => $p->guru_id,
         ]);
     }
 

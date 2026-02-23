@@ -11,8 +11,13 @@ class DataEkstrakurikulerController extends Controller
 {
     public function index()
     {
-        $ekskul = DataEkstrakurikuler::with('pembina.pengguna')->get();
-        return view('admin.ekstrakurikuler.index', compact('ekskul'));
+        $ekskul = DataEkstrakurikuler::with('pembina.pengguna')
+            ->withCount('anggota')
+            ->get();
+
+        $pembina = DataGuru::with('pengguna')->get();
+
+        return view('admin.ekstrakurikuler.index', compact('ekskul', 'pembina'));
     }
 
     public function create()
@@ -48,6 +53,18 @@ class DataEkstrakurikulerController extends Controller
         return view('admin.ekstrakurikuler.form', compact('ekskul', 'pembina'));
     }
 
+    public function json($id)
+    {
+        $e = DataEkstrakurikuler::findOrFail($id);
+
+        return response()->json([
+            'id' => $e->id,
+            'nama_ekskul' => $e->nama_ekskul,
+            'pembina_id' => $e->pembina_id,
+            'status_aktif' => (int) $e->status_aktif,
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $ekskul = DataEkstrakurikuler::findOrFail($id);
@@ -63,5 +80,15 @@ class DataEkstrakurikulerController extends Controller
         return redirect()
             ->route('admin.ekstrakurikuler.index')
             ->with('success', 'Ekstrakurikuler diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $ekskul = DataEkstrakurikuler::findOrFail($id);
+        $ekskul->delete();
+
+        return redirect()
+            ->route('admin.ekstrakurikuler.index')
+            ->with('success', 'Ekstrakurikuler berhasil dihapus');
     }
 }
