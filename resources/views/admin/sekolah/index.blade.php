@@ -11,7 +11,7 @@
         <p>Data sekolah belum tersedia.</p>
         <form method="POST" action="{{ route('admin.sekolah.store') }}">
             @csrf
-            <input type="hidden" name="nama_sekolah" value="SMP BUMI PERMATA">
+            <input type="hidden" name="nama_sekolah" value="SMK BUDI PERKASA">
             <button class="btn btn-primary">
                 Buat Data Sekolah
             </button>
