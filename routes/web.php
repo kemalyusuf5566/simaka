@@ -81,6 +81,16 @@ Route::middleware(['auth', 'role:admin'])
 
         // ===== SISWA =====
         Route::get('siswa', [DataSiswaController::class, 'index'])->name('siswa.index');
+            // ===== IMPORT SISWA (XLSX) =====
+            Route::get('siswa/import/format', [DataSiswaController::class, 'downloadFormatImport'])
+                ->name('siswa.import.format');
+
+            Route::post('siswa/import', [DataSiswaController::class, 'import'])
+                ->name('siswa.import');
+
+            Route::get('siswa/import', [DataSiswaController::class, 'importCreate'])
+                ->name('siswa.import.create');
+        // CRUD SISWA (taruh setelah import)
         Route::get('siswa/create', [DataSiswaController::class, 'create'])->name('siswa.create');
         Route::post('siswa', [DataSiswaController::class, 'store'])->name('siswa.store');
         Route::get('siswa/{id}', [DataSiswaController::class, 'show'])->name('siswa.show');
@@ -91,15 +101,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::delete('siswa/destroy-multiple', [DataSiswaController::class, 'destroyMultiple'])
             ->name('siswa.destroyMultiple');
 
-        // ===== IMPORT SISWA (XLSX) =====
-        Route::get('siswa/import/format', [DataSiswaController::class, 'downloadFormatImport'])
-                ->name('siswa.import.format');
-
-        Route::post('siswa/import', [DataSiswaController::class, 'import'])
-            ->name('siswa.import');
-            
-        Route::get('siswa/import', [DataSiswaController::class, 'importCreate'])
-            ->name('siswa.import.create');
+        
 
 
         // ===== GURU =====

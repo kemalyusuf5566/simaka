@@ -487,4 +487,11 @@ class DataSiswaController extends Controller
         return redirect()->route('admin.siswa.index')
             ->with('success', 'Data siswa terpilih berhasil dihapus.');
     }
+
+    public function importCreate()
+    {
+        if (!$this->isAdmin()) abort(403);
+
+        return view('admin.siswa.import');
+    }
 }

@@ -28,9 +28,9 @@
           <i class="fas fa-filter"></i> Filter Data
         </button>
 
-        <a href="{{ route('admin.siswa.import.create') }}" class="btn btn-warning btn-sm">
+        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalImportSiswa">
           <i class="fas fa-file-import"></i> Import Data Siswa
-        </a>
+        </button>
       </div>
     </div>
 
@@ -56,6 +56,8 @@
                style="width:220px">
       </div>
     </div>
+
+
 
     {{-- FORM HAPUS MASSAL --}}
     <form id="formHapusMassal" action="{{ route('admin.siswa.destroyMultiple') }}" method="POST">
@@ -194,6 +196,86 @@
   </div>
 </div>
 
+{{-- ================= MODAL IMPORT SISWA ================= --}}
+<div class="modal fade" id="modalImportSiswa" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title">
+          <i class="fas fa-file-import"></i> Import Data Siswa (XLSX)
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data" id="formImportSiswa">
+        @csrf
+
+        <div class="modal-body">
+          <div class="alert alert-info mb-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+              <div class="mb-2 mb-md-0">
+                Download format terlebih dahulu, isi sesuai header, lalu upload file XLSX.
+              </div>
+              <a href="{{ route('admin.siswa.import.format') }}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-download"></i> Download Format
+              </a>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>File XLSX</label>
+            <div class="custom-file">
+              <input type="file" name="file" class="custom-file-input" id="importFile" accept=".xlsx" required>
+              <label class="custom-file-label" for="importFile">Pilih file...</label>
+            </div>
+            <small class="text-muted">Hanya .xlsx</small>
+          </div>
+
+          <div class="form-group mb-0">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="confirmImport" name="confirm" value="1" required>
+              <label class="custom-control-label" for="confirmImport">
+                Saya sudah memastikan format sesuai & data yang diimport benar.
+              </label>
+            </div>
+          </div>
+
+          {{-- area pesan error server (opsional) --}}
+          @if ($errors->any())
+            <div class="alert alert-danger mt-3 mb-0">
+              <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
+
+          @if (session('error'))
+            <div class="alert alert-danger mt-3 mb-0">{!! session('error') !!}</div>
+          @endif
+
+          @if (session('warning'))
+            <div class="alert alert-warning mt-3 mb-0">{!! session('warning') !!}</div>
+          @endif
+
+          @if (session('success'))
+            <div class="alert alert-success mt-3 mb-0">{!! session('success') !!}</div>
+          @endif
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning" id="btnSubmitImport" disabled>
+            <i class="fas fa-upload"></i> Upload & Import
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {{-- ================= SCRIPT ================= --}}
 @push('scripts')
@@ -311,6 +393,41 @@
   applyView();
   updateHapusButton();
 })();
+
+  // ===== IMPORT MODAL =====
+  const importFile = document.getElementById('importFile');
+  const confirmImport = document.getElementById('confirmImport');
+  const btnSubmitImport = document.getElementById('btnSubmitImport');
+
+  function updateImportButton(){
+    const hasFile = importFile && importFile.files && importFile.files.length > 0;
+    const ok = confirmImport && confirmImport.checked;
+    if(btnSubmitImport) btnSubmitImport.disabled = !(hasFile && ok);
+  }
+
+  if(importFile){
+    importFile.addEventListener('change', function(e){
+      // update label custom-file
+      const label = document.querySelector('label[for="importFile"]');
+      if(label && e.target.files.length){
+        label.textContent = e.target.files[0].name;
+      }
+      updateImportButton();
+    });
+  }
+
+  if(confirmImport){
+    confirmImport.addEventListener('change', updateImportButton);
+  }
+
+  // saat modal ditutup, reset form
+  $('#modalImportSiswa').on('hidden.bs.modal', function(){
+    const form = document.getElementById('formImportSiswa');
+    if(form) form.reset();
+    const label = document.querySelector('label[for="importFile"]');
+    if(label) label.textContent = 'Pilih file...';
+    updateImportButton();
+  });
 </script>
 @endpush
 
