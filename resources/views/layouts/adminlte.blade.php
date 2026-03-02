@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@yield('title','E-Rapor')</title>
+  <title>@yield('title','SIMAKA')</title>
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -42,7 +42,7 @@
   {{-- SIDEBAR --}}
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="#" class="brand-link text-center">
-      <span class="brand-text font-weight-light">E-Rapor</span>
+      <span class="brand-text font-weight-light">S I M A K A</span>
     </a>
 
     <div class="sidebar">
@@ -387,7 +387,7 @@
   </div>
 
   <footer class="main-footer text-center">
-    <strong>© {{ date('Y') }} E-Rapor | SMP Bumi Permata</strong>
+    <strong>© {{ date('Y') }} SIMAKA | SMK PK Budi Perkasa</strong>
   </footer>
 
 </div>

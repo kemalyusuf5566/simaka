@@ -9,8 +9,8 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // 1) tambah kolom semester kalau belum ada
         Schema::table('data_ketidakhadiran', function (Blueprint $table) {
-            // 1) tambah kolom semester kalau belum ada
             if (!Schema::hasColumn('data_ketidakhadiran', 'semester')) {
                 $table->enum('semester', ['Ganjil', 'Genap'])
                     ->default('Ganjil')
@@ -18,52 +18,85 @@ return new class extends Migration
             }
         });
 
-        // 2) drop unique lama (kalau ada) lalu buat unique baru (siswa+tahun+semester)
-        // NOTE: drop index unique harus by name
+        // 2) drop foreign key dulu (kalau ada)
+        $this->dropForeignIfExists('data_ketidakhadiran', 'data_ketidakhadiran_data_siswa_id_foreign');
+        $this->dropForeignIfExists('data_ketidakhadiran', 'data_ketidakhadiran_data_tahun_pelajaran_id_foreign');
+
+        // 3) drop unique lama (kalau ada)
         $this->dropIndexIfExists('data_ketidakhadiran', 'data_ketidakhadiran_data_siswa_id_data_tahun_pelajaran_id_unique');
         $this->dropIndexIfExists('data_ketidakhadiran', 'dk_unique_siswa_tahun_semester');
 
+        // 4) buat unique baru (siswa+tahun+semester)
         DB::statement("
             ALTER TABLE data_ketidakhadiran
             ADD UNIQUE KEY dk_unique_siswa_tahun_semester (data_siswa_id, data_tahun_pelajaran_id, semester)
         ");
 
-        // 3) index biasa (opsional). Ini yang error kamu: index sudah ada.
-        // Jadi drop dulu kalau sudah ada, atau jangan bikin sama sekali.
-        $this->dropIndexIfExists('data_ketidakhadiran', 'dk_data_siswa_id_index');
-        DB::statement("ALTER TABLE data_ketidakhadiran ADD INDEX dk_data_siswa_id_index (data_siswa_id)");
+        // 5) tambahkan foreign key lagi (pastikan nama tabel referensi benar)
+        $this->addForeignIfNotExists(
+            'data_ketidakhadiran',
+            'data_ketidakhadiran_data_siswa_id_foreign',
+            'data_siswa_id',
+            'data_siswa',
+            'id',
+            'CASCADE'
+        );
 
-        $this->dropIndexIfExists('data_ketidakhadiran', 'dk_tahun_index');
-        DB::statement("ALTER TABLE data_ketidakhadiran ADD INDEX dk_tahun_index (data_tahun_pelajaran_id)");
+        $this->addForeignIfNotExists(
+            'data_ketidakhadiran',
+            'data_ketidakhadiran_data_tahun_pelajaran_id_foreign',
+            'data_tahun_pelajaran_id',
+            'data_tahun_pelajaran',
+            'id',
+            'CASCADE'
+        );
     }
 
     public function down(): void
     {
-        // rollback unique baru
+        // drop FK dulu
+        $this->dropForeignIfExists('data_ketidakhadiran', 'data_ketidakhadiran_data_siswa_id_foreign');
+        $this->dropForeignIfExists('data_ketidakhadiran', 'data_ketidakhadiran_data_tahun_pelajaran_id_foreign');
+
+        // drop unique baru
         $this->dropIndexIfExists('data_ketidakhadiran', 'dk_unique_siswa_tahun_semester');
 
-        // rollback index opsional
-        $this->dropIndexIfExists('data_ketidakhadiran', 'dk_data_siswa_id_index');
-        $this->dropIndexIfExists('data_ketidakhadiran', 'dk_tahun_index');
-
-        // hapus kolom semester kalau ada
+        // hapus kolom semester
         Schema::table('data_ketidakhadiran', function (Blueprint $table) {
             if (Schema::hasColumn('data_ketidakhadiran', 'semester')) {
                 $table->dropColumn('semester');
             }
         });
 
-        // balikin unique lama (kalau kamu memang mau)
-        // (opsional) kalau dulu unique lama wajib ada:
-        // DB::statement("
-        //   ALTER TABLE data_ketidakhadiran
-        //   ADD UNIQUE KEY data_ketidakhadiran_data_siswa_id_data_tahun_pelajaran_id_unique (data_siswa_id, data_tahun_pelajaran_id)
-        // ");
+        // balikin unique lama (opsional)
+        DB::statement("
+            ALTER TABLE data_ketidakhadiran
+            ADD UNIQUE KEY data_ketidakhadiran_data_siswa_id_data_tahun_pelajaran_id_unique
+            (data_siswa_id, data_tahun_pelajaran_id)
+        ");
+
+        // tambahkan FK lagi
+        $this->addForeignIfNotExists(
+            'data_ketidakhadiran',
+            'data_ketidakhadiran_data_siswa_id_foreign',
+            'data_siswa_id',
+            'data_siswa',
+            'id',
+            'CASCADE'
+        );
+
+        $this->addForeignIfNotExists(
+            'data_ketidakhadiran',
+            'data_ketidakhadiran_data_tahun_pelajaran_id_foreign',
+            'data_tahun_pelajaran_id',
+            'data_tahun_pelajaran',
+            'id',
+            'CASCADE'
+        );
     }
 
     private function dropIndexIfExists(string $table, string $indexName): void
     {
-        // MySQL: DROP INDEX harus pakai statement
         $exists = DB::selectOne("
             SELECT COUNT(1) AS cnt
             FROM information_schema.statistics
@@ -72,8 +105,52 @@ return new class extends Migration
               AND index_name = ?
         ", [$table, $indexName]);
 
-        if ($exists && (int)$exists->cnt > 0) {
+        if ($exists && (int) $exists->cnt > 0) {
             DB::statement("ALTER TABLE {$table} DROP INDEX {$indexName}");
+        }
+    }
+
+    private function dropForeignIfExists(string $table, string $fkName): void
+    {
+        $exists = DB::selectOne("
+            SELECT COUNT(1) AS cnt
+            FROM information_schema.table_constraints
+            WHERE constraint_schema = DATABASE()
+              AND table_name = ?
+              AND constraint_name = ?
+              AND constraint_type = 'FOREIGN KEY'
+        ", [$table, $fkName]);
+
+        if ($exists && (int) $exists->cnt > 0) {
+            DB::statement("ALTER TABLE {$table} DROP FOREIGN KEY {$fkName}");
+        }
+    }
+
+    private function addForeignIfNotExists(
+        string $table,
+        string $fkName,
+        string $column,
+        string $refTable,
+        string $refColumn,
+        string $onDelete = 'RESTRICT'
+    ): void {
+        $exists = DB::selectOne("
+            SELECT COUNT(1) AS cnt
+            FROM information_schema.table_constraints
+            WHERE constraint_schema = DATABASE()
+              AND table_name = ?
+              AND constraint_name = ?
+              AND constraint_type = 'FOREIGN KEY'
+        ", [$table, $fkName]);
+
+        if (!$exists || (int) $exists->cnt === 0) {
+            DB::statement("
+                ALTER TABLE {$table}
+                ADD CONSTRAINT {$fkName}
+                FOREIGN KEY ({$column})
+                REFERENCES {$refTable}({$refColumn})
+                ON DELETE {$onDelete}
+            ");
         }
     }
 };

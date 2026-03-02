@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Dashboard')
-@section('page_title', 'Dashboard')
+@section('page_title', 'Sistem Informasi Manajemen SMK (SIMAKA)')
 
 @section('content')
 <div class="row">
