@@ -162,6 +162,12 @@
                   <p>Data Pembelajaran</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.hari-libur.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data Hari Libur</p>
+                </a>
+              </li>
             </ul>
           </li>
 

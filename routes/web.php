@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\DataKelasController;
 use App\Http\Controllers\Admin\DataMapelController;
 use App\Http\Controllers\Admin\DataPembelajaranController;
 use App\Http\Controllers\Admin\DataEkstrakurikulerController;
+use App\Http\Controllers\Admin\HariLiburController;
 
 // KOKURIKULER
 use App\Http\Controllers\Admin\KkDimensiController;
@@ -157,6 +158,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('pembelajaran/{id}/json', [DataPembelajaranController::class, 'json'])
             ->name('pembelajaran.json');
 
+        // HARI LIBUR
+        Route::get('hari-libur', [HariLiburController::class, 'index'])->name('hari-libur.index');
+        Route::post('hari-libur', [HariLiburController::class, 'store'])->name('hari-libur.store');
+        Route::delete('hari-libur/{hariLibur}', [HariLiburController::class, 'destroy'])->name('hari-libur.destroy');
 
         Route::resource('ekstrakurikuler', DataEkstrakurikulerController::class);
         Route::get('ekstrakurikuler/{id}/json', [DataEkstrakurikulerController::class, 'json'])
