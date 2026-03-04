@@ -69,9 +69,11 @@
       <table class="table table-bordered table-sm mb-0" id="tableMapel">
         <thead class="bg-dark text-white">
           <tr>
-            <th style="width:60px;">No.</th>
-            <th>Nama Mapel</th>
-            <th style="width:150px;">Singkatan</th>
+            <th style="width:40px;">No.</th>
+            <th style="width:150px;">Nama Mapel</th>
+            <th style="width:50px;">Kode</th>
+            <th style="width:50px;">Tingkat</th>
+            <th style="width:100px;">Jurusan</th>
             <th style="width:220px;">Kelompok</th>
             <th style="width:130px;">Urutan Cetak</th>
             <th style="width:190px;">Aksi</th>
@@ -90,6 +92,8 @@
               <td class="text-center align-middle">{{ $startNo + $i + 1 }}</td>
               <td class="align-middle">{{ $m->nama_mapel }}</td>
               <td class="align-middle">{{ $m->singkatan }}</td>
+              <td class="align-middle">{{ $m->tingkat ?? 'SEMUA' }}</td>
+              <td class="align-middle">{{ $m->jurusan->kode_jurusan ?? 'UMUM' }}</td>
               <td class="align-middle">{{ $m->kelompok_mapel }}</td>
               <td class="align-middle">{{ $m->urutan_cetak }}</td>
               <td class="align-middle">
@@ -123,7 +127,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-center text-muted py-4">
+              <td colspan="8" class="text-center text-muted py-4">
                 Data mata pelajaran belum tersedia
               </td>
             </tr>
@@ -179,6 +183,32 @@
           <label class="col-sm-4 col-form-label">Singkatan <span class="text-danger">*</span></label>
           <div class="col-sm-8">
             <input type="text" name="singkatan" class="form-control" placeholder="Ketik Singkatan" required>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Tingkat <span class="text-danger">*</span></label>
+          <div class="col-sm-8">
+            <select name="tingkat" class="form-control" required>
+              <option value="SEMUA">SEMUA</option>
+              <option value="X">X</option>
+              <option value="XI">XI</option>
+              <option value="XII">XII</option>
+            </select>
+            <small class="text-muted">Pilih SEMUA untuk mapel umum</small>
+          </div>
+        </div>
+
+        {{-- ✅ BARU: JURUSAN --}}
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label">Jurusan</label>
+          <div class="col-sm-8">
+            <select name="jurusan_id" class="form-control">
+              <option value="">UMUM (Semua Jurusan)</option>
+              @foreach($jurusan as $j)
+                <option value="{{ $j->id }}">{{ $j->kode_jurusan }} - {{ $j->nama_jurusan }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
 

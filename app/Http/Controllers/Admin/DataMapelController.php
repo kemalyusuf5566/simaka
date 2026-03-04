@@ -10,6 +10,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Illuminate\Support\Facades\DB;
+use App\Models\DataJurusan;
 
 class DataMapelController extends Controller
 {
@@ -18,15 +19,32 @@ class DataMapelController extends Controller
         abort_unless(Auth::user()?->peran?->nama_peran === 'admin', 403);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $this->assertAdmin();
 
-        $mapel = DataMapel::orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
-            ->orderBy('nama_mapel')
-            ->paginate(10);
+        $tingkat   = strtoupper(trim((string)$request->get('tingkat', '')));
+        $jurusanId = $request->get('jurusan_id', '');
 
-        return view('admin.mapel.index', compact('mapel'));
+        $mapel = DataMapel::query()
+            ->with('jurusan')
+            ->when($tingkat !== '' && in_array($tingkat, ['X', 'XI', 'XII', 'SEMUA'], true), function ($q) use ($tingkat) {
+                $q->where('tingkat', $tingkat);
+            })
+            ->when($jurusanId !== '' && is_numeric($jurusanId), function ($q) use ($jurusanId) {
+                $q->where('jurusan_id', (int)$jurusanId);
+            })
+            ->orderByRaw("FIELD(tingkat,'SEMUA','X','XI','XII') ASC")
+            ->orderByRaw("COALESCE(jurusan_id, 0) ASC")
+            ->orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
+            ->orderBy('nama_mapel')
+            ->paginate(10)
+            ->withQueryString();
+
+        // ✅ ini yang bikin error hilang
+        $jurusan = DataJurusan::orderBy('kode_jurusan')->get();
+
+        return view('admin.mapel.index', compact('mapel', 'jurusan', 'tingkat', 'jurusanId'));
     }
 
     public function create()
@@ -47,17 +65,26 @@ class DataMapelController extends Controller
             'singkatan'      => 'required|string|max:30',
             'urutan_cetak'   => 'required|integer|min:1|max:9999',
             'kelompok_mapel' => 'required|in:Mata Pelajaran Umum,Mata Pelajaran Kejuruan,Mata Pelajaran Pilihan,Muatan Lokal',
-
-            // kolom baru
             'tingkat'        => 'required|in:X,XI,XII,SEMUA',
             'jurusan_id'     => 'nullable|integer|min:1',
         ]);
 
+        // Cegah bentrok urutan di konteks yang sama
+        $exists = DataMapel::where('tingkat', $data['tingkat'])
+            ->where('urutan_cetak', $data['urutan_cetak'])
+            ->where(function ($q) use ($data) {
+                if (empty($data['jurusan_id'])) $q->whereNull('jurusan_id');
+                else $q->where('jurusan_id', $data['jurusan_id']);
+            })
+            ->exists();
+
+        if ($exists) {
+            return back()->withInput()->with('error', 'Urutan cetak sudah dipakai pada tingkat & jurusan tersebut.');
+        }
+
         DataMapel::create($data);
 
-        return redirect()
-            ->route('admin.mapel.index')
-            ->with('success', 'Data mata pelajaran berhasil ditambahkan');
+        return redirect()->route('admin.mapel.index')->with('success', 'Data mata pelajaran berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -80,17 +107,26 @@ class DataMapelController extends Controller
             'singkatan'      => 'required|string|max:30',
             'urutan_cetak'   => 'required|integer|min:1|max:9999',
             'kelompok_mapel' => 'required|in:Mata Pelajaran Umum,Mata Pelajaran Kejuruan,Mata Pelajaran Pilihan,Muatan Lokal',
-
-            // kolom baru
             'tingkat'        => 'required|in:X,XI,XII,SEMUA',
             'jurusan_id'     => 'nullable|integer|min:1',
         ]);
 
+        $exists = DataMapel::where('id', '!=', $mapel->id)
+            ->where('tingkat', $data['tingkat'])
+            ->where('urutan_cetak', $data['urutan_cetak'])
+            ->where(function ($q) use ($data) {
+                if (empty($data['jurusan_id'])) $q->whereNull('jurusan_id');
+                else $q->where('jurusan_id', $data['jurusan_id']);
+            })
+            ->exists();
+
+        if ($exists) {
+            return back()->withInput()->with('error', 'Urutan cetak sudah dipakai pada tingkat & jurusan tersebut.');
+        }
+
         $mapel->update($data);
 
-        return redirect()
-            ->route('admin.mapel.index')
-            ->with('success', 'Data mata pelajaran berhasil diperbarui');
+        return redirect()->route('admin.mapel.index')->with('success', 'Data mata pelajaran berhasil diperbarui');
     }
 
     public function destroy($id)

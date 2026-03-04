@@ -116,7 +116,7 @@ class DataKelasController extends Controller
             'kelas'      => $kelas,
             'tahunAktif' => $kelas->tahunPelajaran ?? DataTahunPelajaran::where('status_aktif', 1)->first(),
             'wali'       => DataGuru::with('pengguna')->get(),
-            'jurusan' => \App\Models\DataJurusan::where('status', 'AKTIF')->orderBy('kode_jurusan')->get(),
+            'jurusan'    => \App\Models\DataJurusan::where('status', 'AKTIF')->orderBy('kode_jurusan')->get(),
         ];
 
         if ($request->ajax()) {

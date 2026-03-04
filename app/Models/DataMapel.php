@@ -27,4 +27,9 @@ class DataMapel extends Model
     {
         return $this->hasMany(NilaiMapelSiswa::class, 'data_mapel_id');
     }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(\App\Models\DataJurusan::class, 'jurusan_id');
+    }
 }
