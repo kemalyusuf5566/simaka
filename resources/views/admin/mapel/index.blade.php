@@ -29,9 +29,20 @@
             <i class="fas fa-filter"></i> Filter Data
           </button>
 
+          {{-- <a href="{{ route('admin.mapel.export') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-file-excel"></i> Export Mapel
+          </a>   --}}
+
+          
+
           <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalKelompokMapel">
             <i class="fas fa-cog"></i> Kelompok Mapel
           </button>
+
+          <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalImportMapel">
+            <i class="fas fa-file-import"></i>
+          </button>
+
         </div>
       </div>
     </div>
@@ -184,8 +195,7 @@
             <select name="kelompok_mapel" class="form-control" required>
               <option value="">-- Pilih --</option>
               <option value="Mata Pelajaran Umum">Mata Pelajaran Umum</option>
-              <option value="Mata Pelajaran Pilihan">Mata Pelajaran Pilihan</option>
-              <option value="Muatan Lokal">Muatan Lokal</option>
+              <option value="Mata Pelajaran Kejuruan">Mata Pelajaran Kejuruan</option>
             </select>
           </div>
         </div>
@@ -258,8 +268,7 @@
             <select name="kelompok_mapel" class="form-control" id="eKelompok" required>
               <option value="">-- Pilih --</option>
               <option value="Mata Pelajaran Umum">Mata Pelajaran Umum</option>
-              <option value="Mata Pelajaran Pilihan">Mata Pelajaran Pilihan</option>
-              <option value="Muatan Lokal">Muatan Lokal</option>
+              <option value="Mata Pelajaran Kejuruan">Mata Pelajaran Kejuruan</option>
             </select>
           </div>
         </div>
@@ -302,8 +311,7 @@
           <select class="form-control" id="filterKelompok">
             <option value="">Semua</option>
             <option value="mata pelajaran umum">Mata Pelajaran Umum</option>
-            <option value="mata pelajaran pilihan">Mata Pelajaran Pilihan</option>
-            <option value="muatan lokal">Muatan Lokal</option>
+            <option value="mata pelajaran kejuruan">Mata Pelajaran Kejuruan</option>
           </select>
         </div>
       </div>
@@ -317,6 +325,47 @@
   </div>
 </div>
 
+{{-- =========================
+   MODAL: IMPORT
+========================= --}}
+<div class="modal fade" id="modalImportMapel" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Import Data Mapel</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <form method="POST" action="{{ route('admin.mapel.import') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-body">
+
+          <div class="alert alert-warning">
+            <b>Penting!</b> File harus <b>.xlsx</b><br>
+            <a href="{{ route('admin.mapel.import.format') }}">Download Format Import</a>
+          </div>
+
+          <div class="form-group">
+            <input type="file" name="file" class="form-control" accept=".xlsx" required>
+          </div>
+
+          <div class="form-group d-flex justify-content-between align-items-center mt-3 mb-0">
+            <div>
+              <label class="mb-0">
+                <input type="checkbox" name="yakin" value="1" required>
+                Saya yakin sudah mengisi dengan benar
+              </label>
+            </div>
+            <button class="btn btn-primary">Simpan</button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 @push('styles')
 <style>

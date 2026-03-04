@@ -145,6 +145,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="{{ route('admin.jurusan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data Jurusan</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="{{ route('admin.kelas.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Data Kelas</p>
@@ -407,6 +413,27 @@
 <script src="{{ asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+
+<script>
+/**
+ * GLOBAL INIT DATATABLES (LEBIH AMAN)
+ * - Hanya tabel dengan class .datatable yang akan di-init
+ * - Skip jika tabel ada attribute data-no-datatable="true"
+ */
+$(function () {
+  $('.datatable').each(function () {
+    if ($(this).data('no-datatable') === true) return;
+
+    $(this).DataTable({
+      responsive: true,
+      autoWidth: false,
+      ordering: false,
+      pageLength: 10,
+      lengthMenu: [10, 25, 50, 100],
+    });
+  });
+});
+</script>
 
 @stack('scripts')
 </body>

@@ -63,13 +63,14 @@
     <table class="table table-bordered table-striped table-hover">
       <thead class="bg-secondary">
         <tr>
-          <th style="width:60px">No</th>
-          <th style="width:90px">ID Kelas</th>
-          <th>Nama Kelas</th>
-          <th>Wali Kelas</th>
-          <th class="text-center" style="width:90px">Tingkat</th>
-          <th class="text-center" style="width:130px">Jumlah Siswa</th>
-          <th class="text-center" style="width:180px">Aksi</th>
+          <th style="width:30px">No</th>
+          {{-- <th style="width:90px">ID Kelas</th> --}}
+          <th class="text-center" style="width:20px">Nama Kelas</th>
+          <th class="text-center" style="width:120px">Wali Kelas</th>
+          <th class="text-center" style="width:20px">Tingkat</th>
+          <th class="text-center" style="width:180px">Jurusan</th>
+          <th class="text-center" style="width:20px">Jumlah Siswa</th>
+          <th class="text-center" style="width:40px">Aksi</th>
         </tr>
       </thead>
 
@@ -77,10 +78,11 @@
         @forelse($kelas as $i => $k)
         <tr>
           <td>{{ $kelas->firstItem() + $i }}</td>
-          <td>{{ $k->id }}</td>
+          {{-- <td>{{ $k->id }}</td> --}}
           <td>{{ $k->nama_kelas }}</td>
           <td>{{ $k->wali->pengguna->nama ?? '-' }}</td>
           <td class="text-center">{{ $k->tingkat }}</td>
+          <td>{{ $k->jurusan ? ($k->jurusan->kode_jurusan.' - '.$k->jurusan->nama_jurusan) : '-' }}</td>
           <td class="text-center">{{ $k->siswa_count ?? 0 }}</td>
           <td class="text-center">
 
@@ -154,9 +156,9 @@
               <select name="tingkat" class="form-control">
                 <option value="" {{ $tingkatVal==='' ? 'selected' : '' }}>-- Pilih --</option>
                 <option value="all" {{ $tingkatVal==='all' ? 'selected' : '' }}>Semua</option>
-                <option value="7" {{ $tingkatVal==='7' ? 'selected' : '' }}>7</option>
-                <option value="8" {{ $tingkatVal==='8' ? 'selected' : '' }}>8</option>
-                <option value="9" {{ $tingkatVal==='9' ? 'selected' : '' }}>9</option>
+                <option value="X" {{ $tingkatVal==='X' ? 'selected' : '' }}>7</option>
+                <option value="XI" {{ $tingkatVal==='XI' ? 'selected' : '' }}>8</option>
+                <option value="XII" {{ $tingkatVal==='XII' ? 'selected' : '' }}>9</option>
               </select>
 
             </div>

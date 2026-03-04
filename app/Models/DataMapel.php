@@ -13,6 +13,8 @@ class DataMapel extends Model
         'singkatan',
         'urutan_cetak',
         'kelompok_mapel',
+        'tingkat',
+        'jurusan_id'
     ];
 
     // Relasi (dipakai nanti di pembelajaran)

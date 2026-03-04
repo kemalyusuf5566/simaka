@@ -13,6 +13,7 @@ class DataKelas extends Model
         'data_tahun_pelajaran_id',
         'nama_kelas',
         'tingkat',
+        'jurusan_id',
         'wali_kelas_id',
     ];
 
@@ -40,5 +41,9 @@ class DataKelas extends Model
     public function nilaiMapel()
     {
         return $this->hasMany(NilaiMapelSiswa::class, 'data_kelas_id');
+    }
+    public function jurusan()
+    {
+        return $this->belongsTo(\App\Models\DataJurusan::class, 'jurusan_id');
     }
 }

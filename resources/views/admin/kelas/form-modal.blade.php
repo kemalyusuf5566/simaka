@@ -51,25 +51,50 @@
     </div>
 
     <div class="form-group">
-      <label>Tahun Pelajaran <span class="text-danger">*</span></label>
-      {{-- karena pilihannya cuma 1 (tahun aktif), tampilkan readonly/select disabled biar sesuai UI --}}
-      <select class="form-control" disabled>
-        <option selected>
-          {{ ($tahunAktif->tahun_pelajaran ?? '-') . ' - ' . ($tahunAktif->semester ?? '-') }}
-        </option>
+          <label>Tahun Pelajaran <span class="text-danger">*</span></label>
+          {{-- karena pilihannya cuma 1 (tahun aktif), tampilkan readonly/select disabled biar sesuai UI --}}
+          <select class="form-control" disabled>
+            <option selected>
+              {{ ($tahunAktif->tahun_pelajaran ?? '-') . ' - ' . ($tahunAktif->semester ?? '-') }}
+            </option>
+          </select>
+          {{-- hidden sudah ada di atas --}}
+        </div>
+
+        <div class="form-group">
+      <label>Tingkat <span class="text-danger">*</span></label>
+
+      @php
+        $tingkatList = [
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII'
+        ];
+      @endphp
+
+      <select name="tingkat" class="form-control" required>
+        <option value="">-- Pilih --</option>
+
+        @foreach($tingkatList as $value => $label)
+          <option value="{{ $value }}"
+            @selected(old('tingkat', $kelas->tingkat ?? '') == $value)>
+            {{ $label }}
+          </option>
+        @endforeach
+
       </select>
-      {{-- hidden sudah ada di atas --}}
     </div>
 
     <div class="form-group">
-      <label>Tingkat <span class="text-danger">*</span></label>
-      <select name="tingkat" class="form-control" required>
-        <option value="">-- Pilih --</option>
-        @for($i=7;$i<=9;$i++)
-          <option value="{{ $i }}" @selected(old('tingkat', $kelas->tingkat ?? '') == $i)>
-            {{ $i }}
+      <label>Jurusan</label>
+      <select name="jurusan_id" class="form-control">
+        <option value="">-- Pilih Jurusan --</option>
+        @foreach($jurusan as $j)
+          <option value="{{ $j->id }}"
+            {{ (old('jurusan_id', $kelas->jurusan_id ?? '') == $j->id) ? 'selected' : '' }}>
+            {{ $j->kode_jurusan }} - {{ $j->nama_jurusan }}
           </option>
-        @endfor
+        @endforeach
       </select>
     </div>
 

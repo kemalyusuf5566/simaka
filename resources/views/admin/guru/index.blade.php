@@ -1,3 +1,4 @@
+{{-- resources/views/admin/guru/index.blade.php --}}
 @extends('layouts.adminlte')
 
 @section('page_title','Data Guru')
@@ -5,9 +6,10 @@
 @section('content')
 
 @php
-  // Ambil filter dari query string agar persist
-  $status = request('status', ''); // 1 / 0 / ''
-  $jk     = request('jk', '');     // L / P / ''
+  $status   = request('status', ''); // 1 / 0 / ''
+  $jk       = request('jk', '');     // L / P / ''
+  $qVal     = request('q', $q ?? '');
+  $limitVal = (int) request('limit', $limit ?? 10);
 @endphp
 
 <div class="card card-dark">
@@ -41,26 +43,31 @@
     </div>
 
     {{-- FILTER BAR --}}
-    <form id="formFilterBar" method="GET" action="{{ route('admin.guru.index') }}" class="d-flex justify-content-between align-items-center mb-2">
+    <form id="formFilterBar" method="GET" action="{{ route('admin.guru.index') }}"
+          class="d-flex justify-content-between align-items-center mb-2">
+
+      {{-- reset ke page 1 saat ganti limit / cari --}}
+      <input type="hidden" name="page" value="1">
+
       <div>
         <label class="mb-0">
           Tampilkan
           <select name="limit" class="custom-select custom-select-sm w-auto" onchange="this.form.submit()">
-            <option value="10"  {{ ($limit ?? 10)==10 ? 'selected' : '' }}>10</option>
-            <option value="25"  {{ ($limit ?? 10)==25 ? 'selected' : '' }}>25</option>
-            <option value="50"  {{ ($limit ?? 10)==50 ? 'selected' : '' }}>50</option>
-            <option value="100" {{ ($limit ?? 10)==100 ? 'selected' : '' }}>100</option>
+            <option value="10"  {{ $limitVal===10 ? 'selected' : '' }}>10</option>
+            <option value="25"  {{ $limitVal===25 ? 'selected' : '' }}>25</option>
+            <option value="50"  {{ $limitVal===50 ? 'selected' : '' }}>50</option>
+            <option value="100" {{ $limitVal===100 ? 'selected' : '' }}>100</option>
           </select>
           data
         </label>
 
-        {{-- Persist filter lanjutan dari modal --}}
+        {{-- Persist filter modal --}}
         <input type="hidden" name="status" value="{{ $status }}">
         <input type="hidden" name="jk" value="{{ $jk }}">
       </div>
 
       <div class="d-flex">
-        <input type="text" name="q" value="{{ $q ?? '' }}"
+        <input type="text" name="q" value="{{ $qVal }}"
                class="form-control form-control-sm"
                placeholder="Cari..."
                style="width:220px">
@@ -75,87 +82,93 @@
       @csrf
       @method('DELETE')
 
-      <table class="table table-bordered table-hover">
-        <thead class="bg-secondary">
-          <tr>
-            <th width="40" class="text-center">
-              <input type="checkbox" id="checkAll">
-            </th>
-            <th width="60">No</th>
-            <th>Nama</th>
-            <th width="60">L/P</th>
-            <th>NIP</th>
-            <th>NUPTK</th>
-            <th>Status</th>
-            <th width="220">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($guru as $i => $g)
-          <tr>
-            <td class="text-center">
-              <input type="checkbox" class="checkItem" name="ids[]" value="{{ $g->id }}">
-            </td>
-            <td>{{ $guru->firstItem() + $i }}</td>
-            <td>{{ $g->pengguna->nama ?? '-' }}</td>
-            <td class="text-center">{{ $g->jenis_kelamin ?? '-' }}</td>
-            <td>{{ $g->nip ?? '-' }}</td>
-            <td>{{ $g->nuptk ?? '-' }}</td>
-            <td>
-              @php $aktif = (bool)($g->pengguna->status_aktif ?? false); @endphp
-              <span class="badge {{ $aktif ? 'badge-success' : 'badge-danger' }}">
-                {{ $aktif ? 'AKTIF' : 'TIDAK AKTIF' }}
-              </span>
-            </td>
-            <td>
-              <button type="button"
-                      class="btn btn-success btn-xs btn-detail-guru"
-                      data-id="{{ $g->id }}">
-                <i class="fas fa-eye"></i> Detail
-              </button>
+      <div class="table-responsive">
+        {{-- jangan pakai class .datatable supaya tidak bentrok dengan Laravel paginate --}}
+        <table id="table-guru" class="table table-bordered table-hover mb-0">
+          <thead class="bg-secondary">
+            <tr>
+              <th width="40" class="text-center">
+                <input type="checkbox" id="checkAll">
+              </th>
+              <th width="60">No</th>
+              <th>Nama</th>
+              <th width="60">L/P</th>
+              <th>NIP</th>
+              <th>NUPTK</th>
+              <th>Status</th>
+              <th width="220">Aksi</th>
+            </tr>
+          </thead>
 
-              <a href="{{ route('admin.guru.edit',$g->id) }}"
-                 class="btn btn-warning btn-xs">
-                <i class="fas fa-edit"></i> Edit
-              </a>
+          <tbody>
+            @forelse($guru as $i => $g)
+              <tr>
+                <td class="text-center">
+                  <input type="checkbox" class="checkItem" name="ids[]" value="{{ $g->id }}">
+                </td>
+                <td>{{ $guru->firstItem() + $i }}</td>
+                <td>{{ $g->pengguna->nama ?? '-' }}</td>
+                <td class="text-center">{{ $g->jenis_kelamin ?? '-' }}</td>
+                <td>{{ $g->nip ?? '-' }}</td>
+                <td>{{ $g->nuptk ?? '-' }}</td>
+                <td>
+                  @php $aktif = (bool)($g->pengguna->status_aktif ?? false); @endphp
+                  <span class="badge {{ $aktif ? 'badge-success' : 'badge-danger' }}">
+                    {{ $aktif ? 'AKTIF' : 'TIDAK AKTIF' }}
+                  </span>
+                </td>
+                <td>
+                  <button type="button"
+                          class="btn btn-success btn-xs btn-detail-guru"
+                          data-id="{{ $g->id }}">
+                    <i class="fas fa-eye"></i> Detail
+                  </button>
 
-              <form action="{{ route('admin.guru.destroy',$g->id) }}"
-                    method="POST" class="d-inline"
-                    onsubmit="return confirm('Hapus data guru ini?')">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-xs">
-                  <i class="fas fa-trash"></i> Hapus
-                </button>
-              </form>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="8" class="text-center text-muted">
-              Data guru belum tersedia
-            </td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
+                  <a href="{{ route('admin.guru.edit',$g->id) }}"
+                     class="btn btn-warning btn-xs">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+
+                  <form action="{{ route('admin.guru.destroy',$g->id) }}"
+                        method="POST" class="d-inline"
+                        onsubmit="return confirm('Hapus data guru ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-xs">
+                      <i class="fas fa-trash"></i> Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="8" class="text-center text-muted">
+                  Data guru belum tersedia
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
     </form>
 
-    {{-- PAGINATION RAPI --}}
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="text-muted">
+    {{-- PAGINATION --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-3">
+      <div class="text-muted small mb-2 mb-md-0">
         Menampilkan {{ $guru->count() ? $guru->firstItem() : 0 }} - {{ $guru->count() ? $guru->lastItem() : 0 }}
         dari {{ $guru->total() }} data
       </div>
-      <div>
-        {{ $guru->links() }}
+
+      <div class="d-flex justify-content-end">
+        {{-- paksa bootstrap-4 view + aman bawa query --}}
+        {{ $guru->onEachSide(1)->links('pagination::bootstrap-4') }}
       </div>
     </div>
 
   </div>
 </div>
 
-{{-- MODAL FILTER (AKTIF) --}}
+{{-- MODAL FILTER --}}
 <div class="modal fade" id="modalFilter" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -168,6 +181,9 @@
 
       <form id="formModalFilter" method="GET" action="{{ route('admin.guru.index') }}">
         <div class="modal-body">
+
+          {{-- reset ke page 1 saat apply filter --}}
+          <input type="hidden" name="page" value="1">
 
           <div class="row">
             <div class="col-md-6">
@@ -191,16 +207,14 @@
 
           <hr>
 
-          {{-- Bawa parameter yang sudah ada agar tidak hilang --}}
-          <input type="hidden" name="limit" value="{{ $limit ?? 10 }}">
-          <input type="hidden" name="q" value="{{ $q ?? '' }}">
+          {{-- bawa parameter lain --}}
+          <input type="hidden" name="limit" value="{{ $limitVal }}">
+          <input type="hidden" name="q" value="{{ $qVal }}">
 
         </div>
 
         <div class="modal-footer d-flex justify-content-between">
-          <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">
-            Reset
-          </a>
+          <a href="{{ route('admin.guru.index') }}" class="btn btn-secondary">Reset</a>
 
           <div>
             <button type="button" class="btn btn-light" data-dismiss="modal">Tutup</button>
@@ -213,7 +227,7 @@
   </div>
 </div>
 
-{{-- MODAL IMPORT (samakan dengan siswa) --}}
+{{-- MODAL IMPORT --}}
 <div class="modal fade" id="modalImportGuru" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -229,7 +243,7 @@
         <div class="modal-body">
 
           <div class="alert alert-warning">
-            <b>Penting!</b> File yang diunggah harus berupa dokumen Microsoft Excel dengan ekstensi <b>.xlsx</b><br>
+            <b>Penting!</b> File harus <b>.xlsx</b><br>
             <a href="{{ route('admin.guru.import.format') }}">Download Format Import</a>
           </div>
 
@@ -237,16 +251,14 @@
             <input type="file" name="file" class="form-control" accept=".xlsx" required>
           </div>
 
-          <div class="form-group d-flex justify-content-between align-items-center mt-3">
+          <div class="form-group d-flex justify-content-between align-items-center mt-3 mb-0">
             <div>
               <label class="mb-0">
                 <input type="checkbox" name="yakin" value="1" required>
                 Saya yakin sudah mengisi dengan benar
               </label>
             </div>
-            <button class="btn btn-primary">
-              Simpan
-            </button>
+            <button class="btn btn-primary">Simpan</button>
           </div>
 
         </div>
@@ -309,6 +321,9 @@
   });
 
   btn.addEventListener('click', function () {
+    const selected = document.querySelectorAll('.checkItem:checked').length;
+    if (selected === 0) return;
+
     if (!confirm('Hapus beberapa data guru yang dipilih?')) return;
     document.getElementById('formDestroyMultiple').submit();
   });

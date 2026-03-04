@@ -4,6 +4,37 @@
 
 @section('content')
 
+@php
+  // ambil query agar persist di UI
+  $limit  = (int) request('limit', $limit ?? 10);
+  $q      = (string) request('q', $q ?? '');
+
+  // filter tambahan (nanti dipakai controller)
+  $kelas  = (string) request('kelas', $kelas ?? '');
+  $jk     = (string) request('jk', $jk ?? '');          // L / P / ''
+  $status = (string) request('status', $status ?? '');  // aktif / tidak aktif / ''
+@endphp
+
+@if(session('success'))
+  <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+
+@if(session('error'))
+  <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+@if(session('warning'))
+  <div class="alert alert-warning">{!! session('warning') !!}</div>
+@endif
+
+@if($errors->any())
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      @foreach($errors->all() as $e) <li>{{ $e }}</li> @endforeach
+    </ul>
+  </div>
+@endif
+
 <div class="card card-dark">
   <div class="card-header">
     <h3 class="card-title">Data Siswa</h3>
@@ -34,37 +65,45 @@
       </div>
     </div>
 
-    {{-- FILTER BAR --}}
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    {{-- FILTER BAR (SERVER SIDE) --}}
+    <form id="formFilterBar" method="GET" action="{{ route('admin.siswa.index') }}"
+          class="d-flex justify-content-between align-items-center mb-2">
+
       <div>
         <label class="mb-0">
           Tampilkan
-          <select id="limitData" class="custom-select custom-select-sm w-auto">
-            <option value="10" selected>10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="9999">Semua</option>
+          <select name="limit" class="custom-select custom-select-sm w-auto" onchange="this.form.submit()">
+            <option value="10"  {{ $limit===10 ? 'selected' : '' }}>10</option>
+            <option value="25"  {{ $limit===25 ? 'selected' : '' }}>25</option>
+            <option value="50"  {{ $limit===50 ? 'selected' : '' }}>50</option>
+            <option value="100" {{ $limit===100 ? 'selected' : '' }}>100</option>
           </select>
           data
         </label>
+
+        {{-- persist filter modal --}}
+        <input type="hidden" name="kelas" value="{{ $kelas }}">
+        <input type="hidden" name="jk" value="{{ $jk }}">
+        <input type="hidden" name="status" value="{{ $status }}">
       </div>
 
-      <div>
-        <input type="text" id="searchData"
+      <div class="d-flex">
+        <input type="text" name="q" value="{{ $q }}"
                class="form-control form-control-sm"
-               placeholder="Cari..."
-               style="width:220px">
+               placeholder="Cari nama / NIS / NISN..."
+               style="width:260px">
+        <button class="btn btn-sm btn-secondary ml-2" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
       </div>
-    </div>
+    </form>
 
-
-
-    {{-- FORM HAPUS MASSAL --}}
+    {{-- FORM HAPUS BEBERAPA --}}
     <form id="formHapusMassal" action="{{ route('admin.siswa.destroyMultiple') }}" method="POST">
       @csrf
       @method('DELETE')
 
-      <table id="table-siswa" class="table table-bordered table-hover">
+      <table class="table table-bordered table-hover">
         <thead class="bg-secondary">
           <tr>
             <th width="45" class="text-center">
@@ -82,116 +121,131 @@
         </thead>
         <tbody>
           @forelse($siswa as $i => $s)
-          @php
-            $kelasNama = optional($s->kelas)->nama_kelas ?? '-';
-            $jk = $s->jenis_kelamin ?? '-';
-            $status = strtolower(trim((string)($s->status_siswa ?? 'aktif')));
-            $statusLabel = ($status === 'aktif') ? 'AKTIF' : 'TIDAK AKTIF';
-          @endphp
-          <tr class="row-siswa"
-              data-nama="{{ strtolower($s->nama_siswa ?? '') }}"
-              data-kelas="{{ strtolower($kelasNama) }}"
-              data-jk="{{ strtolower($jk) }}"
-              data-status="{{ $status }}">
-            <td class="text-center">
-              <input type="checkbox" class="checkItem" name="ids[]" value="{{ $s->id }}">
-            </td>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $s->nama_siswa ?? '-' }}</td>
-            <td>{{ $kelasNama }}</td>
-            <td>{{ $s->nis ?? '-' }}</td>
-            <td>{{ $s->nisn ?? '-' }}</td>
-            <td class="text-center">{{ $jk }}</td>
-            <td class="text-center">
-              @if($status === 'aktif')
-                <span class="badge badge-success">{{ $statusLabel }}</span>
-              @else
-                <span class="badge badge-secondary">{{ $statusLabel }}</span>
-              @endif
-            </td>
-            <td>
-              <a href="{{ route('admin.siswa.show', $s->id) }}" class="btn btn-success btn-xs">
-                <i class="fas fa-eye"></i> Detail
-              </a>
+            @php
+              $kelasNama = optional($s->kelas)->nama_kelas ?? '-';
+              $jkVal = $s->jenis_kelamin ?? '-';
+              $st = strtolower(trim((string)($s->status_siswa ?? 'aktif')));
+              if ($st === 'nonaktif' || $st === 'non aktif') $st = 'tidak aktif';
+              $stLabel = ($st === 'aktif') ? 'AKTIF' : 'TIDAK AKTIF';
+            @endphp
+            <tr>
+              <td class="text-center">
+                <input type="checkbox" class="checkItem" name="ids[]" value="{{ $s->id }}">
+              </td>
+              <td>{{ ($siswa->firstItem() ?? 1) + $i }}</td>
+              <td>{{ $s->nama_siswa ?? '-' }}</td>
+              <td>{{ $kelasNama }}</td>
+              <td>{{ $s->nis ?? '-' }}</td>
+              <td>{{ $s->nisn ?? '-' }}</td>
+              <td class="text-center">{{ $jkVal }}</td>
+              <td class="text-center">
+                <span class="badge {{ $st === 'aktif' ? 'badge-success' : 'badge-secondary' }}">
+                  {{ $stLabel }}
+                </span>
+              </td>
+              <td>
+                <a href="{{ route('admin.siswa.show', $s->id) }}" class="btn btn-success btn-xs">
+                  <i class="fas fa-eye"></i> Detail
+                </a>
 
-              <a href="{{ route('admin.siswa.edit', $s->id) }}" class="btn btn-warning btn-xs">
-                <i class="fas fa-edit"></i> Edit
-              </a>
+                <a href="{{ route('admin.siswa.edit', $s->id) }}" class="btn btn-warning btn-xs">
+                  <i class="fas fa-edit"></i> Edit
+                </a>
 
-              <form action="{{ route('admin.siswa.destroy', $s->id) }}"
-                    method="POST" class="d-inline"
-                    onsubmit="return confirm('Hapus data siswa ini?')">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-xs">
-                  <i class="fas fa-trash"></i> Hapus
-                </button>
-              </form>
-            </td>
-          </tr>
+                <form action="{{ route('admin.siswa.destroy', $s->id) }}"
+                      method="POST" class="d-inline"
+                      onsubmit="return confirm('Hapus data siswa ini?')">
+                  @csrf
+                  @method('DELETE')
+                  <button class="btn btn-danger btn-xs">
+                    <i class="fas fa-trash"></i> Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
           @empty
-          <tr>
-            <td colspan="9" class="text-center text-muted">
-              Data siswa belum tersedia
-            </td>
-          </tr>
+            <tr>
+              <td colspan="9" class="text-center text-muted">
+                Data siswa belum tersedia
+              </td>
+            </tr>
           @endforelse
         </tbody>
       </table>
     </form>
 
+    {{-- PAGINATION RAPI --}}
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="text-muted">
+        Menampilkan
+        {{ $siswa->count() ? $siswa->firstItem() : 0 }} - {{ $siswa->count() ? $siswa->lastItem() : 0 }}
+        dari {{ $siswa->total() }} data
+      </div>
+      <div>
+        {{ $siswa->links() }}
+      </div>
+    </div>
+
   </div>
 </div>
 
-
-{{-- ================= MODAL FILTER ================= --}}
-<div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-md" role="document">
+{{-- ================= MODAL FILTER (SERVER SIDE) ================= --}}
+<div class="modal fade" id="modalFilter" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-info">
-        <h5 class="modal-title"><i class="fas fa-filter"></i> Filter Data</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <h4 class="modal-title"><i class="fas fa-filter"></i> Filter Data Siswa</h4>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
 
-      <div class="modal-body">
+      <form method="GET" action="{{ route('admin.siswa.index') }}">
+        <div class="modal-body">
 
-        <div class="form-group">
-          <label>Kelas</label>
-          <input type="text" id="filterKelas" class="form-control" placeholder="Contoh: VII A">
+          <div class="row">
+            <div class="col-md-6">
+              <label>Kelas</label>
+              <input type="text" name="kelas" class="form-control"
+                     value="{{ $kelas }}" placeholder="Contoh: VII A">
+              <small class="text-muted">Boleh sebagian (mis: VII)</small>
+            </div>
+
+            <div class="col-md-3">
+              <label>Jenis Kelamin</label>
+              <select name="jk" class="form-control">
+                <option value=""  {{ $jk==='' ? 'selected' : '' }}>Semua</option>
+                <option value="L" {{ strtoupper($jk)==='L' ? 'selected' : '' }}>L</option>
+                <option value="P" {{ strtoupper($jk)==='P' ? 'selected' : '' }}>P</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label>Status</label>
+              <select name="status" class="form-control">
+                <option value="" {{ $status==='' ? 'selected' : '' }}>Semua</option>
+                <option value="aktif" {{ strtolower($status)==='aktif' ? 'selected' : '' }}>AKTIF</option>
+                <option value="tidak aktif" {{ strtolower($status)==='tidak aktif' ? 'selected' : '' }}>TIDAK AKTIF</option>
+              </select>
+            </div>
+          </div>
+
+          <hr>
+
+          {{-- bawa param yang sudah ada agar tidak hilang --}}
+          <input type="hidden" name="limit" value="{{ $limit }}">
+          <input type="hidden" name="q" value="{{ $q }}">
+
         </div>
 
-        <div class="form-group">
-          <label>Jenis Kelamin</label>
-          <select id="filterJk" class="form-control">
-            <option value="">Semua</option>
-            <option value="l">L</option>
-            <option value="p">P</option>
-          </select>
+        <div class="modal-footer d-flex justify-content-between">
+          <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">Reset</a>
+
+          <div>
+            <button type="button" class="btn btn-light" data-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-primary">Terapkan</button>
+          </div>
         </div>
+      </form>
 
-        <div class="form-group mb-0">
-          <label>Status Siswa</label>
-          <select id="filterStatus" class="form-control">
-            <option value="">Semua</option>
-            <option value="aktif">Aktif</option>
-            <option value="tidak aktif">Tidak Aktif</option>
-            <option value="nonaktif">Nonaktif</option>
-          </select>
-          <small class="text-muted">* disamakan otomatis saat filter (aktif vs tidak aktif/nonaktif)</small>
-        </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="btnResetFilter">
-          Reset
-        </button>
-        <button type="button" class="btn btn-info" id="btnApplyFilter" data-dismiss="modal">
-          Terapkan
-        </button>
-      </div>
     </div>
   </div>
 </div>
@@ -241,29 +295,6 @@
               </label>
             </div>
           </div>
-
-          {{-- area pesan error server (opsional) --}}
-          @if ($errors->any())
-            <div class="alert alert-danger mt-3 mb-0">
-              <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-            </div>
-          @endif
-
-          @if (session('error'))
-            <div class="alert alert-danger mt-3 mb-0">{!! session('error') !!}</div>
-          @endif
-
-          @if (session('warning'))
-            <div class="alert alert-warning mt-3 mb-0">{!! session('warning') !!}</div>
-          @endif
-
-          @if (session('success'))
-            <div class="alert alert-success mt-3 mb-0">{!! session('success') !!}</div>
-          @endif
         </div>
 
         <div class="modal-footer">
@@ -277,122 +308,48 @@
   </div>
 </div>
 
-{{-- ================= SCRIPT ================= --}}
+@endsection
+
 @push('scripts')
 <script>
 (function(){
-  const table = document.getElementById('table-siswa');
-  const rows = Array.from(table.querySelectorAll('tbody tr.row-siswa'));
-
-  const searchEl = document.getElementById('searchData');
-  const limitEl = document.getElementById('limitData');
-
-  const checkAll = document.getElementById('checkAll');
-  const checkItems = () => Array.from(document.querySelectorAll('.checkItem'));
   const btnHapusBeberapa = document.getElementById('btnHapusBeberapa');
-  const formHapusMassal = document.getElementById('formHapusMassal');
+  const formHapusMassal  = document.getElementById('formHapusMassal');
+  const checkAll         = document.getElementById('checkAll');
 
-  const filterKelas = document.getElementById('filterKelas');
-  const filterJk = document.getElementById('filterJk');
-  const filterStatus = document.getElementById('filterStatus');
+  function items(){ return Array.from(document.querySelectorAll('.checkItem')); }
 
-  const btnResetFilter = document.getElementById('btnResetFilter');
-  const btnApplyFilter = document.getElementById('btnApplyFilter');
-
-  let activeFilter = { kelas:'', jk:'', status:'' };
-
-  function normalizeStatus(s){
-    s = (s || '').toLowerCase().trim();
-    if(s === '') return '';
-    if(s === 'aktif') return 'aktif';
-    if(s === 'tidak aktif' || s === 'nonaktif' || s === 'non aktif') return 'tidak aktif';
-    return s;
+  function refreshBtn(){
+    const checked = items().filter(x => x.checked).length;
+    btnHapusBeberapa.disabled = (checked === 0);
   }
 
-  function updateHapusButton(){
-    const checked = checkItems().filter(ch => ch.checked).length;
-    btnHapusBeberapa.disabled = checked === 0;
-  }
-
-  function applyView(){
-    const q = (searchEl.value || '').toLowerCase().trim();
-    const limit = parseInt(limitEl.value || '10', 10);
-
-    let shownCount = 0;
-
-    rows.forEach(r => {
-      const nama = r.dataset.nama || '';
-      const kelas = r.dataset.kelas || '';
-      const jk = r.dataset.jk || '';
-      const status = normalizeStatus(r.dataset.status || '');
-
-      const matchSearch = (q === '') || (nama.includes(q) || kelas.includes(q));
-      const matchKelas = (activeFilter.kelas === '') || kelas.includes(activeFilter.kelas);
-      const matchJk = (activeFilter.jk === '') || jk === activeFilter.jk;
-      const matchStatus = (activeFilter.status === '') || status === activeFilter.status;
-
-      const match = matchSearch && matchKelas && matchJk && matchStatus;
-
-      if(match && (limit === 9999 || shownCount < limit)){
-        r.style.display = '';
-        shownCount++;
-      } else {
-        r.style.display = 'none';
-      }
+  if(checkAll){
+    checkAll.addEventListener('change', function(){
+      items().forEach(x => x.checked = checkAll.checked);
+      refreshBtn();
     });
   }
 
-  // events search/limit
-  searchEl.addEventListener('input', applyView);
-  limitEl.addEventListener('change', applyView);
-
-  // checkbox all
-  checkAll.addEventListener('change', function(){
-    const items = checkItems();
-    items.forEach(ch => ch.checked = checkAll.checked);
-    updateHapusButton();
-  });
-
   document.addEventListener('change', function(e){
     if(e.target.classList.contains('checkItem')){
-      // kalau ada 1 saja tidak checked -> checkAll false
-      const items = checkItems();
-      const allChecked = items.length > 0 && items.every(x => x.checked);
-      checkAll.checked = allChecked;
-      updateHapusButton();
+      const list = items();
+      const allChecked = list.length > 0 && list.every(x => x.checked);
+      if(checkAll) checkAll.checked = allChecked;
+      refreshBtn();
     }
   });
 
-  // hapus massal
-  btnHapusBeberapa.addEventListener('click', function(){
-    const items = checkItems().filter(ch => ch.checked);
-    if(items.length === 0) return;
+  if(btnHapusBeberapa){
+    btnHapusBeberapa.addEventListener('click', function(){
+      const checked = items().filter(x => x.checked);
+      if(checked.length === 0) return;
 
-    if(confirm('Yakin hapus ' + items.length + ' data siswa terpilih?')){
-      formHapusMassal.submit();
-    }
-  });
-
-  // filter modal
-  btnApplyFilter.addEventListener('click', function(){
-    activeFilter.kelas = (filterKelas.value || '').toLowerCase().trim();
-    activeFilter.jk = (filterJk.value || '').toLowerCase().trim();
-    activeFilter.status = normalizeStatus(filterStatus.value || '');
-    applyView();
-  });
-
-  btnResetFilter.addEventListener('click', function(){
-    filterKelas.value = '';
-    filterJk.value = '';
-    filterStatus.value = '';
-    activeFilter = { kelas:'', jk:'', status:'' };
-    applyView();
-  });
-
-  // init
-  applyView();
-  updateHapusButton();
-})();
+      if(confirm('Yakin hapus ' + checked.length + ' data siswa terpilih?')){
+        formHapusMassal.submit();
+      }
+    });
+  }
 
   // ===== IMPORT MODAL =====
   const importFile = document.getElementById('importFile');
@@ -407,7 +364,6 @@
 
   if(importFile){
     importFile.addEventListener('change', function(e){
-      // update label custom-file
       const label = document.querySelector('label[for="importFile"]');
       if(label && e.target.files.length){
         label.textContent = e.target.files[0].name;
@@ -420,7 +376,6 @@
     confirmImport.addEventListener('change', updateImportButton);
   }
 
-  // saat modal ditutup, reset form
   $('#modalImportSiswa').on('hidden.bs.modal', function(){
     const form = document.getElementById('formImportSiswa');
     if(form) form.reset();
@@ -428,7 +383,9 @@
     if(label) label.textContent = 'Pilih file...';
     updateImportButton();
   });
+
+  refreshBtn();
+  updateImportButton();
+})();
 </script>
 @endpush
-
-@endsection

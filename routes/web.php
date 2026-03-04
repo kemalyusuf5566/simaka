@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DataGuruController;
 use App\Http\Controllers\Admin\DataAdminController;
 use App\Http\Controllers\Admin\DataSekolahController;
 use App\Http\Controllers\Admin\DataTahunPelajaranController;
+use App\Http\Controllers\Admin\DataJurusanController;
 use App\Http\Controllers\Admin\DataKelasController;
 use App\Http\Controllers\Admin\DataMapelController;
 use App\Http\Controllers\Admin\DataPembelajaranController;
@@ -91,6 +92,9 @@ Route::middleware(['auth', 'role:admin'])
 
             Route::get('siswa/import', [DataSiswaController::class, 'importCreate'])
                 ->name('siswa.import.create');
+
+        Route::delete('siswa/destroy-multiple', [DataSiswaController::class, 'destroyMultiple'])
+            ->name('siswa.destroyMultiple');
         // CRUD SISWA (taruh setelah import)
         Route::get('siswa/create', [DataSiswaController::class, 'create'])->name('siswa.create');
         Route::post('siswa', [DataSiswaController::class, 'store'])->name('siswa.store');
@@ -99,14 +103,27 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('siswa/{id}', [DataSiswaController::class, 'update'])->name('siswa.update');
         Route::delete('siswa/{id}', [DataSiswaController::class, 'destroy'])->name('siswa.destroy');
 
-        Route::delete('siswa/destroy-multiple', [DataSiswaController::class, 'destroyMultiple'])
-            ->name('siswa.destroyMultiple');
+        
 
         
 
 
         // ===== GURU =====
         Route::get('guru', [DataGuruController::class, 'index'])->name('guru.index');
+       
+        // ===== IMPORT GURU (XLSX) =====
+        Route::get('guru/import', [DataGuruController::class, 'importCreate'])->name('guru.import.create');
+        Route::get('guru/import/format', [DataGuruController::class, 'downloadFormatImport'])->name('guru.import.format');
+        Route::post('guru/import', [DataGuruController::class, 'import'])->name('guru.import');
+
+        // destroy multiple
+        Route::delete('guru/destroy-multiple', [DataGuruController::class, 'destroyMultiple'])
+            ->name('guru.destroyMultiple');
+
+        // modal detail (AJAX)
+        Route::get('guru/{id}/detail', [DataGuruController::class, 'detailModal'])->name('guru.detail.modal');
+
+        // CRUD
         Route::get('guru/create', [DataGuruController::class, 'create'])->name('guru.create');
         Route::post('guru', [DataGuruController::class, 'store'])->name('guru.store');
         Route::get('guru/{id}', [DataGuruController::class, 'show'])->name('guru.show');
@@ -114,17 +131,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('guru/{id}', [DataGuruController::class, 'update'])->name('guru.update');
         Route::delete('guru/{id}', [DataGuruController::class, 'destroy'])->name('guru.destroy');
 
-        // modal detail (AJAX)
-        Route::get('guru/{id}/detail', [DataGuruController::class, 'detailModal'])->name('guru.detail.modal');
+        
 
-        // destroy multiple
-        Route::delete('guru/destroy-multiple', [DataGuruController::class, 'destroyMultiple'])
-            ->name('guru.destroyMultiple');
+       
 
-        // ===== IMPORT GURU (XLSX) =====
-        Route::get('guru/import', [DataGuruController::class, 'importCreate'])->name('guru.import.create');
-        Route::get('guru/import/format', [DataGuruController::class, 'downloadFormatImport'])->name('guru.import.format');
-        Route::post('guru/import', [DataGuruController::class, 'import'])->name('guru.import');
+       
        
        
        
@@ -149,9 +160,25 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('tahun-pelajaran/{id}/aktif', [DataTahunPelajaranController::class, 'setAktif'])
             ->name('tahun.aktif');
 
+        // JURUSAN
+        Route::get('jurusan', [DataJurusanController::class, 'index'])->name('jurusan.index');
+        Route::post('jurusan', [DataJurusanController::class, 'store'])->name('jurusan.store');
+        Route::put('jurusan/{id}', [DataJurusanController::class, 'update'])->name('jurusan.update');
+        Route::delete('jurusan/{id}', [DataJurusanController::class, 'destroy'])->name('jurusan.destroy');
+
         // ADMINISTRASI LANJUTAN
         Route::resource('kelas', DataKelasController::class);
+
+        // MAPEL
+        Route::get('mapel/import/format', [DataMapelController::class, 'downloadFormatImport'])
+            ->name('mapel.import.format');
+        Route::post('mapel/import', [DataMapelController::class, 'import'])
+            ->name('mapel.import');
+
+        Route::get('mapel/export', [DataMapelController::class, 'export'])
+            ->name('mapel.export');
         Route::resource('mapel', DataMapelController::class);
+        
 
         // PEMBELAJRAN
         Route::resource('pembelajaran', DataPembelajaranController::class);

@@ -1,4 +1,6 @@
 <?php
+// app/Http/Controllers/Admin/DataGuruController.php
+// (tidak wajib diubah kalau punyamu sudah sama, ini versi lengkap yang aman)
 
 namespace App\Http\Controllers\Admin;
 
@@ -23,47 +25,39 @@ class DataGuruController extends Controller
 
         $q = trim((string)$request->get('q', ''));
 
-        // FILTER BARU (SAMA KONSEP DENGAN DATA SISWA)
-        // status: '' | '1' | '0'
         $status = $request->get('status', '');
         if (!in_array((string)$status, ['', '1', '0'], true)) $status = '';
 
-        // jk: '' | 'L' | 'P'
         $jk = strtoupper(trim((string)$request->get('jk', '')));
         if (!in_array($jk, ['', 'L', 'P'], true)) $jk = '';
 
         $guru = DataGuru::with('pengguna')
-            // SEARCH
             ->when($q !== '', function ($query) use ($q) {
-                $query->whereHas('pengguna', function ($p) use ($q) {
-                    $p->where('nama', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
-                })
-                    ->orWhere('nip', 'like', "%{$q}%")
-                    ->orWhere('nuptk', 'like', "%{$q}%");
+                $query->where(function ($w) use ($q) {
+                    $w->whereHas('pengguna', function ($p) use ($q) {
+                        $p->where('nama', 'like', "%{$q}%")
+                            ->orWhere('email', 'like', "%{$q}%");
+                    })
+                        ->orWhere('nip', 'like', "%{$q}%")
+                        ->orWhere('nuptk', 'like', "%{$q}%");
+                });
             })
-            // FILTER STATUS (dari pengguna.status_aktif)
             ->when($status !== '', function ($query) use ($status) {
                 $query->whereHas('pengguna', function ($p) use ($status) {
                     $p->where('status_aktif', (int)$status);
                 });
             })
-            // FILTER JENIS KELAMIN (dari data_guru.jenis_kelamin)
             ->when($jk !== '', function ($query) use ($jk) {
                 $query->where('jenis_kelamin', $jk);
             })
             ->orderByDesc('id')
             ->paginate($limit)
-            ->appends([
-                'limit'  => $limit,
-                'q'      => $q,
-                'status' => $status,
-                'jk'     => $jk,
-            ]);
+            ->withQueryString(); // ✅ ini penting biar semua query ikut kebawa dengan aman
 
         return view('admin.guru.index', compact('guru', 'limit', 'q', 'status', 'jk'));
     }
 
+    // ====== sisanya biarkan sama seperti punyamu ======
     public function create()
     {
         return view('admin.guru.form', [
@@ -91,7 +85,7 @@ class DataGuruController extends Controller
                 'nama'         => $request->nama,
                 'email'        => $request->email,
                 'password'     => bcrypt($request->password),
-                'status_aktif' => (bool)$request->status_aktif,
+                'status_aktif' => (bool) $request->status_aktif,
             ]);
 
             DataGuru::create([
@@ -145,7 +139,7 @@ class DataGuruController extends Controller
             $updateUser = [
                 'nama'         => $request->nama,
                 'email'        => $request->email,
-                'status_aktif' => (bool)$request->status_aktif,
+                'status_aktif' => (bool) $request->status_aktif,
             ];
 
             if ($request->filled('password')) {
@@ -215,12 +209,12 @@ class DataGuruController extends Controller
             'nama',
             'email',
             'password',
-            'status_guru',       // AKTIF / TIDAK AKTIF
+            'status_guru',
             'nip',
             'nuptk',
             'tempat_lahir',
-            'tanggal_lahir',     // yyyy-mm-dd
-            'jenis_kelamin',     // L / P
+            'tanggal_lahir',
+            'jenis_kelamin',
             'telepon',
             'alamat',
         ];
