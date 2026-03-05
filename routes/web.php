@@ -159,6 +159,8 @@ Route::middleware(['auth', 'role:admin'])
             ->name('tahun.update');
         Route::put('tahun-pelajaran/{id}/aktif', [DataTahunPelajaranController::class, 'setAktif'])
             ->name('tahun.aktif');
+        Route::get('pembelajaran/mapel-by-kelas/{kelas}', [DataPembelajaranController::class, 'mapelByKelas'])
+            ->name('pembelajaran.mapelByKelas');
 
         // JURUSAN
         Route::get('jurusan', [DataJurusanController::class, 'index'])->name('jurusan.index');

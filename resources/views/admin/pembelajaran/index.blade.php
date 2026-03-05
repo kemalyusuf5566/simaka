@@ -89,7 +89,7 @@
 
           <div class="form-group">
             <label>Kelas <span class="text-danger">*</span></label>
-            <select name="data_kelas_id" class="form-control" required>
+            <select name="data_kelas_id" class="form-control" id="create_kelas" required>
               <option value="" selected disabled>-- Pilih --</option>
               @foreach($kelas as $k)
                 <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
@@ -99,12 +99,10 @@
 
           <div class="form-group">
             <label>Mata Pelajaran <span class="text-danger">*</span></label>
-            <select name="data_mapel_id" class="form-control" required>
-              <option value="" selected disabled>-- Pilih --</option>
-              @foreach($mapel as $m)
-                <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
-              @endforeach
+            <select name="data_mapel_id" class="form-control" id="create_mapel" required>
+              <option value="" selected disabled>-- Pilih Kelas dulu --</option>
             </select>
+            <small class="text-muted">Mapel otomatis difilter berdasarkan tingkat & jurusan kelas.</small>
           </div>
 
           <div class="form-group">
@@ -160,6 +158,7 @@
           <div class="form-group">
             <label>Kelas <span class="text-danger">*</span></label>
             <select name="data_kelas_id" class="form-control" id="edit_kelas" required>
+              <option value="" disabled>-- Pilih --</option>
               @foreach($kelas as $k)
                 <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
               @endforeach
@@ -169,15 +168,15 @@
           <div class="form-group">
             <label>Mata Pelajaran <span class="text-danger">*</span></label>
             <select name="data_mapel_id" class="form-control" id="edit_mapel" required>
-              @foreach($mapel as $m)
-                <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
-              @endforeach
+              <option value="" selected disabled>-- Pilih Kelas dulu --</option>
             </select>
+            <small class="text-muted">Mapel otomatis difilter berdasarkan tingkat & jurusan kelas.</small>
           </div>
 
           <div class="form-group">
             <label>Guru Pengampu <span class="text-danger">*</span></label>
             <select name="guru_id" class="form-control" id="edit_guru" required>
+              <option value="" disabled>-- Pilih --</option>
               @foreach($guru as $g)
                 <option value="{{ $g->id }}">{{ $g->nama }}</option>
               @endforeach
@@ -280,12 +279,40 @@ $(function () {
     }
   });
 
+  // ===== helper load mapel by kelas
+  function loadMapelByKelas(kelasId, $selectMapel, selectedId = null) {
+    $selectMapel.html('<option value="" selected disabled>Memuat...</option>');
+
+    if (!kelasId) {
+      $selectMapel.html('<option value="" selected disabled>-- Pilih Kelas dulu --</option>');
+      return;
+    }
+
+    $.get("{{ route('admin.pembelajaran.mapelByKelas', '__KELAS__') }}".replace('__KELAS__', kelasId), function (data) {
+      let html = '<option value="" selected disabled>-- Pilih --</option>';
+      data.forEach(item => {
+        const sel = (selectedId && String(selectedId) === String(item.id)) ? 'selected' : '';
+        html += `<option value="${item.id}" ${sel}>${item.nama}</option>`;
+      });
+      $selectMapel.html(html);
+    }).fail(function () {
+      $selectMapel.html('<option value="" selected disabled>Gagal memuat mapel</option>');
+    });
+  }
+
   // Open modal create
   $('#btn-open-create').on('click', function () {
     $('#form-create')[0].reset();
+    $('#create_mapel').html('<option value="" selected disabled>-- Pilih Kelas dulu --</option>');
+
     $('#check-create').prop('checked', false);
     $('#btn-submit-create').prop('disabled', true);
     $('#modalCreate').modal('show');
+  });
+
+  // saat kelas create berubah -> reload mapel
+  $('#create_kelas').on('change', function(){
+    loadMapelByKelas($(this).val(), $('#create_mapel'));
   });
 
   // Open modal filter
@@ -305,7 +332,7 @@ $(function () {
   $('.btn-edit').on('click', function () {
     const id = $(this).data('id');
 
-    // action update tetap ke route resource (tidak ubah logic)
+    // action update tetap ke route resource
     $('#form-edit').attr('action', "{{ url('admin/pembelajaran') }}/" + id);
 
     $('#check-edit').prop('checked', false);
@@ -313,12 +340,20 @@ $(function () {
 
     $.get("{{ url('admin/pembelajaran') }}/" + id + "/json", function (res) {
       $('#edit_kelas').val(res.data_kelas_id);
-      $('#edit_mapel').val(res.data_mapel_id);
+
+      // reload mapel sesuai kelas + set selected mapel lama
+      loadMapelByKelas(res.data_kelas_id, $('#edit_mapel'), res.data_mapel_id);
+
       $('#edit_guru').val(res.guru_id);
       $('#modalEdit').modal('show');
     }).fail(function(){
       alert('Gagal mengambil data pembelajaran.');
     });
+  });
+
+  // saat kelas edit berubah -> reload mapel (reset pilihan lama)
+  $('#edit_kelas').on('change', function(){
+    loadMapelByKelas($(this).val(), $('#edit_mapel'));
   });
 
   // FILTER client-side via data-atribut row

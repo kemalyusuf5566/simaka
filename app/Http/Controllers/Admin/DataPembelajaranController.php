@@ -23,6 +23,7 @@ class DataPembelajaranController extends Controller
         return view('admin.pembelajaran.index', [
             'pembelajaran' => $pembelajaran,
             'kelas' => DataKelas::orderBy('nama_kelas')->get(),
+            // mapel tetap dikirim (dipakai filter modal kamu)
             'mapel' => DataMapel::orderBy('nama_mapel')->get(),
             'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
                 ->orderBy('nama')->get(),
@@ -37,8 +38,8 @@ class DataPembelajaranController extends Controller
             'pembelajaran' => null,
             'kelas' => DataKelas::orderBy('nama_kelas')->get(),
             'mapel' => DataMapel::orderBy('nama_mapel')->get(),
-            'guru'  => User::whereHas('peran', fn($q)=>$q->where('nama_peran','guru_mapel'))
-                        ->orderBy('nama')->get(),
+            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
+                ->orderBy('nama')->get(),
         ]);
     }
 
@@ -52,15 +53,14 @@ class DataPembelajaranController extends Controller
             'guru_id'       => 'required|exists:pengguna,id',
         ]);
 
-        // cegah duplikasi kelas-mapel
-        DataPembelajaran::where('data_kelas_id',$data['data_kelas_id'])
-            ->where('data_mapel_id',$data['data_mapel_id'])
-            ->exists() && abort(422,'Pembelajaran sudah ada');
+        DataPembelajaran::where('data_kelas_id', $data['data_kelas_id'])
+            ->where('data_mapel_id', $data['data_mapel_id'])
+            ->exists() && abort(422, 'Pembelajaran sudah ada');
 
         DataPembelajaran::create($data);
 
         return redirect()->route('admin.pembelajaran.index')
-            ->with('success','Data pembelajaran berhasil ditambahkan');
+            ->with('success', 'Data pembelajaran berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -71,8 +71,8 @@ class DataPembelajaranController extends Controller
             'pembelajaran' => DataPembelajaran::findOrFail($id),
             'kelas' => DataKelas::orderBy('nama_kelas')->get(),
             'mapel' => DataMapel::orderBy('nama_mapel')->get(),
-            'guru'  => User::whereHas('peran', fn($q)=>$q->where('nama_peran','guru_mapel'))
-                        ->orderBy('nama')->get(),
+            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
+                ->orderBy('nama')->get(),
         ]);
     }
 
@@ -102,14 +102,72 @@ class DataPembelajaranController extends Controller
             'guru_id'       => 'required|exists:pengguna,id',
         ]);
 
-        DataPembelajaran::where('id','!=',$pembelajaran->id)
-            ->where('data_kelas_id',$data['data_kelas_id'])
-            ->where('data_mapel_id',$data['data_mapel_id'])
-            ->exists() && abort(422,'Pembelajaran sudah ada');
+        DataPembelajaran::where('id', '!=', $pembelajaran->id)
+            ->where('data_kelas_id', $data['data_kelas_id'])
+            ->where('data_mapel_id', $data['data_mapel_id'])
+            ->exists() && abort(422, 'Pembelajaran sudah ada');
 
         $pembelajaran->update($data);
 
         return redirect()->route('admin.pembelajaran.index')
-            ->with('success','Data pembelajaran berhasil diperbarui');
+            ->with('success', 'Data pembelajaran berhasil diperbarui');
+    }
+
+    public function mapelByKelas($kelasId)
+    {
+        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+
+        $kelas = DataKelas::findOrFail($kelasId);
+
+        // tingkat 10/11/12 -> X/XI/XII
+        $rawTingkat = strtoupper(trim((string)$kelas->tingkat));
+        $mapTingkat = ['10' => 'X', '11' => 'XI', '12' => 'XII', 'X' => 'X', 'XI' => 'XI', 'XII' => 'XII'];
+        $tingkatKelas = $mapTingkat[$rawTingkat] ?? $rawTingkat;
+
+        $jurusanId  = $kelas->jurusan_id;
+        $hasJurusan = !empty($jurusanId);
+
+        // 1) ambil semua kandidat sesuai filter (tingkat + jurusan)
+        $rows = DataMapel::query()
+            ->whereIn('tingkat', [$tingkatKelas, 'SEMUA'])
+            ->where(function ($q) use ($hasJurusan, $jurusanId) {
+                if ($hasJurusan) {
+                    $q->whereNull('jurusan_id')
+                        ->orWhere('jurusan_id', (int)$jurusanId);
+                } else {
+                    $q->whereNull('jurusan_id');
+                }
+            })
+            ->get();
+
+        // 2) buat PRIORITAS SORT (ini kunci agar urutan pasti sesuai DB)
+        //    tingkat: SEMUA dulu -> prior 0, tingkat kelas -> prior 1
+        //    jurusan: UMUM(NULL) dulu -> prior 0, jurusan kelas -> prior 1
+        //    lalu urutan_cetak ASC
+        $rows = $rows->map(function ($m) use ($tingkatKelas, $jurusanId) {
+            $tingkatPrior = ($m->tingkat === 'SEMUA') ? 0 : (($m->tingkat === $tingkatKelas) ? 1 : 9);
+            $jurusanPrior = is_null($m->jurusan_id) ? 0 : (((int)$m->jurusan_id === (int)$jurusanId) ? 1 : 9);
+            $urutan = is_null($m->urutan_cetak) ? 999999 : (int)$m->urutan_cetak;
+
+            $m->_sortKey = [$tingkatPrior, $jurusanPrior, $urutan, mb_strtolower($m->nama_mapel)];
+            return $m;
+        });
+
+        // 3) UNIQUE nama_mapel -> ambil yang sortKey TERKECIL (paling prioritas)
+        $unique = $rows
+            ->groupBy(fn($m) => mb_strtolower(trim((string)$m->nama_mapel)))
+            ->map(function ($grp) {
+                return $grp->sortBy(fn($m) => $m->_sortKey)->first();
+            })
+            ->values()
+            // 4) setelah unique, SORT lagi berdasarkan sortKey (agar urutan dropdown benar)
+            ->sortBy(fn($m) => $m->_sortKey)
+            ->values()
+            ->map(fn($m) => [
+                'id'   => $m->id,
+                'nama' => $m->nama_mapel,
+            ]);
+
+        return response()->json($unique);
     }
 }
