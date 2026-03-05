@@ -23,28 +23,59 @@ class DataMapelController extends Controller
     {
         $this->assertAdmin();
 
-        $tingkat   = strtoupper(trim((string)$request->get('tingkat', '')));
-        $jurusanId = $request->get('jurusan_id', '');
+        $limit = (int) $request->get('limit', 10);
+        if (!in_array($limit, [10, 25, 50, 100])) $limit = 10;
 
-        $mapel = DataMapel::query()
-            ->with('jurusan')
-            ->when($tingkat !== '' && in_array($tingkat, ['X', 'XI', 'XII', 'SEMUA'], true), function ($q) use ($tingkat) {
-                $q->where('tingkat', $tingkat);
-            })
-            ->when($jurusanId !== '' && is_numeric($jurusanId), function ($q) use ($jurusanId) {
-                $q->where('jurusan_id', (int)$jurusanId);
-            })
-            ->orderByRaw("FIELD(tingkat,'SEMUA','X','XI','XII') ASC")
-            ->orderByRaw("COALESCE(jurusan_id, 0) ASC")
+        $q = trim((string) $request->get('q', ''));
+        $tingkat = (string) $request->get('tingkat', '');
+        $jurusanId = (string) $request->get('jurusan_id', '');
+        $kelompok = (string) $request->get('kelompok_mapel', '');
+
+        $query = DataMapel::with('jurusan')
             ->orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
-            ->orderBy('nama_mapel')
-            ->paginate(10)
-            ->withQueryString();
+            ->orderBy('nama_mapel');
 
-        // ✅ ini yang bikin error hilang
-        $jurusan = DataJurusan::orderBy('kode_jurusan')->get();
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('nama_mapel', 'like', "%{$q}%")
+                    ->orWhere('singkatan', 'like', "%{$q}%");
+            });
+        }
 
-        return view('admin.mapel.index', compact('mapel', 'jurusan', 'tingkat', 'jurusanId'));
+        if ($tingkat !== '' && $tingkat !== 'all') {
+            $query->where('tingkat', $tingkat);
+        }
+
+        // jurusan_id kosong = UMUM (NULL)
+        if ($jurusanId !== '' && $jurusanId !== 'all') {
+            if ($jurusanId === 'umum') $query->whereNull('jurusan_id');
+            else $query->where('jurusan_id', (int) $jurusanId);
+        }
+
+        if ($kelompok !== '' && $kelompok !== 'all') {
+            $query->where('kelompok_mapel', $kelompok);
+        }
+
+        $mapel = $query->paginate($limit)->appends([
+            'limit' => $limit,
+            'q' => $q,
+            'tingkat' => $tingkat,
+            'jurusan_id' => $jurusanId,
+            'kelompok_mapel' => $kelompok,
+        ]);
+
+        // list jurusan untuk dropdown filter + modal tambah
+        $jurusan = \App\Models\DataJurusan::orderBy('kode_jurusan')->get();
+
+        return view('admin.mapel.index', compact(
+            'mapel',
+            'limit',
+            'q',
+            'tingkat',
+            'jurusanId',
+            'kelompok',
+            'jurusan'
+        ));
     }
 
     public function create()

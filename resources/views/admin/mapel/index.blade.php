@@ -25,7 +25,7 @@
         </div>
 
         <div class="d-flex align-items-center" style="gap:10px;">
-          <button class="btn btn-info btn-sm" disabled>
+          <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalFilterMapel">
             <i class="fas fa-filter"></i> Filter Data
           </button>
 
@@ -35,9 +35,9 @@
 
           
 
-          <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalKelompokMapel">
+          {{-- <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalKelompokMapel">
             <i class="fas fa-cog"></i> Kelompok Mapel
-          </button>
+          </button> --}}
 
           <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalImportMapel">
             <i class="fas fa-file-import"></i>
@@ -47,22 +47,40 @@
       </div>
     </div>
 
-    {{-- Bar tampilkan + cari (UI mirip gambar) --}}
-    <div class="card-body pt-0 pb-2">
+    {{-- Bar tampilkan + cari --}}
+    <form method="GET" action="{{ route('admin.mapel.index') }}" class="card-body pt-0 pb-2">
       <div class="d-flex justify-content-between align-items-center">
+
         <div class="d-flex align-items-center" style="gap:10px;">
           <span class="text-muted">Tampilkan</span>
-          <select class="form-control form-control-sm" style="width:85px;" disabled>
-            <option selected>10</option>
+
+          @php $limitVal = (int)($limit ?? 10); @endphp
+          <select name="limit" class="form-control form-control-sm" style="width:85px;"
+                  onchange="this.form.submit()">
+            <option value="10"  {{ $limitVal===10 ? 'selected' : '' }}>10</option>
+            <option value="25"  {{ $limitVal===25 ? 'selected' : '' }}>25</option>
+            <option value="50"  {{ $limitVal===50 ? 'selected' : '' }}>50</option>
+            <option value="100" {{ $limitVal===100 ? 'selected' : '' }}>100</option>
           </select>
+
           <span class="text-muted">data</span>
         </div>
 
-        <div style="width:220px;">
-          <input type="text" class="form-control form-control-sm" id="searchMapel" placeholder="Cari...">
+        {{-- jaga filter modal tetap kebawa --}}
+        <input type="hidden" name="tingkat" value="{{ $tingkat ?? '' }}">
+        <input type="hidden" name="jurusan_id" value="{{ $jurusanId ?? '' }}">
+        <input type="hidden" name="kelompok_mapel" value="{{ $kelompok ?? '' }}">
+
+        <div class="d-flex" style="gap:8px; width:260px;">
+          <input type="text" class="form-control form-control-sm" name="q"
+                value="{{ $q ?? '' }}" placeholder="Cari...">
+          <button class="btn btn-sm btn-secondary" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
         </div>
+
       </div>
-    </div>
+    </form>
 
     {{-- Tabel --}}
     <div class="card-body pt-0 table-responsive p-0">
@@ -322,34 +340,73 @@
 
 
 {{-- =========================
-   MODAL: FILTER KELOMPOK (tombol "Kelompok Mapel")
+   MODAL: FILTER DATA MAPEL
 ========================= --}}
-<div class="modal fade" id="modalKelompokMapel" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="modalFilterMapel" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Kelompok Mapel</h5>
+        <h5 class="modal-title">Filter Data Mapel</h5>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>
 
-      <div class="modal-body">
-        <div class="form-group mb-0">
-          <label class="mb-1">Filter Kelompok</label>
-          <select class="form-control" id="filterKelompok">
-            <option value="">Semua</option>
-            <option value="mata pelajaran umum">Mata Pelajaran Umum</option>
-            <option value="mata pelajaran kejuruan">Mata Pelajaran Kejuruan</option>
-          </select>
-        </div>
-      </div>
+      <form method="GET" action="{{ route('admin.mapel.index') }}">
+        <div class="modal-body">
 
-      <div class="modal-footer">
-        <button class="btn btn-light" id="btnResetKelompok">Reset</button>
-        <button class="btn btn-primary" data-dismiss="modal" id="btnApplyKelompok">Terapkan</button>
-      </div>
+          {{-- jaga q + limit tetap kebawa --}}
+          <input type="hidden" name="q" value="{{ $q ?? '' }}">
+          <input type="hidden" name="limit" value="{{ $limit ?? 10 }}">
+
+          <div class="form-group">
+            <label class="mb-1">Tingkat</label>
+            @php $tingkatVal = (string)($tingkat ?? ''); @endphp
+            <select name="tingkat" class="form-control">
+              <option value="all" {{ $tingkatVal==='all' || $tingkatVal==='' ? 'selected' : '' }}>Semua</option>
+              <option value="SEMUA" {{ $tingkatVal==='SEMUA' ? 'selected' : '' }}>SEMUA (Mapel Umum)</option>
+              <option value="X" {{ $tingkatVal==='X' ? 'selected' : '' }}>X</option>
+              <option value="XI" {{ $tingkatVal==='XI' ? 'selected' : '' }}>XI</option>
+              <option value="XII" {{ $tingkatVal==='XII' ? 'selected' : '' }}>XII</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="mb-1">Jurusan</label>
+            @php $jurVal = (string)($jurusanId ?? ''); @endphp
+            <select name="jurusan_id" class="form-control">
+              <option value="all" {{ $jurVal==='' || $jurVal==='all' ? 'selected' : '' }}>Semua</option>
+              <option value="umum" {{ $jurVal==='umum' ? 'selected' : '' }}>UMUM (SEMUA JURUSAN)</option>
+              @foreach($jurusan as $j)
+                <option value="{{ $j->id }}" {{ $jurVal==(string)$j->id ? 'selected' : '' }}>
+                  {{ $j->kode_jurusan }} - {{ $j->nama_jurusan }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="form-group mb-0">
+            <label class="mb-1">Kelompok Mapel</label>
+            @php $kelVal = (string)($kelompok ?? ''); @endphp
+            <select name="kelompok_mapel" class="form-control">
+              <option value="all" {{ $kelVal==='' || $kelVal==='all' ? 'selected' : '' }}>Semua</option>
+              <option value="Mata Pelajaran Umum" {{ $kelVal==='Mata Pelajaran Umum' ? 'selected' : '' }}>
+                Mata Pelajaran Umum
+              </option>
+              <option value="Mata Pelajaran Kejuruan" {{ $kelVal==='Mata Pelajaran Kejuruan' ? 'selected' : '' }}>
+                Mata Pelajaran Kejuruan
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <a href="{{ route('admin.mapel.index') }}" class="btn btn-secondary">Reset</a>
+          <button class="btn btn-primary">Terapkan</button>
+        </div>
+      </form>
 
     </div>
   </div>
