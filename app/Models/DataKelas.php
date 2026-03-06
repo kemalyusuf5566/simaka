@@ -46,4 +46,14 @@ class DataKelas extends Model
     {
         return $this->belongsTo(\App\Models\DataJurusan::class, 'jurusan_id');
     }
+
+    public function jadwalPelajaran()
+    {
+        return $this->hasMany(JadwalPelajaran::class, 'data_kelas_id');
+    }
+
+    public function absensiJam()
+    {
+        return $this->hasMany(AbsensiJamSiswa::class, 'data_kelas_id');
+    }
 }

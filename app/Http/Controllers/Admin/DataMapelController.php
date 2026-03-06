@@ -3,174 +3,395 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\DataPembelajaran;
-use App\Models\DataKelas;
+use App\Models\DataJurusan;
 use App\Models\DataMapel;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class DataPembelajaranController extends Controller
+class DataMapelController extends Controller
 {
-    public function index()
+    private function ensureAdmin(): void
     {
         abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+    }
 
-        $pembelajaran = DataPembelajaran::with(['kelas', 'mapel', 'guru'])
-            ->orderBy('data_kelas_id')
-            ->get();
+    public function index(Request $request)
+    {
+        $this->ensureAdmin();
 
-        return view('admin.pembelajaran.index', [
-            'pembelajaran' => $pembelajaran,
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
-            // mapel tetap dikirim (dipakai filter modal kamu)
-            'mapel' => DataMapel::orderBy('nama_mapel')->get(),
-            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
-                ->orderBy('nama')->get(),
+        $limit = (int) $request->get('limit', 10);
+        if (!in_array($limit, [10, 25, 50, 100], true)) {
+            $limit = 10;
+        }
+
+        $q = trim((string) $request->get('q', ''));
+
+        $tingkat = strtoupper(trim((string) $request->get('tingkat', 'all')));
+        if (!in_array($tingkat, ['ALL', 'SEMUA', 'X', 'XI', 'XII'], true)) {
+            $tingkat = 'ALL';
+        }
+
+        $jurusanId = trim((string) $request->get('jurusan_id', 'all'));
+        if ($jurusanId !== 'all' && $jurusanId !== 'umum' && !ctype_digit($jurusanId)) {
+            $jurusanId = 'all';
+        }
+
+        $kelompok = trim((string) $request->get('kelompok_mapel', 'all'));
+        $allowedKelompok = ['Mata Pelajaran Umum', 'Mata Pelajaran Kejuruan'];
+        if ($kelompok !== 'all' && !in_array($kelompok, $allowedKelompok, true)) {
+            $kelompok = 'all';
+        }
+
+        $mapel = DataMapel::query()
+            ->with('jurusan')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('nama_mapel', 'like', "%{$q}%")
+                        ->orWhere('singkatan', 'like', "%{$q}%")
+                        ->orWhere('kelompok_mapel', 'like', "%{$q}%");
+                });
+            })
+            ->when($tingkat !== 'ALL', fn($query) => $query->where('tingkat', $tingkat))
+            ->when($jurusanId === 'umum', fn($query) => $query->whereNull('jurusan_id'))
+            ->when(ctype_digit($jurusanId), fn($query) => $query->where('jurusan_id', (int) $jurusanId))
+            ->when($kelompok !== 'all', fn($query) => $query->where('kelompok_mapel', $kelompok))
+            ->orderByRaw("CASE WHEN tingkat = 'SEMUA' THEN 0 WHEN tingkat = 'X' THEN 1 WHEN tingkat = 'XI' THEN 2 WHEN tingkat = 'XII' THEN 3 ELSE 9 END")
+            ->orderByRaw('CASE WHEN jurusan_id IS NULL THEN 0 ELSE 1 END')
+            ->orderByRaw('COALESCE(urutan_cetak, 999999)')
+            ->orderBy('nama_mapel')
+            ->paginate($limit)
+            ->withQueryString();
+
+        $jurusan = DataJurusan::orderBy('kode_jurusan')->get();
+
+        return view('admin.mapel.index', [
+            'mapel' => $mapel,
+            'jurusan' => $jurusan,
+            'limit' => $limit,
+            'q' => $q,
+            'tingkat' => $tingkat === 'ALL' ? 'all' : $tingkat,
+            'jurusanId' => $jurusanId,
+            'kelompok' => $kelompok,
         ]);
     }
 
     public function create()
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        return view('admin.pembelajaran.form', [
-            'pembelajaran' => null,
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
-            'mapel' => DataMapel::orderBy('nama_mapel')->get(),
-            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
-                ->orderBy('nama')->get(),
+        return view('admin.mapel.form', [
+            'mapel' => null,
         ]);
     }
 
     public function store(Request $request)
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        $data = $request->validate([
-            'data_kelas_id' => 'required|exists:data_kelas,id',
-            'data_mapel_id' => 'required|exists:data_mapel,id',
-            'guru_id'       => 'required|exists:pengguna,id',
-        ]);
+        $data = $this->validatedData($request);
 
-        DataPembelajaran::where('data_kelas_id', $data['data_kelas_id'])
-            ->where('data_mapel_id', $data['data_mapel_id'])
-            ->exists() && abort(422, 'Pembelajaran sudah ada');
+        DataMapel::create($data);
 
-        DataPembelajaran::create($data);
-
-        return redirect()->route('admin.pembelajaran.index')
-            ->with('success', 'Data pembelajaran berhasil ditambahkan');
+        return redirect()
+            ->route('admin.mapel.index')
+            ->with('success', 'Data mata pelajaran berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function show(string $id)
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        return view('admin.pembelajaran.form', [
-            'pembelajaran' => DataPembelajaran::findOrFail($id),
-            'kelas' => DataKelas::orderBy('nama_kelas')->get(),
-            'mapel' => DataMapel::orderBy('nama_mapel')->get(),
-            'guru'  => User::whereHas('peran', fn($q) => $q->where('nama_peran', 'guru_mapel'))
-                ->orderBy('nama')->get(),
+        return redirect()->route('admin.mapel.edit', $id);
+    }
+
+    public function edit(string $id)
+    {
+        $this->ensureAdmin();
+
+        return view('admin.mapel.form', [
+            'mapel' => DataMapel::findOrFail($id),
         ]);
     }
 
-    public function json($id)
+    public function update(Request $request, string $id)
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        $p = DataPembelajaran::findOrFail($id);
+        $mapel = DataMapel::findOrFail($id);
+        $data = $this->validatedData($request, true);
 
-        return response()->json([
-            'id' => $p->id,
-            'data_kelas_id' => $p->data_kelas_id,
-            'data_mapel_id' => $p->data_mapel_id,
-            'guru_id' => $p->guru_id,
-        ]);
+        $mapel->update($data);
+
+        return redirect()
+            ->route('admin.mapel.index')
+            ->with('success', 'Data mata pelajaran berhasil diperbarui.');
     }
 
-    public function update(Request $request, $id)
+    public function destroy(string $id)
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        $pembelajaran = DataPembelajaran::findOrFail($id);
+        DataMapel::findOrFail($id)->delete();
 
-        $data = $request->validate([
-            'data_kelas_id' => 'required|exists:data_kelas,id',
-            'data_mapel_id' => 'required|exists:data_mapel,id',
-            'guru_id'       => 'required|exists:pengguna,id',
-        ]);
-
-        DataPembelajaran::where('id', '!=', $pembelajaran->id)
-            ->where('data_kelas_id', $data['data_kelas_id'])
-            ->where('data_mapel_id', $data['data_mapel_id'])
-            ->exists() && abort(422, 'Pembelajaran sudah ada');
-
-        $pembelajaran->update($data);
-
-        return redirect()->route('admin.pembelajaran.index')
-            ->with('success', 'Data pembelajaran berhasil diperbarui');
+        return redirect()
+            ->route('admin.mapel.index')
+            ->with('success', 'Data mata pelajaran berhasil dihapus.');
     }
 
-    public function mapelByKelas($kelasId)
+    public function export(Request $request): StreamedResponse
     {
-        abort_unless(Auth::user()->peran->nama_peran === 'admin', 403);
+        $this->ensureAdmin();
 
-        $kelas = DataKelas::findOrFail($kelasId);
-
-        // tingkat di data_kelas: 10/11/12 -> X/XI/XII
-        $rawTingkat = trim((string) $kelas->tingkat);
-
-        $mapTingkat = [
-            '10' => 'X',
-            '11' => 'XI',
-            '12' => 'XII',
-            'X'  => 'X',
-            'XI' => 'XI',
-            'XII' => 'XII',
-        ];
-
-        $tingkatKelas = $mapTingkat[strtoupper($rawTingkat)] ?? strtoupper($rawTingkat);
-
-        $jurusanId  = $kelas->jurusan_id;
-        $hasJurusan = !empty($jurusanId);
+        $q = trim((string) $request->get('q', ''));
+        $tingkat = strtoupper(trim((string) $request->get('tingkat', 'all')));
+        $jurusanId = trim((string) $request->get('jurusan_id', 'all'));
+        $kelompok = trim((string) $request->get('kelompok_mapel', 'all'));
 
         $rows = DataMapel::query()
-            // filter tingkat: tingkat kelas + SEMUA
-            ->whereIn('tingkat', [$tingkatKelas, 'SEMUA'])
-            // filter jurusan: UMUM (NULL) + jurusan kelas (kalau ada)
-            ->where(function ($q) use ($hasJurusan, $jurusanId) {
-                if ($hasJurusan) {
-                    $q->whereNull('jurusan_id')
-                        ->orWhere('jurusan_id', (int)$jurusanId);
-                } else {
-                    $q->whereNull('jurusan_id');
-                }
+            ->with('jurusan')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('nama_mapel', 'like', "%{$q}%")
+                        ->orWhere('singkatan', 'like', "%{$q}%")
+                        ->orWhere('kelompok_mapel', 'like', "%{$q}%");
+                });
             })
-            // ✅ URUTAN TINGKAT: SEMUA dulu, baru tingkat kelas
-            ->orderByRaw("CASE WHEN tingkat = 'SEMUA' THEN 0 WHEN tingkat = ? THEN 1 ELSE 2 END", [$tingkatKelas])
-            // ✅ URUTAN JURUSAN: UMUM (NULL) dulu, baru jurusan kelas
-            ->when($hasJurusan, function ($q) use ($jurusanId) {
-                $q->orderByRaw("CASE WHEN jurusan_id IS NULL THEN 0 WHEN jurusan_id = ? THEN 1 ELSE 2 END", [(int)$jurusanId]);
-            }, function ($q) {
-                $q->orderByRaw("CASE WHEN jurusan_id IS NULL THEN 0 ELSE 1 END");
-            })
-            // urutan cetak lalu nama
-            ->orderByRaw('COALESCE(urutan_cetak, 999999) ASC')
+            ->when(in_array($tingkat, ['SEMUA', 'X', 'XI', 'XII'], true), fn($query) => $query->where('tingkat', $tingkat))
+            ->when($jurusanId === 'umum', fn($query) => $query->whereNull('jurusan_id'))
+            ->when(ctype_digit($jurusanId), fn($query) => $query->where('jurusan_id', (int) $jurusanId))
+            ->when(in_array($kelompok, ['Mata Pelajaran Umum', 'Mata Pelajaran Kejuruan'], true), fn($query) => $query->where('kelompok_mapel', $kelompok))
+            ->orderByRaw("CASE WHEN tingkat = 'SEMUA' THEN 0 WHEN tingkat = 'X' THEN 1 WHEN tingkat = 'XI' THEN 2 WHEN tingkat = 'XII' THEN 3 ELSE 9 END")
+            ->orderByRaw('CASE WHEN jurusan_id IS NULL THEN 0 ELSE 1 END')
+            ->orderByRaw('COALESCE(urutan_cetak, 999999)')
             ->orderBy('nama_mapel')
             ->get();
 
-        // unik berdasarkan nama_mapel (hindari double di dropdown)
-        $unique = $rows
-            ->groupBy(fn($m) => mb_strtolower(trim((string)$m->nama_mapel)))
-            ->map(fn($grp) => $grp->first())
-            ->values()
-            ->map(fn($m) => [
-                'id'   => $m->id,
-                'nama' => $m->nama_mapel,
+        $filename = 'data-mapel-' . date('Ymd-His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($out, ['nama_mapel', 'singkatan', 'tingkat', 'jurusan', 'kelompok_mapel', 'urutan_cetak']);
+
+            foreach ($rows as $m) {
+                fputcsv($out, [
+                    $m->nama_mapel,
+                    $m->singkatan,
+                    $m->tingkat ?? 'SEMUA',
+                    $m->jurusan->kode_jurusan ?? 'UMUM',
+                    $m->kelompok_mapel,
+                    $m->urutan_cetak,
+                ]);
+            }
+
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function downloadFormatImport(): StreamedResponse
+    {
+        $this->ensureAdmin();
+
+        $headers = [
+            'nama_mapel',
+            'singkatan',
+            'tingkat',
+            'jurusan_kode',
+            'kelompok_mapel',
+            'urutan_cetak',
+        ];
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        foreach ($headers as $i => $h) {
+            $col = Coordinate::stringFromColumnIndex($i + 1);
+            $sheet->setCellValue($col . '1', $h);
+        }
+
+        $sample = [
+            'Pendidikan Agama Islam',
+            'PAI',
+            'SEMUA',
+            'UMUM',
+            'Mata Pelajaran Umum',
+            1,
+        ];
+
+        foreach ($sample as $i => $val) {
+            $col = Coordinate::stringFromColumnIndex($i + 1);
+            $sheet->setCellValue($col . '2', $val);
+        }
+
+        $filename = 'format_import_data_mapel.xlsx';
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $this->ensureAdmin();
+
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx',
+            'yakin' => 'required|in:1',
+        ], [
+            'file.required' => 'File wajib diunggah.',
+            'file.mimes' => 'File harus berformat XLSX.',
+            'yakin.required' => 'Checklist konfirmasi wajib dicentang.',
+            'yakin.in' => 'Checklist konfirmasi wajib dicentang.',
+        ]);
+
+        $path = $request->file('file')->getRealPath();
+        $spreadsheet = IOFactory::load($path);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
+
+        if (count($rows) < 2) {
+            return back()->with('error', 'File kosong / tidak ada data.');
+        }
+
+        $headerMap = [];
+        foreach (($rows[1] ?? []) as $col => $header) {
+            $key = strtolower(trim((string) $header));
+            if ($key !== '') {
+                $headerMap[$key] = $col;
+            }
+        }
+
+        $required = ['nama_mapel', 'singkatan', 'tingkat', 'kelompok_mapel', 'urutan_cetak'];
+        foreach ($required as $colName) {
+            if (!isset($headerMap[$colName])) {
+                return back()->with('error', "Header '{$colName}' tidak ditemukan. Gunakan format import yang tersedia.");
+            }
+        }
+
+        $jurusanByKode = DataJurusan::query()
+            ->get()
+            ->keyBy(fn($j) => strtoupper(trim((string) $j->kode_jurusan)));
+
+        $created = 0;
+        $skipped = 0;
+
+        for ($i = 2; $i <= count($rows); $i++) {
+            $row = $rows[$i] ?? null;
+            if (!$row) {
+                continue;
+            }
+
+            $get = function (string $name) use ($headerMap, $row) {
+                $col = $headerMap[$name] ?? null;
+                if (!$col) {
+                    return null;
+                }
+
+                $value = $row[$col] ?? null;
+                if (is_string($value)) {
+                    $value = trim($value);
+                }
+
+                return $value === '' ? null : $value;
+            };
+
+            $nama = $get('nama_mapel');
+            $singkatan = $get('singkatan');
+            $tingkat = strtoupper((string) ($get('tingkat') ?? 'SEMUA'));
+            $jurusanKode = strtoupper((string) ($get('jurusan_kode') ?? 'UMUM'));
+            $kelompokMapel = $get('kelompok_mapel');
+            $urutanCetak = $get('urutan_cetak');
+
+            if (!$nama && !$singkatan && !$kelompokMapel) {
+                continue;
+            }
+
+            if (!$nama || !$singkatan || !$kelompokMapel || !is_numeric($urutanCetak)) {
+                $skipped++;
+                continue;
+            }
+
+            if (!in_array($tingkat, ['SEMUA', 'X', 'XI', 'XII'], true)) {
+                $skipped++;
+                continue;
+            }
+
+            if (!in_array($kelompokMapel, ['Mata Pelajaran Umum', 'Mata Pelajaran Kejuruan'], true)) {
+                $skipped++;
+                continue;
+            }
+
+            $jurusanId = null;
+            if ($jurusanKode !== '' && $jurusanKode !== 'UMUM') {
+                $jurusan = $jurusanByKode->get($jurusanKode);
+                if (!$jurusan) {
+                    $skipped++;
+                    continue;
+                }
+                $jurusanId = $jurusan->id;
+            }
+
+            DataMapel::create([
+                'nama_mapel' => $nama,
+                'singkatan' => strtoupper((string) $singkatan),
+                'tingkat' => $tingkat,
+                'jurusan_id' => $jurusanId,
+                'kelompok_mapel' => $kelompokMapel,
+                'urutan_cetak' => (int) $urutanCetak,
             ]);
 
-        return response()->json($unique);
+            $created++;
+        }
+
+        return redirect()
+            ->route('admin.mapel.index')
+            ->with('success', "Import selesai. Berhasil: {$created}, Dilewati: {$skipped}");
+    }
+
+    private function validatedData(Request $request, bool $isUpdate = false): array
+    {
+        $rules = [
+            'nama_mapel' => 'required|string|max:255',
+            'singkatan' => 'required|string|max:30',
+            'kelompok_mapel' => 'required|in:Mata Pelajaran Umum,Mata Pelajaran Kejuruan',
+            'urutan_cetak' => 'required|integer|min:1|max:9999',
+            'tingkat' => 'nullable|in:SEMUA,X,XI,XII',
+            'jurusan_id' => 'nullable|exists:data_jurusan,id',
+        ];
+
+        if ($isUpdate) {
+            $rules['tingkat'] = 'sometimes|nullable|in:SEMUA,X,XI,XII';
+            $rules['jurusan_id'] = 'sometimes|nullable|exists:data_jurusan,id';
+        }
+
+        $data = $request->validate($rules);
+
+        if (!array_key_exists('tingkat', $data) || is_null($data['tingkat']) || $data['tingkat'] === '') {
+            $data['tingkat'] = 'SEMUA';
+        }
+
+        if (!array_key_exists('jurusan_id', $data) || $data['jurusan_id'] === '') {
+            $data['jurusan_id'] = null;
+        }
+
+        $data['singkatan'] = strtoupper(trim((string) $data['singkatan']));
+        $data['nama_mapel'] = trim((string) $data['nama_mapel']);
+
+        return $data;
     }
 }
+

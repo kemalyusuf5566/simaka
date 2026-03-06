@@ -168,6 +168,12 @@
                   <p>Data Pembelajaran</p>
                 </a>
               </li>
+               <li class="nav-item">
+                <a href="{{ route('admin.absensi.jadwal') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Jadwal Pelajaran</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="{{ route('admin.hari-libur.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -191,6 +197,25 @@
                 <a href="{{ route('admin.ekstrakurikuler.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Data Ekstrakurikuler</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          {{-- ABSENSI --}}
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>
+                Absensi
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.absensi.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Absensi</p>
                 </a>
               </li>
             </ul>
@@ -275,6 +300,13 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{{ route('guru.absensi.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-clipboard-check"></i>
+              <p>Absensi Mapel</p>
+            </a>
+          </li>
+
           {{-- KOKURIKULER --}}
           @if($isKoordinator)
           <li class="nav-item">
@@ -328,9 +360,9 @@
                   </li>
 
                   <li class="nav-item">
-                    <a href="{{ route('guru.wali-kelas.ketidakhadiran.index') }}" class="nav-link">
+                    <a href="{{ route('guru.wali-kelas.absensi.index') }}" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
-                      <p>Ketidakhadiran</p>
+                      <p>Absensi</p>
                     </a>
                   </li>
 

@@ -10,7 +10,17 @@
   </div>
 
   <div class="card-body">
+    @if(session('success'))
+      <div class="alert alert-success">
+        {{ session('success') }}
+      </div>
+    @endif
 
+    @if(session('error'))
+      <div class="alert alert-danger">
+        {{ session('error') }}
+      </div>
+    @endif
     {{-- TOOLBAR ATAS --}}
     <div class="d-flex justify-content-between mb-3">
       <div>
@@ -29,9 +39,9 @@
     <table id="table-pembelajaran" class="table table-bordered table-striped table-hover w-100">
       <thead class="bg-secondary">
         <tr>
-          <th style="width:60px">No.</th>
+          <th style="width:20px">No.</th>
           <th>Mata Pelajaran</th>
-          <th style="width:120px">Kelas</th>
+          <th style="width:4s0px">Kelas</th>
           <th>Guru Pengampu</th>
           <th style="width:160px">Aksi</th>
         </tr>

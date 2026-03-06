@@ -14,63 +14,29 @@ class KetidakhadiranController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $kelas = DataKelas::withCount('siswa')
-            ->where('wali_kelas_id', $user->id)
-            ->get();
-
-        // ✅ KUNCI: nama wali ambil dari user login (kolom: nama)
-        $namaWali = $user->nama ?? '-';
-
-        return view('guru.wali_kelas.ketidakhadiran.index', compact('kelas', 'namaWali'));
+        return redirect()->route('guru.wali-kelas.absensi.index');
     }
 
     public function kelola($kelasId)
     {
-        $user = Auth::user();
-
-        $kelas = DataKelas::where('id', $kelasId)
-            ->where('wali_kelas_id', $user->id)
-            ->firstOrFail();
-
-        $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
-
-        $siswa = DataSiswa::where('data_kelas_id', $kelas->id)->get();
-
-        $data = DataKetidakhadiran::where('data_tahun_pelajaran_id', $tahunAktif->id)
-            ->where('semester', $tahunAktif->semester)
-            ->whereIn('data_siswa_id', $siswa->pluck('id'))
-            ->get()
-            ->keyBy('data_siswa_id');
-
-        // ✅ KUNCI: nama wali ambil dari user login (kolom: nama)
-        $namaWali = $user->nama ?? '-';
-
-        return view('guru.wali_kelas.ketidakhadiran.kelola', compact(
-            'kelas',
-            'tahunAktif',
-            'siswa',
-            'data',
-            'namaWali'
-        ));
+        return redirect()->route('guru.wali-kelas.absensi.kelola', $kelasId);
     }
 
     public function update(Request $request, $kelasId)
     {
         $user = Auth::user();
-
         $kelas = DataKelas::where('id', $kelasId)
             ->where('wali_kelas_id', $user->id)
             ->firstOrFail();
 
         $tahunAktif = DataTahunPelajaran::where('status_aktif', 1)->firstOrFail();
+        $siswaIds = DataSiswa::where('data_kelas_id', $kelas->id)->pluck('id');
 
         $sakit = $request->input('sakit', []);
-        $izin  = $request->input('izin', []);
-        $tk    = $request->input('tanpa_keterangan', []);
+        $izin = $request->input('izin', []);
+        $alpa = $request->input('alpa', $request->input('tanpa_keterangan', []));
 
-        foreach ($sakit as $siswaId => $val) {
+        foreach ($siswaIds as $siswaId) {
             DataKetidakhadiran::updateOrCreate(
                 [
                     'data_siswa_id' => $siswaId,
@@ -78,13 +44,14 @@ class KetidakhadiranController extends Controller
                     'semester' => $tahunAktif->semester,
                 ],
                 [
-                    'sakit' => (int)($val ?? 0),
-                    'izin' => (int)($izin[$siswaId] ?? 0),
-                    'tanpa_keterangan' => (int)($tk[$siswaId] ?? 0),
+                    'sakit' => max(0, (int) ($sakit[$siswaId] ?? 0)),
+                    'izin' => max(0, (int) ($izin[$siswaId] ?? 0)),
+                    'tanpa_keterangan' => max(0, (int) ($alpa[$siswaId] ?? 0)),
                 ]
             );
         }
 
-        return back()->with('success', 'Ketidakhadiran berhasil disimpan.');
+        return redirect()->route('guru.wali-kelas.absensi.kelola', $kelasId)
+            ->with('success', 'Absensi berhasil disimpan.');
     }
 }

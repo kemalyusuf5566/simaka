@@ -61,4 +61,9 @@ class DataSiswa extends Model
     {
         return $this->hasMany(NilaiMapelSiswa::class, 'data_siswa_id');
     }
+
+    public function absensiJam()
+    {
+        return $this->hasMany(AbsensiJamSiswa::class, 'data_siswa_id');
+    }
 }

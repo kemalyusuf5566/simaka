@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\DataMapelController;
 use App\Http\Controllers\Admin\DataPembelajaranController;
 use App\Http\Controllers\Admin\DataEkstrakurikulerController;
 use App\Http\Controllers\Admin\HariLiburController;
+use App\Http\Controllers\Admin\AbsensiController as AdminAbsensiController;
 
 // KOKURIKULER
 use App\Http\Controllers\Admin\KkDimensiController;
@@ -44,12 +45,14 @@ use App\Http\Controllers\Guru\TujuanPembelajaranController;
 use App\Http\Controllers\Guru\NilaiAkhirController;
 use App\Http\Controllers\Guru\DeskripsiCapaianController;
 use App\Http\Controllers\Guru\DashboardController;
+use App\Http\Controllers\Guru\AbsensiController as GuruAbsensiController;
 use App\Http\Controllers\Guru\Kokurikuler\KelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\AnggotaKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\CapaianAkhirController;
 use App\Http\Controllers\Guru\Kokurikuler\DeskripsiKokurikulerController;
 use App\Http\Controllers\Guru\WaliKelas\DataKelasController as GuruWaliDataKelasController;
 use App\Http\Controllers\Guru\WaliKelas\KetidakhadiranController;
+use App\Http\Controllers\Guru\WaliKelas\AbsensiController as GuruWaliAbsensiController;
 use App\Http\Controllers\Guru\WaliKelas\CatatanWaliKelasController;
 use App\Http\Controllers\Guru\Kokurikuler\KegiatanKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\NilaiKokurikulerController;
@@ -195,6 +198,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('ekstrakurikuler', DataEkstrakurikulerController::class);
         Route::get('ekstrakurikuler/{id}/json', [DataEkstrakurikulerController::class, 'json'])
             ->name('ekstrakurikuler.json');
+
+        // ABSENSI (REKAP KETIDAKHADIRAN PER SEMESTER)
+        Route::get('absensi', [AdminAbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('absensi/{kelas}/rekap', [AdminAbsensiController::class, 'rekap'])->name('absensi.rekap');
+        Route::get('absensi-jadwal', [AdminAbsensiController::class, 'jadwal'])->name('absensi.jadwal');
+        Route::post('absensi-jadwal', [AdminAbsensiController::class, 'jadwalStore'])->name('absensi.jadwal.store');
+        Route::delete('absensi-jadwal/{id}', [AdminAbsensiController::class, 'jadwalDestroy'])->name('absensi.jadwal.destroy');
         /*
         |----------------------------------------------------------------------
         | KOKURIKULER
@@ -284,6 +294,11 @@ Route::middleware(['auth', 'role:guru_mapel'])
 
         Route::post('nilai', [NilaiController::class, 'store'])
             ->name('nilai.store');
+
+        // ABSENSI PER-JAM (GURU MAPEL)
+        Route::get('absensi', [GuruAbsensiController::class, 'index'])->name('absensi.index');
+        Route::get('absensi/{jadwal}/input', [GuruAbsensiController::class, 'input'])->name('absensi.input');
+        Route::post('absensi/{jadwal}/input', [GuruAbsensiController::class, 'store'])->name('absensi.store');
 
         Route::get('tujuan-pembelajaran/{pembelajaran}', [TujuanPembelajaranController::class, 'index'])
             ->name('tp.index');
@@ -395,6 +410,11 @@ Route::middleware(['auth', 'role:guru_mapel'])
         Route::put('data-kelas/siswa/{id}', [GuruWaliDataKelasController::class, 'updateSiswa'])->name('data-kelas.siswa.update');
 
             // KETIDAKHADIRAN
+            Route::get('absensi', [GuruWaliAbsensiController::class, 'index'])->name('absensi.index');
+            Route::get('absensi/{kelas}', [GuruWaliAbsensiController::class, 'kelola'])->name('absensi.kelola');
+            Route::post('absensi/{kelas}', [GuruWaliAbsensiController::class, 'update'])->name('absensi.update');
+
+            // kompatibilitas route lama
             Route::get('ketidakhadiran', [KetidakhadiranController::class, 'index'])->name('ketidakhadiran.index');
             Route::get('ketidakhadiran/{kelas}', [KetidakhadiranController::class, 'kelola'])->name('ketidakhadiran.kelola');
             Route::post('ketidakhadiran/{kelas}', [KetidakhadiranController::class, 'update'])->name('ketidakhadiran.update');
