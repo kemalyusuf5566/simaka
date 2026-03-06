@@ -141,30 +141,16 @@ table { border-collapse: collapse; width:100%; }
 </head>
 
 @php
-$fase ='D';
+$fase = $fase ?? '-';
 $kelas = $siswa->kelas ?? null;
 $semesterLabel = (($semester ?? 'Ganjil') === 'Genap') ? '2 (Genap)' : '1 (Ganjil)';
 $tapel = $tahun->tahun_pelajaran ?? '-';
-
-$tingkat = (int)($kelas->tingkat ?? 7);
 
 $wali = $kelas?->wali?->pengguna;
 $namaOrtu = $siswa->nama_ayah ?? '-';
 
 $kepsekNama = $sekolah->kepala_sekolah ?? '-';
 $kepsekNip  = $sekolah->nip_kepala_sekolah ?? '-';
-
-/* ==== STATUS KENAIKAN ==== */
-if(($semester ?? 'Ganjil') === 'Genap'){
-    if($tingkat == 9){
-        $labelStatusAkhir = "Kelulusan";
-        $statusAkhir = "Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan LULUS.";
-    }else{
-        $labelStatusAkhir = "Kenaikan Kelas";
-        $naikKe = $tingkat + 1;
-        $statusAkhir = "Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan naik ke kelas {$naikKe}.";
-    }
-}
 @endphp
 
 <body>
@@ -221,10 +207,10 @@ if(($semester ?? 'Ganjil') === 'Genap'){
 @endforeach
 
 
-{{-- ================= MATA PELAJARAN PILIHAN ================= --}}
+{{-- ================= MATA PELAJARAN KEJURUAN/PILIHAN ================= --}}
 @if(count($mapelPilihan ?? []) > 0)
 <tr class="section-row">
-    <td colspan="4">Mata Pelajaran Pilihan</td>
+    <td colspan="4">Mata Pelajaran Kejuruan/Pilihan</td>
 </tr>
 
 @php $no=1; @endphp

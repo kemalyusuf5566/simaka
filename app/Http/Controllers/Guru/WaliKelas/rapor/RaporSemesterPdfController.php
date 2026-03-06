@@ -41,8 +41,29 @@ class RaporSemesterPdfController extends Controller
         // ================= SEKOLAH =================
         $sekolah = DataSekolah::first();
 
-        // ================= NILAI MAPEL (PASTI MUNCUL SEMUA MAPEL) =================
-        $allMapel = DataMapel::orderByRaw('COALESCE(urutan_cetak, 9999) ASC')
+        // ================= NILAI MAPEL =================
+        // Filter mapel mengikuti tingkat + jurusan kelas siswa.
+        $kelasTingkat = (string)($siswa->kelas?->tingkat ?? '');
+        $mapelTingkat = $this->resolveMapelTingkat($kelasTingkat);
+        $fase = $this->resolveFase($kelasTingkat);
+        $kelasJurusanId = $siswa->kelas?->jurusan_id;
+
+        $allMapel = DataMapel::query()
+            ->when(
+                $mapelTingkat !== null,
+                fn($q) => $q->whereIn('tingkat', ['SEMUA', $mapelTingkat])
+            )
+            ->when(
+                $kelasJurusanId,
+                function ($q) use ($kelasJurusanId) {
+                    $q->where(function ($w) use ($kelasJurusanId) {
+                        $w->whereNull('jurusan_id')
+                            ->orWhere('jurusan_id', $kelasJurusanId);
+                    });
+                },
+                fn($q) => $q->whereNull('jurusan_id')
+            )
+            ->orderByRaw('COALESCE(urutan_cetak, 9999) ASC')
             ->orderBy('nama_mapel')
             ->get();
 
@@ -81,7 +102,7 @@ class RaporSemesterPdfController extends Controller
                 'kelompok' => $m->kelompok_mapel,
             ];
 
-            if (($m->kelompok_mapel ?? '') === 'Mata Pelajaran Pilihan') {
+            if (in_array(($m->kelompok_mapel ?? ''), ['Mata Pelajaran Pilihan', 'Mata Pelajaran Kejuruan'], true)) {
                 $mapelPilihan[] = $row;
             } else {
                 $mapelUmum[] = $row;
@@ -136,8 +157,8 @@ class RaporSemesterPdfController extends Controller
 
         if ($semester === 'Genap') {
             $tingkat = (string)($siswa->kelas?->tingkat ?? '');
-            $labelStatusAkhir = ($tingkat === '9') ? 'Kelulusan' : 'Kenaikan Kelas';
-            $statusAkhir = $catatan?->status_kenaikan_kelas ?: '-';
+            $labelStatusAkhir = in_array(strtoupper($tingkat), ['12', 'XII'], true) ? 'Kelulusan' : 'Kenaikan Kelas';
+            $statusAkhir = $this->resolveStatusAkhirText($catatan?->status_kenaikan_kelas, $tingkat);
         }
 
         // ================= PDF =================
@@ -156,10 +177,59 @@ class RaporSemesterPdfController extends Controller
                 'catatan',
                 'kokurikulerText',
                 'labelStatusAkhir',
-                'statusAkhir'
+                'statusAkhir',
+                'fase'
             )
         )->setPaper('A4', 'portrait');
 
         return $pdf->stream('RAPOR_SEMESTER_' . $siswa->nama_siswa . '.pdf');
+    }
+
+    private function resolveMapelTingkat(string $tingkat): ?string
+    {
+        $normalized = strtoupper(trim($tingkat));
+
+        return match ($normalized) {
+            '10', 'X' => 'X',
+            '11', 'XI' => 'XI',
+            '12', 'XII' => 'XII',
+            default => null,
+        };
+    }
+
+    private function resolveFase(string $tingkat): string
+    {
+        $normalized = strtoupper(trim($tingkat));
+
+        return match ($normalized) {
+            '10', 'X' => 'E',
+            '11', 'XI', '12', 'XII' => 'F',
+            default => '-',
+        };
+    }
+
+    private function resolveStatusAkhirText(?string $statusRaw, string $tingkat): string
+    {
+        $status = strtolower(trim((string)$statusRaw));
+        if ($status === '') {
+            return '-';
+        }
+
+        $normalizedTingkat = strtoupper(trim($tingkat));
+        $angkaTingkat = is_numeric($tingkat) ? (int)$tingkat : null;
+
+        return match ($status) {
+            'lulus' => 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan LULUS.',
+            'tidak lulus', 'tidak_lulus' => 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan BELUM LULUS.',
+            'naik' => ($angkaTingkat !== null)
+                ? 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan naik ke kelas ' . ($angkaTingkat + 1) . '.'
+                : 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan NAIK KELAS.',
+            'tidak naik', 'tidak_naik' => ($angkaTingkat !== null)
+                ? 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan tetap di kelas ' . $angkaTingkat . '.'
+                : 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan TIDAK NAIK KELAS.',
+            default => in_array($normalizedTingkat, ['12', 'XII'], true)
+                ? 'Berdasarkan hasil pembelajaran yang dicapai peserta didik ditetapkan LULUS.'
+                : $statusRaw,
+        };
     }
 }
