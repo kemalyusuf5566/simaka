@@ -15,6 +15,7 @@ class PeranSeeder extends Seeder
     {
         $roles = [
         'admin',
+        'bk',
         'wali_kelas',
         'guru_mapel',
         'koordinator_p5',

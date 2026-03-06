@@ -39,6 +39,9 @@ class AuthenticatedSessionController extends Controller
             'wali_kelas' =>
                 redirect()->intended(route('wali.dashboard', absolute: false)),
 
+            'bk' =>
+                redirect()->intended(route('bk.data-bk.index', absolute: false)),
+
             default =>
                 redirect('/'),
         };

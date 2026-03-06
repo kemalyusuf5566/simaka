@@ -39,6 +39,11 @@ class RoleMiddleware
             return $next($request);
         }
 
+        // Cek role tambahan jika model User menyediakan helper hasRole()
+        if (method_exists($user, 'hasRole') && $user->hasRole($role)) {
+            return $next($request);
+        }
+
         // ===== 2) CEK MULTI-ROLE (OPSIONAL) =====
         // Jika kamu sudah pakai pivot `pengguna_peran` untuk role tambahan,
         // pastikan Model User/Pengguna punya relasi peranTambahan():

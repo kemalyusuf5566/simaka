@@ -56,6 +56,7 @@ use App\Http\Controllers\Guru\WaliKelas\AbsensiController as GuruWaliAbsensiCont
 use App\Http\Controllers\Guru\WaliKelas\CatatanWaliKelasController;
 use App\Http\Controllers\Guru\Kokurikuler\KegiatanKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\NilaiKokurikulerController;
+use App\Http\Controllers\BK\DataBkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -205,6 +206,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('absensi-jadwal', [AdminAbsensiController::class, 'jadwal'])->name('absensi.jadwal');
         Route::post('absensi-jadwal', [AdminAbsensiController::class, 'jadwalStore'])->name('absensi.jadwal.store');
         Route::delete('absensi-jadwal/{id}', [AdminAbsensiController::class, 'jadwalDestroy'])->name('absensi.jadwal.destroy');
+
+        // BK
+        Route::get('bk', [DataBkController::class, 'index'])->name('bk.index');
+        Route::post('bk', [DataBkController::class, 'store'])->name('bk.store');
+        Route::put('bk/{bk}', [DataBkController::class, 'update'])->name('bk.update');
+        Route::delete('bk/{bk}', [DataBkController::class, 'destroy'])->name('bk.destroy');
+        Route::get('bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('bk.riwayat');
         /*
         |----------------------------------------------------------------------
         | KOKURIKULER
@@ -424,6 +432,11 @@ Route::middleware(['auth', 'role:guru_mapel'])
             Route::get('catatan/{kelas}', [CatatanWaliKelasController::class, 'kelola'])->name('catatan.kelola');
             Route::post('catatan/{kelas}', [CatatanWaliKelasController::class, 'update'])->name('catatan.update');
 
+            // BK
+            Route::get('bk', [DataBkController::class, 'index'])->name('bk.index');
+            Route::post('bk', [DataBkController::class, 'store'])->name('bk.store');
+            Route::get('bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('bk.riwayat');
+
 
             Route::prefix('rapor')->name('rapor.')->group(function () {
 
@@ -448,6 +461,17 @@ Route::middleware(['auth', 'role:guru_mapel'])
                     ->name('pdf.semester');
             });
         });
+    });
+
+Route::middleware(['auth', 'role:bk'])
+    ->prefix('bk')
+    ->name('bk.')
+    ->group(function () {
+        Route::get('data-bk', [DataBkController::class, 'index'])->name('data-bk.index');
+        Route::post('data-bk', [DataBkController::class, 'store'])->name('data-bk.store');
+        Route::put('data-bk/{bk}', [DataBkController::class, 'update'])->name('data-bk.update');
+        Route::delete('data-bk/{bk}', [DataBkController::class, 'destroy'])->name('data-bk.destroy');
+        Route::get('data-bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('data-bk.riwayat');
     });
 
 

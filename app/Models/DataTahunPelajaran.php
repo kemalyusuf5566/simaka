@@ -25,4 +25,9 @@ class DataTahunPelajaran extends Model
     {
         return $this->hasMany(NilaiMapelSiswa::class, 'data_tahun_pelajaran_id');
     }
+
+    public function dataBk()
+    {
+        return $this->hasMany(DataBk::class, 'data_tahun_pelajaran_id');
+    }
 }

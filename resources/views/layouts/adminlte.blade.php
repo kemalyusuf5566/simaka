@@ -221,6 +221,25 @@
             </ul>
           </li>
 
+          {{-- BK --}}
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-user-shield"></i>
+              <p>
+                BK
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data BK</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           {{-- KOKURIKULER --}}
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -279,6 +298,17 @@
 
           @endif
           {{-- =============== END ADMIN =============== --}}
+
+          {{-- ================= BK ================= --}}
+          @if($role === 'bk')
+          <li class="nav-item">
+            <a href="{{ route('bk.data-bk.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-user-shield"></i>
+              <p>Data BK</p>
+            </a>
+          </li>
+          @endif
+          {{-- =============== END BK =============== --}}
 
 
           {{-- ================= GURU ================= --}}
@@ -370,6 +400,13 @@
                     <a href="{{ route('guru.wali-kelas.catatan.index') }}" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Catatan Wali Kelas</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="{{ route('guru.wali-kelas.bk.index') }}" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>BK</p>
                     </a>
                   </li>
                 </ul>

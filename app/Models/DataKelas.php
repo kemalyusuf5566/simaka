@@ -56,4 +56,9 @@ class DataKelas extends Model
     {
         return $this->hasMany(AbsensiJamSiswa::class, 'data_kelas_id');
     }
+
+    public function dataBk()
+    {
+        return $this->hasMany(DataBk::class, 'data_kelas_id');
+    }
 }

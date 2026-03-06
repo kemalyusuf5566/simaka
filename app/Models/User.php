@@ -53,4 +53,14 @@ class User extends Authenticatable
             ->where('nama_peran', $roleName)
             ->exists();
     }
+
+    public function bkDibuat()
+    {
+        return $this->hasMany(DataBk::class, 'created_by');
+    }
+
+    public function bkDiubah()
+    {
+        return $this->hasMany(DataBk::class, 'updated_by');
+    }
 }
