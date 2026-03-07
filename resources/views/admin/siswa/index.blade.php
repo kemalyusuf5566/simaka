@@ -103,75 +103,77 @@
       @csrf
       @method('DELETE')
 
-      <table class="table table-bordered table-hover">
-        <thead class="bg-secondary">
-          <tr>
-            <th width="45" class="text-center">
-              <input type="checkbox" id="checkAll">
-            </th>
-            <th width="60">No</th>
-            <th>Nama</th>
-            <th width="90">Kelas</th>
-            <th>NIS</th>
-            <th>NISN</th>
-            <th width="60" class="text-center">L/P</th>
-            <th width="110" class="text-center">Status</th>
-            <th width="200">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($siswa as $i => $s)
-            @php
-              $kelasNama = optional($s->kelas)->nama_kelas ?? '-';
-              $jkVal = $s->jenis_kelamin ?? '-';
-              $st = strtolower(trim((string)($s->status_siswa ?? 'aktif')));
-              if ($st === 'nonaktif' || $st === 'non aktif') $st = 'tidak aktif';
-              $stLabel = ($st === 'aktif') ? 'AKTIF' : 'TIDAK AKTIF';
-            @endphp
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+          <thead>
             <tr>
-              <td class="text-center">
-                <input type="checkbox" class="checkItem" name="ids[]" value="{{ $s->id }}">
-              </td>
-              <td>{{ ($siswa->firstItem() ?? 1) + $i }}</td>
-              <td>{{ $s->nama_siswa ?? '-' }}</td>
-              <td>{{ $kelasNama }}</td>
-              <td>{{ $s->nis ?? '-' }}</td>
-              <td>{{ $s->nisn ?? '-' }}</td>
-              <td class="text-center">{{ $jkVal }}</td>
-              <td class="text-center">
-                <span class="badge {{ $st === 'aktif' ? 'badge-success' : 'badge-secondary' }}">
-                  {{ $stLabel }}
-                </span>
-              </td>
-              <td>
-                <a href="{{ route('admin.siswa.show', $s->id) }}" class="btn btn-success btn-xs">
-                  <i class="fas fa-eye"></i> Detail
-                </a>
-
-                <a href="{{ route('admin.siswa.edit', $s->id) }}" class="btn btn-warning btn-xs">
-                  <i class="fas fa-edit"></i> Edit
-                </a>
-
-                <form action="{{ route('admin.siswa.destroy', $s->id) }}"
-                      method="POST" class="d-inline"
-                      onsubmit="return confirm('Hapus data siswa ini?')">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-danger btn-xs">
-                    <i class="fas fa-trash"></i> Hapus
-                  </button>
-                </form>
-              </td>
+              <th width="45" class="text-center">
+                <input type="checkbox" id="checkAll">
+              </th>
+              <th width="60">No</th>
+              <th>Nama</th>
+              <th width="90">Kelas</th>
+              <th>NIS</th>
+              <th>NISN</th>
+              <th width="60" class="text-center">L/P</th>
+              <th width="110" class="text-center">Status</th>
+              <th width="200">Aksi</th>
             </tr>
-          @empty
-            <tr>
-              <td colspan="9" class="text-center text-muted">
-                Data siswa belum tersedia
-              </td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @forelse($siswa as $i => $s)
+              @php
+                $kelasNama = optional($s->kelas)->nama_kelas ?? '-';
+                $jkVal = $s->jenis_kelamin ?? '-';
+                $st = strtolower(trim((string)($s->status_siswa ?? 'aktif')));
+                if ($st === 'nonaktif' || $st === 'non aktif') $st = 'tidak aktif';
+                $stLabel = ($st === 'aktif') ? 'AKTIF' : 'TIDAK AKTIF';
+              @endphp
+              <tr>
+                <td class="text-center">
+                  <input type="checkbox" class="checkItem" name="ids[]" value="{{ $s->id }}">
+                </td>
+                <td>{{ ($siswa->firstItem() ?? 1) + $i }}</td>
+                <td>{{ $s->nama_siswa ?? '-' }}</td>
+                <td>{{ $kelasNama }}</td>
+                <td>{{ $s->nis ?? '-' }}</td>
+                <td>{{ $s->nisn ?? '-' }}</td>
+                <td class="text-center">{{ $jkVal }}</td>
+                <td class="text-center">
+                  <span class="badge {{ $st === 'aktif' ? 'badge-success' : 'badge-secondary' }}">
+                    {{ $stLabel }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{{ route('admin.siswa.show', $s->id) }}" class="btn btn-success btn-xs">
+                    <i class="fas fa-eye"></i> Detail
+                  </a>
+
+                  <a href="{{ route('admin.siswa.edit', $s->id) }}" class="btn btn-warning btn-xs">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+
+                  <form action="{{ route('admin.siswa.destroy', $s->id) }}"
+                        method="POST" class="d-inline"
+                        onsubmit="return confirm('Hapus data siswa ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-xs">
+                      <i class="fas fa-trash"></i> Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="9" class="text-center text-muted">
+                  Data siswa belum tersedia
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
     </form>
 
     {{-- PAGINATION RAPI --}}
@@ -182,7 +184,7 @@
         dari {{ $siswa->total() }} data
       </div>
       <div>
-        {{ $siswa->links() }}
+        {{ $siswa->onEachSide(1)->links('pagination::bootstrap-4') }}
       </div>
     </div>
 

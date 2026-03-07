@@ -52,54 +52,56 @@
     </div>
 
     {{-- TABEL (STYLE SAMA KAYA GURU) --}}
-    <table id="table-admin" class="table table-bordered table-hover">
-      <thead class="bg-secondary">
-        <tr>
-          <th width="50">No</th>
-          <th>Nama</th>
-          <th>Email</th>
-          <th>Status Admin</th>
-          <th width="200">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        @forelse($admin as $i => $a)
-        <tr>
-          <td>{{ $i + 1 }}</td>
-          <td>{{ $a->nama }}</td>
-          <td>{{ $a->email }}</td>
-          <td>
-            <span class="badge {{ $a->status_aktif ? 'badge-success' : 'badge-secondary' }}">
-              {{ $a->status_aktif ? 'AKTIF' : 'NON AKTIF' }}
-            </span>
-          </td>
-          <td>
-            <a href="{{ route('admin.admin.edit',$a->id) }}"
-               class="btn btn-warning btn-xs">
-              <i class="fas fa-edit"></i> Edit
-            </a>
+    <div class="table-responsive">
+      <table id="table-admin" class="table table-bordered table-hover mb-0">
+        <thead>
+          <tr>
+            <th width="50">No</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Status Admin</th>
+            <th width="200">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($admin as $i => $a)
+          <tr>
+            <td>{{ $i + 1 }}</td>
+            <td>{{ $a->nama }}</td>
+            <td>{{ $a->email }}</td>
+            <td>
+              <span class="badge {{ $a->status_aktif ? 'badge-success' : 'badge-secondary' }}">
+                {{ $a->status_aktif ? 'AKTIF' : 'NON AKTIF' }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ route('admin.admin.edit',$a->id) }}"
+                 class="btn btn-warning btn-xs">
+                <i class="fas fa-edit"></i> Edit
+              </a>
 
-            <form action="{{ route('admin.admin.destroy',$a->id) }}"
-                  method="POST"
-                  class="d-inline"
-                  onsubmit="return confirm('Hapus admin ini?')">
-              @csrf
-              @method('DELETE')
-              <button class="btn btn-danger btn-xs">
-                <i class="fas fa-trash"></i> Hapus
-              </button>
-            </form>
-          </td>
-        </tr>
-        @empty
-        <tr>
-          <td colspan="5" class="text-center text-muted">
-            Data admin belum tersedia
-          </td>
-        </tr>
-        @endforelse
-      </tbody>
-    </table>
+              <form action="{{ route('admin.admin.destroy',$a->id) }}"
+                    method="POST"
+                    class="d-inline"
+                    onsubmit="return confirm('Hapus admin ini?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash"></i> Hapus
+                </button>
+              </form>
+            </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="5" class="text-center text-muted">
+              Data admin belum tersedia
+            </td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>

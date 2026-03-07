@@ -36,47 +36,49 @@
     </div>
 
     {{-- TABEL --}}
-    <table id="table-pembelajaran" class="table table-bordered table-striped table-hover w-100">
-      <thead class="bg-secondary">
-        <tr>
-          <th style="width:20px">No.</th>
-          <th>Mata Pelajaran</th>
-          <th style="width:4s0px">Kelas</th>
-          <th>Guru Pengampu</th>
-          <th style="width:160px">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($pembelajaran as $i => $p)
-          <tr data-kelas="{{ $p->data_kelas_id }}"
-              data-mapel="{{ $p->data_mapel_id }}"
-              data-guru="{{ $p->guru_id }}">
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $p->mapel->nama_mapel }}</td>
-            <td>{{ $p->kelas->nama_kelas }}</td>
-            <td>{{ $p->guru->nama }}</td>
-            <td>
-              <button type="button"
-                      class="btn btn-warning btn-xs btn-edit"
-                      data-id="{{ $p->id }}">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-
-              <form action="{{ route('admin.pembelajaran.destroy',$p->id) }}"
-                    method="POST"
-                    class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-xs"
-                        onclick="return confirm('Hapus pembelajaran ini?')">
-                  <i class="fas fa-trash"></i> Hapus
-                </button>
-              </form>
-            </td>
+    <div class="table-responsive">
+      <table id="table-pembelajaran" class="table table-bordered table-striped table-hover w-100 mb-0">
+        <thead>
+          <tr>
+            <th style="width:20px">No.</th>
+            <th>Mata Pelajaran</th>
+            <th style="width:40px">Kelas</th>
+            <th>Guru Pengampu</th>
+            <th style="width:160px">Aksi</th>
           </tr>
-        @endforeach
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @foreach($pembelajaran as $i => $p)
+            <tr data-kelas="{{ $p->data_kelas_id }}"
+                data-mapel="{{ $p->data_mapel_id }}"
+                data-guru="{{ $p->guru_id }}">
+              <td>{{ $i + 1 }}</td>
+              <td>{{ $p->mapel->nama_mapel }}</td>
+              <td>{{ $p->kelas->nama_kelas }}</td>
+              <td>{{ $p->guru->nama }}</td>
+              <td>
+                <button type="button"
+                        class="btn btn-warning btn-xs btn-edit"
+                        data-id="{{ $p->id }}">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+
+                <form action="{{ route('admin.pembelajaran.destroy',$p->id) }}"
+                      method="POST"
+                      class="d-inline">
+                  @csrf
+                  @method('DELETE')
+                  <button class="btn btn-danger btn-xs"
+                          onclick="return confirm('Hapus pembelajaran ini?')">
+                    <i class="fas fa-trash"></i> Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>

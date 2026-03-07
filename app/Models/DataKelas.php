@@ -61,4 +61,44 @@ class DataKelas extends Model
     {
         return $this->hasMany(DataBk::class, 'data_kelas_id');
     }
+
+    public function pelanggaranBk()
+    {
+        return $this->hasMany(BkPelanggaranSiswa::class, 'data_kelas_id');
+    }
+
+    public function pembinaanBk()
+    {
+        return $this->hasMany(BkPembinaanSiswa::class, 'data_kelas_id');
+    }
+
+    public function homeVisitBk()
+    {
+        return $this->hasMany(BkHomeVisit::class, 'data_kelas_id');
+    }
+
+    public function pemanggilanOrtuBk()
+    {
+        return $this->hasMany(BkPemanggilanOrangTua::class, 'data_kelas_id');
+    }
+
+    public function perjanjianBk()
+    {
+        return $this->hasMany(BkPerjanjianSiswa::class, 'data_kelas_id');
+    }
+
+    public function pengunduranDiriBk()
+    {
+        return $this->hasMany(BkPengunduranDiri::class, 'data_kelas_id');
+    }
+
+    public function peminatanBk()
+    {
+        return $this->hasMany(BkPeminatanSiswa::class, 'data_kelas_id');
+    }
+
+    public function sikapBk()
+    {
+        return $this->hasMany(BkSikapSiswa::class, 'data_kelas_id');
+    }
 }

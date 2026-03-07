@@ -75,7 +75,7 @@
     {{-- TABLE --}}
     <div class="table-responsive">
       <table class="table table-bordered table-hover mb-0">
-        <thead class="bg-secondary">
+        <thead>
           <tr>
             <th width="60">No</th>
             <th width="160">Kode</th>
@@ -134,7 +134,7 @@
         dari {{ $jurusan->total() }} data
       </div>
       <div class="d-flex justify-content-end">
-        {{ $jurusan->onEachSide(1)->links() }}
+        {{ $jurusan->onEachSide(1)->links('pagination::bootstrap-4') }}
       </div>
     </div>
 

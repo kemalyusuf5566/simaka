@@ -85,7 +85,7 @@
       <div class="table-responsive">
         {{-- jangan pakai class .datatable supaya tidak bentrok dengan Laravel paginate --}}
         <table id="table-guru" class="table table-bordered table-hover mb-0">
-          <thead class="bg-secondary">
+          <thead>
             <tr>
               <th width="40" class="text-center">
                 <input type="checkbox" id="checkAll">

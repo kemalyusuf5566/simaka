@@ -60,70 +60,72 @@
     </form>
 
     {{-- TABEL --}}
-    <table class="table table-bordered table-striped table-hover">
-      <thead class="bg-secondary">
-        <tr>
-          <th style="width:30px">No</th>
-          {{-- <th style="width:90px">ID Kelas</th> --}}
-          <th class="text-center" style="width:20px">Nama Kelas</th>
-          <th class="text-center" style="width:120px">Wali Kelas</th>
-          <th class="text-center" style="width:20px">Tingkat</th>
-          <th class="text-center" style="width:180px">Jurusan</th>
-          <th class="text-center" style="width:20px">Jumlah Siswa</th>
-          <th class="text-center" style="width:40px">Aksi</th>
-        </tr>
-      </thead>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover mb-0">
+        <thead>
+          <tr>
+            <th style="width:30px">No</th>
+            {{-- <th style="width:90px">ID Kelas</th> --}}
+            <th class="text-center" style="width:20px">Nama Kelas</th>
+            <th class="text-center" style="width:120px">Wali Kelas</th>
+            <th class="text-center" style="width:20px">Tingkat</th>
+            <th class="text-center" style="width:180px">Jurusan</th>
+            <th class="text-center" style="width:20px">Jumlah Siswa</th>
+            <th class="text-center" style="width:40px">Aksi</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        @forelse($kelas as $i => $k)
-        <tr>
-          <td>{{ $kelas->firstItem() + $i }}</td>
-          {{-- <td>{{ $k->id }}</td> --}}
-          <td>{{ $k->nama_kelas }}</td>
-          <td>{{ $k->wali->pengguna->nama ?? '-' }}</td>
-          <td class="text-center">{{ $k->tingkat }}</td>
-          <td>{{ $k->jurusan ? ($k->jurusan->kode_jurusan.' - '.$k->jurusan->nama_jurusan) : '-' }}</td>
-          <td class="text-center">{{ $k->siswa_count ?? 0 }}</td>
-          <td class="text-center">
+        <tbody>
+          @forelse($kelas as $i => $k)
+          <tr>
+            <td>{{ $kelas->firstItem() + $i }}</td>
+            {{-- <td>{{ $k->id }}</td> --}}
+            <td>{{ $k->nama_kelas }}</td>
+            <td>{{ $k->wali->pengguna->nama ?? '-' }}</td>
+            <td class="text-center">{{ $k->tingkat }}</td>
+            <td>{{ $k->jurusan ? ($k->jurusan->kode_jurusan.' - '.$k->jurusan->nama_jurusan) : '-' }}</td>
+            <td class="text-center">{{ $k->siswa_count ?? 0 }}</td>
+            <td class="text-center">
 
-            {{-- WAJIB ada data-url --}}
-            <button type="button"
-                    class="btn btn-warning btn-xs btn-edit-kelas"
-                    data-url="{{ route('admin.kelas.edit', $k->id) }}">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-
-            <form action="{{ route('admin.kelas.destroy',$k->id) }}"
-                  method="POST"
-                  class="d-inline"
-                  onsubmit="return confirm('Hapus kelas ini?')">
-              @csrf
-              @method('DELETE')
-              <button class="btn btn-danger btn-xs">
-                <i class="fas fa-trash"></i> Hapus
+              {{-- WAJIB ada data-url --}}
+              <button type="button"
+                      class="btn btn-warning btn-xs btn-edit-kelas"
+                      data-url="{{ route('admin.kelas.edit', $k->id) }}">
+                <i class="fas fa-edit"></i> Edit
               </button>
-            </form>
 
-          </td>
-        </tr>
-        @empty
-        <tr>
-          <td colspan="7" class="text-center text-muted">
-            Data kelas belum tersedia
-          </td>
-        </tr>
-        @endforelse
-      </tbody>
-    </table>
+              <form action="{{ route('admin.kelas.destroy',$k->id) }}"
+                    method="POST"
+                    class="d-inline"
+                    onsubmit="return confirm('Hapus kelas ini?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash"></i> Hapus
+                </button>
+              </form>
+
+            </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="7" class="text-center text-muted">
+              Data kelas belum tersedia
+            </td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
 
     {{-- PAGINATION RAPI --}}
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center mt-3">
       <div class="text-muted">
         Menampilkan {{ $kelas->count() ? $kelas->firstItem() : 0 }} - {{ $kelas->count() ? $kelas->lastItem() : 0 }}
         dari {{ $kelas->total() }} data
       </div>
       <div>
-        {{ $kelas->links() }}
+        {{ $kelas->onEachSide(1)->links('pagination::bootstrap-4') }}
       </div>
     </div>
 

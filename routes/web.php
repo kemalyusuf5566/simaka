@@ -57,6 +57,16 @@ use App\Http\Controllers\Guru\WaliKelas\CatatanWaliKelasController;
 use App\Http\Controllers\Guru\Kokurikuler\KegiatanKelompokController;
 use App\Http\Controllers\Guru\Kokurikuler\NilaiKokurikulerController;
 use App\Http\Controllers\BK\DataBkController;
+use App\Http\Controllers\BK\ModulBkController;
+use App\Http\Controllers\BK\PelanggaranController;
+use App\Http\Controllers\BK\PembinaanController;
+use App\Http\Controllers\BK\HomeVisitController;
+use App\Http\Controllers\BK\PemanggilanOrangTuaController;
+use App\Http\Controllers\BK\PerjanjianSiswaController;
+use App\Http\Controllers\BK\PengunduranDiriController;
+use App\Http\Controllers\BK\PeminatanSiswaController;
+use App\Http\Controllers\BK\SikapController;
+use App\Http\Controllers\BK\AbsensiBulananController;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,11 +218,57 @@ Route::middleware(['auth', 'role:admin'])
         Route::delete('absensi-jadwal/{id}', [AdminAbsensiController::class, 'jadwalDestroy'])->name('absensi.jadwal.destroy');
 
         // BK
-        Route::get('bk', [DataBkController::class, 'index'])->name('bk.index');
-        Route::post('bk', [DataBkController::class, 'store'])->name('bk.store');
-        Route::put('bk/{bk}', [DataBkController::class, 'update'])->name('bk.update');
-        Route::delete('bk/{bk}', [DataBkController::class, 'destroy'])->name('bk.destroy');
-        Route::get('bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('bk.riwayat');
+        Route::prefix('bk')->name('bk.')->group(function () {
+            Route::get('/', [DataBkController::class, 'index'])->name('index');
+            Route::post('/', [DataBkController::class, 'store'])->name('store');
+            Route::put('{bk}', [DataBkController::class, 'update'])->name('update');
+            Route::delete('{bk}', [DataBkController::class, 'destroy'])->name('destroy');
+            Route::get('riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('riwayat');
+
+            Route::get('sikap', [SikapController::class, 'index'])->name('sikap.index');
+            Route::post('sikap', [SikapController::class, 'store'])->name('sikap.store');
+            Route::put('sikap/{sikap}', [SikapController::class, 'update'])->name('sikap.update');
+            Route::delete('sikap/{sikap}', [SikapController::class, 'destroy'])->name('sikap.destroy');
+            Route::get('pelanggaran', [PelanggaranController::class, 'index'])->name('pelanggaran.index');
+            Route::post('pelanggaran', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
+            Route::put('pelanggaran/{pelanggaran}', [PelanggaranController::class, 'update'])->name('pelanggaran.update');
+            Route::delete('pelanggaran/{pelanggaran}', [PelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+            Route::post('pelanggaran/jenis', [PelanggaranController::class, 'storeJenis'])->name('pelanggaran.jenis.store');
+            Route::put('pelanggaran/jenis/{jenis}', [PelanggaranController::class, 'updateJenis'])->name('pelanggaran.jenis.update');
+            Route::delete('pelanggaran/jenis/{jenis}', [PelanggaranController::class, 'destroyJenis'])->name('pelanggaran.jenis.destroy');
+
+            Route::get('pembinaan', [PembinaanController::class, 'index'])->name('pembinaan.index');
+            Route::post('pembinaan', [PembinaanController::class, 'store'])->name('pembinaan.store');
+            Route::put('pembinaan/{pembinaan}', [PembinaanController::class, 'update'])->name('pembinaan.update');
+            Route::delete('pembinaan/{pembinaan}', [PembinaanController::class, 'destroy'])->name('pembinaan.destroy');
+
+            Route::get('home-visit', [HomeVisitController::class, 'index'])->name('home-visit.index');
+            Route::post('home-visit', [HomeVisitController::class, 'store'])->name('home-visit.store');
+            Route::put('home-visit/{homeVisit}', [HomeVisitController::class, 'update'])->name('home-visit.update');
+            Route::delete('home-visit/{homeVisit}', [HomeVisitController::class, 'destroy'])->name('home-visit.destroy');
+
+            Route::get('pengunduran-diri', [PengunduranDiriController::class, 'index'])->name('pengunduran-diri.index');
+            Route::post('pengunduran-diri', [PengunduranDiriController::class, 'store'])->name('pengunduran-diri.store');
+            Route::put('pengunduran-diri/{pengunduranDiri}', [PengunduranDiriController::class, 'update'])->name('pengunduran-diri.update');
+            Route::delete('pengunduran-diri/{pengunduranDiri}', [PengunduranDiriController::class, 'destroy'])->name('pengunduran-diri.destroy');
+
+            Route::get('perjanjian-siswa', [PerjanjianSiswaController::class, 'index'])->name('perjanjian-siswa.index');
+            Route::post('perjanjian-siswa', [PerjanjianSiswaController::class, 'store'])->name('perjanjian-siswa.store');
+            Route::put('perjanjian-siswa/{perjanjianSiswa}', [PerjanjianSiswaController::class, 'update'])->name('perjanjian-siswa.update');
+            Route::delete('perjanjian-siswa/{perjanjianSiswa}', [PerjanjianSiswaController::class, 'destroy'])->name('perjanjian-siswa.destroy');
+
+            Route::get('peminatan-siswa', [PeminatanSiswaController::class, 'index'])->name('peminatan.index');
+            Route::post('peminatan-siswa', [PeminatanSiswaController::class, 'store'])->name('peminatan.store');
+            Route::put('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'update'])->name('peminatan.update');
+            Route::delete('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'destroy'])->name('peminatan.destroy');
+
+            Route::get('absensi-bulanan', [AbsensiBulananController::class, 'index'])->name('absensi-bulanan.index');
+
+            Route::get('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'index'])->name('pemanggilan-ortu.index');
+            Route::post('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'store'])->name('pemanggilan-ortu.store');
+            Route::put('pemanggilan-orang-tua/{pemanggilanOrtu}', [PemanggilanOrangTuaController::class, 'update'])->name('pemanggilan-ortu.update');
+            Route::delete('pemanggilan-orang-tua/{pemanggilanOrtu}', [PemanggilanOrangTuaController::class, 'destroy'])->name('pemanggilan-ortu.destroy');
+        });
         /*
         |----------------------------------------------------------------------
         | KOKURIKULER
@@ -467,11 +523,50 @@ Route::middleware(['auth', 'role:bk'])
     ->prefix('bk')
     ->name('bk.')
     ->group(function () {
+        Route::get('dashboard', [ModulBkController::class, 'dashboard'])->name('dashboard');
+
         Route::get('data-bk', [DataBkController::class, 'index'])->name('data-bk.index');
         Route::post('data-bk', [DataBkController::class, 'store'])->name('data-bk.store');
         Route::put('data-bk/{bk}', [DataBkController::class, 'update'])->name('data-bk.update');
         Route::delete('data-bk/{bk}', [DataBkController::class, 'destroy'])->name('data-bk.destroy');
         Route::get('data-bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('data-bk.riwayat');
+
+        Route::get('sikap', [SikapController::class, 'index'])->name('sikap.index');
+        Route::post('sikap', [SikapController::class, 'store'])->name('sikap.store');
+        Route::put('sikap/{sikap}', [SikapController::class, 'update'])->name('sikap.update');
+        Route::delete('sikap/{sikap}', [SikapController::class, 'destroy'])->name('sikap.destroy');
+        Route::get('pelanggaran', [PelanggaranController::class, 'index'])->name('pelanggaran.index');
+        Route::post('pelanggaran', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
+        Route::put('pelanggaran/{pelanggaran}', [PelanggaranController::class, 'update'])->name('pelanggaran.update');
+        Route::delete('pelanggaran/{pelanggaran}', [PelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+        Route::post('pelanggaran/jenis', [PelanggaranController::class, 'storeJenis'])->name('pelanggaran.jenis.store');
+        Route::put('pelanggaran/jenis/{jenis}', [PelanggaranController::class, 'updateJenis'])->name('pelanggaran.jenis.update');
+        Route::delete('pelanggaran/jenis/{jenis}', [PelanggaranController::class, 'destroyJenis'])->name('pelanggaran.jenis.destroy');
+        Route::get('pembinaan', [PembinaanController::class, 'index'])->name('pembinaan.index');
+        Route::post('pembinaan', [PembinaanController::class, 'store'])->name('pembinaan.store');
+        Route::put('pembinaan/{pembinaan}', [PembinaanController::class, 'update'])->name('pembinaan.update');
+        Route::delete('pembinaan/{pembinaan}', [PembinaanController::class, 'destroy'])->name('pembinaan.destroy');
+        Route::get('home-visit', [HomeVisitController::class, 'index'])->name('home-visit.index');
+        Route::post('home-visit', [HomeVisitController::class, 'store'])->name('home-visit.store');
+        Route::put('home-visit/{homeVisit}', [HomeVisitController::class, 'update'])->name('home-visit.update');
+        Route::delete('home-visit/{homeVisit}', [HomeVisitController::class, 'destroy'])->name('home-visit.destroy');
+        Route::get('pengunduran-diri', [PengunduranDiriController::class, 'index'])->name('pengunduran-diri.index');
+        Route::post('pengunduran-diri', [PengunduranDiriController::class, 'store'])->name('pengunduran-diri.store');
+        Route::put('pengunduran-diri/{pengunduranDiri}', [PengunduranDiriController::class, 'update'])->name('pengunduran-diri.update');
+        Route::delete('pengunduran-diri/{pengunduranDiri}', [PengunduranDiriController::class, 'destroy'])->name('pengunduran-diri.destroy');
+        Route::get('perjanjian-siswa', [PerjanjianSiswaController::class, 'index'])->name('perjanjian-siswa.index');
+        Route::post('perjanjian-siswa', [PerjanjianSiswaController::class, 'store'])->name('perjanjian-siswa.store');
+        Route::put('perjanjian-siswa/{perjanjianSiswa}', [PerjanjianSiswaController::class, 'update'])->name('perjanjian-siswa.update');
+        Route::delete('perjanjian-siswa/{perjanjianSiswa}', [PerjanjianSiswaController::class, 'destroy'])->name('perjanjian-siswa.destroy');
+        Route::get('peminatan-siswa', [PeminatanSiswaController::class, 'index'])->name('peminatan.index');
+        Route::post('peminatan-siswa', [PeminatanSiswaController::class, 'store'])->name('peminatan.store');
+        Route::put('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'update'])->name('peminatan.update');
+        Route::delete('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'destroy'])->name('peminatan.destroy');
+        Route::get('absensi-bulanan', [AbsensiBulananController::class, 'index'])->name('absensi-bulanan.index');
+        Route::get('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'index'])->name('pemanggilan-ortu.index');
+        Route::post('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'store'])->name('pemanggilan-ortu.store');
+        Route::put('pemanggilan-orang-tua/{pemanggilanOrtu}', [PemanggilanOrangTuaController::class, 'update'])->name('pemanggilan-ortu.update');
+        Route::delete('pemanggilan-orang-tua/{pemanggilanOrtu}', [PemanggilanOrangTuaController::class, 'destroy'])->name('pemanggilan-ortu.destroy');
     });
 
 

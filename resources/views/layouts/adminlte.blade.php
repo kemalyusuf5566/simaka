@@ -14,6 +14,185 @@
   {{-- DATATABLES --}}
 <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <style>
+    :root {
+      --simaka-primary: #1f4e79;
+      --simaka-muted-bg: #f4f6f9;
+      --simaka-card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+      --simaka-border: #dee2e6;
+      --simaka-head-bg: #e9ecef;
+      --simaka-head-fg: #2f3542;
+    }
+
+    body {
+      background-color: var(--simaka-muted-bg);
+    }
+
+    .content-header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 0.25rem;
+    }
+
+    .content .card {
+      border: 0;
+      border-top: 3px solid var(--simaka-primary);
+      border-radius: 0.5rem;
+      box-shadow: var(--simaka-card-shadow);
+      overflow: hidden;
+    }
+
+    .content .card > .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid var(--simaka-border);
+      padding: 0.85rem 1rem;
+    }
+
+    .content .card > .card-header .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+      color: #1f2937;
+    }
+
+    .content .card.card-dark,
+    .content .card.card-primary,
+    .content .card.card-secondary {
+      border-top-color: var(--simaka-primary);
+    }
+
+    .content .card.card-dark > .card-header,
+    .content .card.card-primary > .card-header,
+    .content .card.card-secondary > .card-header,
+    .content .card > .card-header.bg-primary,
+    .content .card > .card-header.bg-info,
+    .content .card > .card-header.bg-warning,
+    .content .card > .card-header.bg-secondary,
+    .content .card > .card-header.bg-dark {
+      background: #fff !important;
+      color: #1f2937 !important;
+      border-bottom: 1px solid var(--simaka-border) !important;
+    }
+
+    .content .card > .card-header .btn,
+    .content .card > .card-header .btn i {
+      color: inherit;
+    }
+
+    .content .card > .card-body {
+      padding: 1rem;
+    }
+
+    .content .card > .card-footer {
+      background: #fff;
+      border-top: 1px solid var(--simaka-border);
+      padding: 0.85rem 1rem;
+    }
+
+    .content .table {
+      margin-bottom: 0;
+      font-size: 0.92rem;
+    }
+
+    .content .table thead th {
+      background: var(--simaka-head-bg);
+      color: var(--simaka-head-fg);
+      border-color: var(--simaka-border);
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    .content .table td {
+      vertical-align: middle;
+    }
+
+    .content .table thead.bg-secondary th,
+    .content .table thead.bg-dark th {
+      background: var(--simaka-head-bg) !important;
+      color: var(--simaka-head-fg) !important;
+    }
+
+    .content .card .table-responsive {
+      border-radius: 0.45rem;
+      border: 1px solid var(--simaka-border);
+    }
+
+    .content .card .card-body.table-responsive,
+    .content .card .card-body.table-responsive.p-0,
+    .content .card .card-body.pt-0.table-responsive,
+    .content .card .card-body.pt-0.table-responsive.p-0 {
+      padding: 0 !important;
+    }
+
+    .content .card .card-body.table-responsive .table,
+    .content .card .card-body.table-responsive.p-0 .table {
+      margin-bottom: 0;
+    }
+
+    .content .alert {
+      border: 0;
+      border-radius: 0.45rem;
+      box-shadow: 0 0.25rem 0.7rem rgba(0, 0, 0, 0.06);
+    }
+
+    .content .custom-select,
+    .content .form-control {
+      border-color: #ced4da;
+    }
+
+    .content .btn.btn-light {
+      border-color: #d4d8dd;
+    }
+
+    .content .btn-xs {
+      padding: 0.2rem 0.45rem;
+      font-size: 0.72rem;
+      line-height: 1.2;
+    }
+
+    .content .badge {
+      font-size: 0.72rem;
+      padding: 0.45em 0.55em;
+      letter-spacing: 0.02em;
+    }
+
+    .content .pagination {
+      margin-bottom: 0;
+    }
+
+    .content .modal .modal-header {
+      border-bottom: 1px solid var(--simaka-border);
+    }
+
+    .content .modal .modal-footer {
+      border-top: 1px solid var(--simaka-border);
+    }
+
+    .content .dataTables_wrapper .dataTables_filter input,
+    .content .dataTables_wrapper .dataTables_length select {
+      border: 1px solid #ced4da;
+      border-radius: 0.2rem;
+      padding: 0.25rem 0.45rem;
+    }
+
+    .content .dataTables_wrapper .dataTables_info,
+    .content .dataTables_wrapper .dataTables_paginate {
+      margin-top: 0.75rem;
+    }
+
+    @media (max-width: 767.98px) {
+      .content .card > .card-body {
+        padding: 0.85rem;
+      }
+
+      .content .card > .card-header,
+      .content .card > .card-footer {
+        padding: 0.75rem 0.85rem;
+      }
+    }
+  </style>
+  @stack('styles')
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -234,7 +413,61 @@
               <li class="nav-item">
                 <a href="{{ route('admin.bk.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Data BK</p>
+                  <p>Catatan BK</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.sikap.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sikap Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.pelanggaran.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Daftar Pelanggaran</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.pembinaan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Laporan Pembinaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.home-visit.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Laporan Home Visit</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.pengunduran-diri.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pengunduran Diri</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.perjanjian-siswa.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Perjanjian Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.peminatan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Peminatan Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.absensi-bulanan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Absensi Bulanan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.pemanggilan-ortu.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pemanggilan Ortu</p>
                 </a>
               </li>
             </ul>
@@ -302,10 +535,82 @@
           {{-- ================= BK ================= --}}
           @if($role === 'bk')
           <li class="nav-item">
-            <a href="{{ route('bk.data-bk.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-user-shield"></i>
-              <p>Data BK</p>
+            <a href="{{ route('bk.dashboard') }}" class="nav-link">
+              <i class="nav-icon fas fa-home"></i>
+              <p>Dashboard BK</p>
             </a>
+          </li>
+
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-user-shield"></i>
+              <p>
+                Modul BK
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('bk.data-bk.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Catatan BK</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.sikap.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sikap Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.pelanggaran.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Daftar Pelanggaran</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.pembinaan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Laporan Pembinaan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.home-visit.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Laporan Home Visit</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.pengunduran-diri.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pengunduran Diri</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.perjanjian-siswa.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Perjanjian Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.peminatan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Peminatan Siswa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.absensi-bulanan.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Absensi Bulanan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.pemanggilan-ortu.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pemanggilan Ortu</p>
+                </a>
+              </li>
+            </ul>
           </li>
           @endif
           {{-- =============== END BK =============== --}}
@@ -499,6 +804,19 @@ $(function () {
       ordering: false,
       pageLength: 10,
       lengthMenu: [10, 25, 50, 100],
+      language: {
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ data",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        zeroRecords: "Data tidak ditemukan",
+        paginate: {
+          first: "Awal",
+          last: "Akhir",
+          next: "Berikutnya",
+          previous: "Sebelumnya"
+        }
+      }
     });
   });
 });

@@ -26,47 +26,49 @@
     </div>
 
     {{-- TABEL --}}
-    <table id="table-ekskul" class="table table-bordered table-striped table-hover w-100">
-      <thead class="bg-secondary">
-        <tr>
-          <th style="width:60px">No.</th>
-          <th>Nama Ekstrakurikuler</th>
-          <th>Pembina</th>
-          <th style="width:160px">Jumlah Anggota</th>
-          <th style="width:180px">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($ekskul as $i => $e)
-          <tr data-pembina="{{ $e->pembina_id ?? '' }}"
-              data-status="{{ (int) $e->status_aktif }}">
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $e->nama_ekskul }}</td>
-            <td>{{ $e->pembina->pengguna->nama ?? '-' }}</td>
-            <td>{{ $e->anggota_count ?? 0 }}</td>
-            <td>
-              <button type="button"
-                      class="btn btn-warning btn-xs btn-edit"
-                      data-id="{{ $e->id }}">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-
-              {{-- HAPUS (akan berfungsi kalau destroy() ada) --}}
-              <form action="{{ route('admin.ekstrakurikuler.destroy',$e->id) }}"
-                    method="POST"
-                    class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-danger btn-xs"
-                        onclick="return confirm('Hapus ekstrakurikuler ini?')">
-                  <i class="fas fa-trash"></i> Hapus
-                </button>
-              </form>
-            </td>
+    <div class="table-responsive">
+      <table id="table-ekskul" class="table table-bordered table-striped table-hover w-100 mb-0">
+        <thead>
+          <tr>
+            <th style="width:60px">No.</th>
+            <th>Nama Ekstrakurikuler</th>
+            <th>Pembina</th>
+            <th style="width:160px">Jumlah Anggota</th>
+            <th style="width:180px">Aksi</th>
           </tr>
-        @endforeach
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @foreach($ekskul as $i => $e)
+            <tr data-pembina="{{ $e->pembina_id ?? '' }}"
+                data-status="{{ (int) $e->status_aktif }}">
+              <td>{{ $i + 1 }}</td>
+              <td>{{ $e->nama_ekskul }}</td>
+              <td>{{ $e->pembina->pengguna->nama ?? '-' }}</td>
+              <td>{{ $e->anggota_count ?? 0 }}</td>
+              <td>
+                <button type="button"
+                        class="btn btn-warning btn-xs btn-edit"
+                        data-id="{{ $e->id }}">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+
+                {{-- HAPUS (akan berfungsi kalau destroy() ada) --}}
+                <form action="{{ route('admin.ekstrakurikuler.destroy',$e->id) }}"
+                      method="POST"
+                      class="d-inline">
+                  @csrf
+                  @method('DELETE')
+                  <button class="btn btn-danger btn-xs"
+                          onclick="return confirm('Hapus ekstrakurikuler ini?')">
+                    <i class="fas fa-trash"></i> Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>

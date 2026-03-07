@@ -56,54 +56,55 @@
     </div>
 
     {{-- TABEL --}}
-    <table class="table table-bordered table-striped table-hover mb-0">
-      <thead class="bg-secondary">
-        <tr>
-          <th style="width:50px">No</th>
-          <th>Tahun Pelajaran</th>
-          <th style="width:100px">Semester</th>
-          <th>Tempat Pembagian Rapor</th>
-          <th style="width:160px">Tanggal Pembagian</th>
-          <th style="width:160px">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        @forelse($tahun as $i => $t)
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover mb-0">
+        <thead>
           <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>
-              {{ $t->tahun_pelajaran }}
-              @if($t->status_aktif)
-                <span class="badge badge-success ml-2">AKTIF</span>
-              @endif
-            </td>
-            <td>{{ $t->semester }}</td>
-            <td>{{ $t->tempat_pembagian_rapor ?? '-' }}</td>
-            <td>
-              {{ $t->tanggal_pembagian_rapor
-                ? $t->tanggal_pembagian_rapor->translatedFormat('d F Y')
-                : '-' }}
-            </td>
-            <td>
-              <button class="btn btn-warning btn-xs"
-                      data-toggle="modal"
-                      data-target="#modalEdit{{ $t->id }}">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-
-              @if(!$t->status_aktif)
-              <form action="{{ route('admin.tahun.aktif',$t->id) }}"
-                    method="POST"
-                    class="d-inline">
-                @csrf
-                @method('PUT')
-                <button class="btn btn-success btn-xs">
-                  Aktifkan
-                </button>
-              </form>
-              @endif
-            </td>
+            <th style="width:50px">No</th>
+            <th>Tahun Pelajaran</th>
+            <th style="width:100px">Semester</th>
+            <th>Tempat Pembagian Rapor</th>
+            <th style="width:160px">Tanggal Pembagian</th>
+            <th style="width:160px">Aksi</th>
           </tr>
+        </thead>
+        <tbody>
+          @forelse($tahun as $i => $t)
+            <tr>
+              <td>{{ $i + 1 }}</td>
+              <td>
+                {{ $t->tahun_pelajaran }}
+                @if($t->status_aktif)
+                  <span class="badge badge-success ml-2">AKTIF</span>
+                @endif
+              </td>
+              <td>{{ $t->semester }}</td>
+              <td>{{ $t->tempat_pembagian_rapor ?? '-' }}</td>
+              <td>
+                {{ $t->tanggal_pembagian_rapor
+                  ? $t->tanggal_pembagian_rapor->translatedFormat('d F Y')
+                  : '-' }}
+              </td>
+              <td>
+                <button class="btn btn-warning btn-xs"
+                        data-toggle="modal"
+                        data-target="#modalEdit{{ $t->id }}">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+
+                @if(!$t->status_aktif)
+                <form action="{{ route('admin.tahun.aktif',$t->id) }}"
+                      method="POST"
+                      class="d-inline">
+                  @csrf
+                  @method('PUT')
+                  <button class="btn btn-success btn-xs">
+                    Aktifkan
+                  </button>
+                </form>
+                @endif
+              </td>
+            </tr>
 
           {{-- MODAL EDIT --}}
           <div class="modal fade" id="modalEdit{{ $t->id }}">
@@ -138,15 +139,16 @@
             </div>
           </div>
 
-        @empty
-          <tr>
-            <td colspan="6" class="text-center text-muted">
-              Belum ada data tahun pelajaran
-            </td>
-          </tr>
-        @endforelse
-      </tbody>
-    </table>
+          @empty
+            <tr>
+              <td colspan="6" class="text-center text-muted">
+                Belum ada data tahun pelajaran
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
 
   </div>
 </div>
