@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DataPembelajaranController;
 use App\Http\Controllers\Admin\DataEkstrakurikulerController;
 use App\Http\Controllers\Admin\HariLiburController;
 use App\Http\Controllers\Admin\AbsensiController as AdminAbsensiController;
+use App\Http\Controllers\Admin\BkHubinAdminSettingController;
 
 // KOKURIKULER
 use App\Http\Controllers\Admin\KkDimensiController;
@@ -220,6 +221,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::delete('absensi-jadwal/{id}', [AdminAbsensiController::class, 'jadwalDestroy'])->name('absensi.jadwal.destroy');
 
         // BK
+        Route::get('bk-hubin-settings', [BkHubinAdminSettingController::class, 'index'])
+            ->name('bk-hubin-settings.index');
+        Route::put('bk-hubin-settings', [BkHubinAdminSettingController::class, 'update'])
+            ->name('bk-hubin-settings.update');
+
         Route::prefix('bk')->name('bk.')->group(function () {
             Route::get('/', [DataBkController::class, 'index'])->name('index');
             Route::post('/', [DataBkController::class, 'store'])->name('store');

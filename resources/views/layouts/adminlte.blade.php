@@ -298,6 +298,12 @@
                   <p>Data Admin</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk-hubin-settings.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Admin BK & Hubin</p>
+                </a>
+              </li>
             </ul>
           </li>
 
@@ -576,7 +582,7 @@
           {{-- =============== END ADMIN =============== --}}
 
           {{-- ================= BK ================= --}}
-          @if($role === 'bk')
+          @if($role === 'bk' || ($role === 'guru_mapel' && $user && $user->hasRole('bk')))
           <li class="nav-item">
             <a href="{{ route('bk.dashboard') }}" class="nav-link">
               <i class="nav-icon fas fa-home"></i>
