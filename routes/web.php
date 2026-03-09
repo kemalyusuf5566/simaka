@@ -67,6 +67,8 @@ use App\Http\Controllers\BK\PengunduranDiriController;
 use App\Http\Controllers\BK\PeminatanSiswaController;
 use App\Http\Controllers\BK\SikapController;
 use App\Http\Controllers\BK\AbsensiBulananController;
+use App\Http\Controllers\BK\RekomendasiPklController;
+use App\Http\Controllers\BK\HubinSkeletonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -263,6 +265,24 @@ Route::middleware(['auth', 'role:admin'])
             Route::delete('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'destroy'])->name('peminatan.destroy');
 
             Route::get('absensi-bulanan', [AbsensiBulananController::class, 'index'])->name('absensi-bulanan.index');
+            Route::get('rekomendasi-pkl', [RekomendasiPklController::class, 'index'])->name('rekomendasi-pkl.index');
+            Route::get('rekomendasi-pkl/export', [RekomendasiPklController::class, 'export'])->name('rekomendasi-pkl.export');
+            Route::get('rekomendasi-pkl/settings', [RekomendasiPklController::class, 'settings'])->name('rekomendasi-pkl.settings');
+            Route::put('rekomendasi-pkl/settings', [RekomendasiPklController::class, 'updateSettings'])->name('rekomendasi-pkl.settings.update');
+            Route::prefix('hubin')->name('hubin.')->group(function () {
+                Route::get('data-dudi', [HubinSkeletonController::class, 'dataDudi'])->name('data-dudi.index');
+                Route::post('data-dudi', [HubinSkeletonController::class, 'storeDudi'])->name('data-dudi.store');
+                Route::put('data-dudi/{dudi}', [HubinSkeletonController::class, 'updateDudi'])->name('data-dudi.update');
+                Route::delete('data-dudi/{dudi}', [HubinSkeletonController::class, 'destroyDudi'])->name('data-dudi.destroy');
+                Route::get('penempatan-pkl', [HubinSkeletonController::class, 'penempatanPkl'])->name('penempatan-pkl.index');
+                Route::post('penempatan-pkl', [HubinSkeletonController::class, 'storePenempatan'])->name('penempatan-pkl.store');
+                Route::put('penempatan-pkl/{penempatan}', [HubinSkeletonController::class, 'updatePenempatan'])->name('penempatan-pkl.update');
+                Route::delete('penempatan-pkl/{penempatan}', [HubinSkeletonController::class, 'destroyPenempatan'])->name('penempatan-pkl.destroy');
+                Route::get('monitoring-pkl', [HubinSkeletonController::class, 'monitoringPkl'])->name('monitoring-pkl.index');
+                Route::post('monitoring-pkl', [HubinSkeletonController::class, 'storeMonitoring'])->name('monitoring-pkl.store');
+                Route::put('monitoring-pkl/{monitoring}', [HubinSkeletonController::class, 'updateMonitoring'])->name('monitoring-pkl.update');
+                Route::delete('monitoring-pkl/{monitoring}', [HubinSkeletonController::class, 'destroyMonitoring'])->name('monitoring-pkl.destroy');
+            });
 
             Route::get('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'index'])->name('pemanggilan-ortu.index');
             Route::post('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'store'])->name('pemanggilan-ortu.store');
@@ -363,6 +383,19 @@ Route::middleware(['auth', 'role:guru_mapel'])
         Route::get('absensi', [GuruAbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/{jadwal}/input', [GuruAbsensiController::class, 'input'])->name('absensi.input');
         Route::post('absensi/{jadwal}/input', [GuruAbsensiController::class, 'store'])->name('absensi.store');
+        Route::get('rekomendasi-pkl', [RekomendasiPklController::class, 'index'])->name('rekomendasi-pkl.index');
+        Route::get('rekomendasi-pkl/export', [RekomendasiPklController::class, 'export'])->name('rekomendasi-pkl.export');
+        Route::prefix('hubin')->name('hubin.')->group(function () {
+            Route::get('data-dudi', [HubinSkeletonController::class, 'dataDudi'])->name('data-dudi.index');
+            Route::post('data-dudi', [HubinSkeletonController::class, 'storeDudi'])->name('data-dudi.store');
+            Route::put('data-dudi/{dudi}', [HubinSkeletonController::class, 'updateDudi'])->name('data-dudi.update');
+            Route::get('penempatan-pkl', [HubinSkeletonController::class, 'penempatanPkl'])->name('penempatan-pkl.index');
+            Route::post('penempatan-pkl', [HubinSkeletonController::class, 'storePenempatan'])->name('penempatan-pkl.store');
+            Route::put('penempatan-pkl/{penempatan}', [HubinSkeletonController::class, 'updatePenempatan'])->name('penempatan-pkl.update');
+            Route::get('monitoring-pkl', [HubinSkeletonController::class, 'monitoringPkl'])->name('monitoring-pkl.index');
+            Route::post('monitoring-pkl', [HubinSkeletonController::class, 'storeMonitoring'])->name('monitoring-pkl.store');
+            Route::put('monitoring-pkl/{monitoring}', [HubinSkeletonController::class, 'updateMonitoring'])->name('monitoring-pkl.update');
+        });
 
         Route::get('tujuan-pembelajaran/{pembelajaran}', [TujuanPembelajaranController::class, 'index'])
             ->name('tp.index');
@@ -492,6 +525,8 @@ Route::middleware(['auth', 'role:guru_mapel'])
             Route::get('bk', [DataBkController::class, 'index'])->name('bk.index');
             Route::post('bk', [DataBkController::class, 'store'])->name('bk.store');
             Route::get('bk/riwayat/{siswa}', [DataBkController::class, 'riwayat'])->name('bk.riwayat');
+            Route::get('rekomendasi-pkl', [RekomendasiPklController::class, 'index'])->name('rekomendasi-pkl.index');
+            Route::get('rekomendasi-pkl/export', [RekomendasiPklController::class, 'export'])->name('rekomendasi-pkl.export');
 
 
             Route::prefix('rapor')->name('rapor.')->group(function () {
@@ -563,6 +598,22 @@ Route::middleware(['auth', 'role:bk'])
         Route::put('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'update'])->name('peminatan.update');
         Route::delete('peminatan-siswa/{peminatanSiswa}', [PeminatanSiswaController::class, 'destroy'])->name('peminatan.destroy');
         Route::get('absensi-bulanan', [AbsensiBulananController::class, 'index'])->name('absensi-bulanan.index');
+        Route::get('rekomendasi-pkl', [RekomendasiPklController::class, 'index'])->name('rekomendasi-pkl.index');
+        Route::get('rekomendasi-pkl/export', [RekomendasiPklController::class, 'export'])->name('rekomendasi-pkl.export');
+        Route::prefix('hubin')->name('hubin.')->group(function () {
+            Route::get('data-dudi', [HubinSkeletonController::class, 'dataDudi'])->name('data-dudi.index');
+            Route::post('data-dudi', [HubinSkeletonController::class, 'storeDudi'])->name('data-dudi.store');
+            Route::put('data-dudi/{dudi}', [HubinSkeletonController::class, 'updateDudi'])->name('data-dudi.update');
+            Route::delete('data-dudi/{dudi}', [HubinSkeletonController::class, 'destroyDudi'])->name('data-dudi.destroy');
+            Route::get('penempatan-pkl', [HubinSkeletonController::class, 'penempatanPkl'])->name('penempatan-pkl.index');
+            Route::post('penempatan-pkl', [HubinSkeletonController::class, 'storePenempatan'])->name('penempatan-pkl.store');
+            Route::put('penempatan-pkl/{penempatan}', [HubinSkeletonController::class, 'updatePenempatan'])->name('penempatan-pkl.update');
+            Route::delete('penempatan-pkl/{penempatan}', [HubinSkeletonController::class, 'destroyPenempatan'])->name('penempatan-pkl.destroy');
+            Route::get('monitoring-pkl', [HubinSkeletonController::class, 'monitoringPkl'])->name('monitoring-pkl.index');
+            Route::post('monitoring-pkl', [HubinSkeletonController::class, 'storeMonitoring'])->name('monitoring-pkl.store');
+            Route::put('monitoring-pkl/{monitoring}', [HubinSkeletonController::class, 'updateMonitoring'])->name('monitoring-pkl.update');
+            Route::delete('monitoring-pkl/{monitoring}', [HubinSkeletonController::class, 'destroyMonitoring'])->name('monitoring-pkl.destroy');
+        });
         Route::get('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'index'])->name('pemanggilan-ortu.index');
         Route::post('pemanggilan-orang-tua', [PemanggilanOrangTuaController::class, 'store'])->name('pemanggilan-ortu.store');
         Route::put('pemanggilan-orang-tua/{pemanggilanOrtu}', [PemanggilanOrangTuaController::class, 'update'])->name('pemanggilan-ortu.update');

@@ -473,6 +473,49 @@
             </ul>
           </li>
 
+          {{-- HUBIN --}}
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-industry"></i>
+              <p>
+                Hubin
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.rekomendasi-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Rekomendasi PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.hubin.data-dudi.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data DU/DI</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.hubin.penempatan-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Penempatan PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.hubin.monitoring-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Monitoring PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.bk.rekomendasi-pkl.settings') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pengaturan PKL</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           {{-- KOKURIKULER --}}
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -612,6 +655,43 @@
               </li>
             </ul>
           </li>
+
+          {{-- HUBIN --}}
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-industry"></i>
+              <p>
+                Hubin
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('bk.rekomendasi-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Rekomendasi PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.hubin.data-dudi.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data DU/DI</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.hubin.penempatan-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Penempatan PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bk.hubin.monitoring-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Monitoring PKL</p>
+                </a>
+              </li>
+            </ul>
+          </li>
           @endif
           {{-- =============== END BK =============== --}}
 
@@ -641,6 +721,44 @@
               <p>Absensi Mapel</p>
             </a>
           </li>
+
+          @if($user && ($user->hasRole('pembimbing_pkl') || $user->hasRole('wali_kelas') || $isWali))
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-industry"></i>
+              <p>
+                Hubin
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('guru.rekomendasi-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Rekomendasi PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('guru.hubin.data-dudi.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Data DU/DI</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('guru.hubin.penempatan-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Penempatan PKL</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('guru.hubin.monitoring-pkl.index') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Monitoring PKL</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          @endif
 
           {{-- KOKURIKULER --}}
           @if($isKoordinator)
@@ -714,6 +832,7 @@
                       <p>BK</p>
                     </a>
                   </li>
+
                 </ul>
               </li>
 
