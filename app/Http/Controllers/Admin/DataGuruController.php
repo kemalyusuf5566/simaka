@@ -9,6 +9,7 @@ use App\Models\DataGuru;
 use App\Models\Peran;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -165,7 +166,18 @@ class DataGuruController extends Controller
     public function destroy($id)
     {
         $guru = DataGuru::with('pengguna')->findOrFail($id);
-        $guru->pengguna?->delete();
+        try {
+            if ($guru->pengguna) {
+                $guru->pengguna->delete();
+            } else {
+                $guru->delete();
+            }
+        } catch (QueryException $e) {
+            if ((string) $e->getCode() === '23000') {
+                return back()->with('error', 'Guru tidak bisa dihapus karena masih dipakai pada data lain (mis. jadwal atau absensi).');
+            }
+            throw $e;
+        }
 
         return back()->with('success', 'Guru berhasil dihapus');
     }
@@ -184,18 +196,36 @@ class DataGuruController extends Controller
         }
 
         $guruList = DataGuru::with('pengguna')->whereIn('id', $ids)->get();
+        $deleted = 0;
+        $blocked = 0;
 
-        DB::transaction(function () use ($guruList) {
-            foreach ($guruList as $g) {
-                if ($g->pengguna) {
-                    $g->pengguna->delete();
-                } else {
-                    $g->delete();
+        foreach ($guruList as $g) {
+            try {
+                DB::transaction(function () use ($g) {
+                    if ($g->pengguna) {
+                        $g->pengguna->delete();
+                    } else {
+                        $g->delete();
+                    }
+                });
+                $deleted++;
+            } catch (QueryException $e) {
+                if ((string) $e->getCode() === '23000') {
+                    $blocked++;
+                    continue;
                 }
+                throw $e;
             }
-        });
+        }
 
-        return back()->with('success', 'Beberapa data guru berhasil dihapus.');
+        if ($deleted > 0 && $blocked === 0) {
+            return back()->with('success', "Beberapa data guru berhasil dihapus ({$deleted}).");
+        }
+        if ($deleted > 0 && $blocked > 0) {
+            return back()->with('error', "Sebagian guru dihapus ({$deleted}), {$blocked} data tidak bisa dihapus karena masih dipakai pada data lain.");
+        }
+
+        return back()->with('error', 'Data guru tidak bisa dihapus karena masih dipakai pada data lain (mis. jadwal atau absensi).');
     }
 
     public function importCreate()

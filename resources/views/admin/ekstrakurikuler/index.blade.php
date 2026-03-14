@@ -43,7 +43,7 @@
                 data-status="{{ (int) $e->status_aktif }}">
               <td>{{ $i + 1 }}</td>
               <td>{{ $e->nama_ekskul }}</td>
-              <td>{{ $e->pembina->pengguna->nama ?? '-' }}</td>
+              <td>{{ $e->pembina->nama ?? $e->pembina_nama ?? '-' }}</td>
               <td>{{ $e->anggota_count ?? 0 }}</td>
               <td>
                 <button type="button"
@@ -107,7 +107,7 @@
             <select name="pembina_id" class="form-control">
               <option value="">-- Pilih --</option>
               @foreach($pembina as $p)
-                <option value="{{ $p->id }}">{{ $p->pengguna->nama ?? '-' }}</option>
+                <option value="{{ $p->pengguna_id }}">{{ $p->pengguna->nama ?? '-' }}</option>
               @endforeach
             </select>
           </div>
@@ -171,7 +171,7 @@
             <select name="pembina_id" id="edit_pembina" class="form-control">
               <option value="">-- Pilih --</option>
               @foreach($pembina as $p)
-                <option value="{{ $p->id }}">{{ $p->pengguna->nama ?? '-' }}</option>
+                <option value="{{ $p->pengguna_id }}">{{ $p->pengguna->nama ?? '-' }}</option>
               @endforeach
             </select>
           </div>
@@ -221,7 +221,7 @@
           <select class="form-control" id="filter_pembina">
             <option value="">-- Pilih --</option>
             @foreach($pembina as $p)
-              <option value="{{ $p->id }}">{{ $p->pengguna->nama ?? '-' }}</option>
+              <option value="{{ $p->pengguna_id }}">{{ $p->pengguna->nama ?? '-' }}</option>
             @endforeach
           </select>
         </div>

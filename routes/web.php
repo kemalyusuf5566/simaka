@@ -81,6 +81,31 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::middleware('auth')->get('/dashboard', function () {
+    $user = auth()->user();
+
+    if (!$user) {
+        return redirect('/');
+    }
+
+    $role = $user->peran->nama_peran ?? null;
+
+    if ($role === 'admin' || $user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($role === 'guru_mapel' || $user->hasRole('guru_mapel')) {
+        return redirect()->route('guru.dashboard');
+    }
+
+    if ($role === 'bk' || $user->hasRole('bk')) {
+        return redirect()->route('bk.dashboard');
+    }
+
+    return redirect('/')
+        ->with('error', 'Akun Anda belum memiliki akses modul. Hubungi admin.');
+})->name('dashboard');
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA
@@ -200,6 +225,10 @@ Route::middleware(['auth', 'role:admin'])
         
 
         // PEMBELAJRAN
+        Route::get('pembelajaran/import/format', [DataPembelajaranController::class, 'downloadFormatImport'])
+            ->name('pembelajaran.import.format');
+        Route::post('pembelajaran/import', [DataPembelajaranController::class, 'import'])
+            ->name('pembelajaran.import');
         Route::resource('pembelajaran', DataPembelajaranController::class);
         Route::get('pembelajaran/{id}/json', [DataPembelajaranController::class, 'json'])
             ->name('pembelajaran.json');
@@ -217,6 +246,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('absensi', [AdminAbsensiController::class, 'index'])->name('absensi.index');
         Route::get('absensi/{kelas}/rekap', [AdminAbsensiController::class, 'rekap'])->name('absensi.rekap');
         Route::get('absensi-jadwal', [AdminAbsensiController::class, 'jadwal'])->name('absensi.jadwal');
+        Route::get('absensi-jadwal/import/format', [AdminAbsensiController::class, 'jadwalDownloadFormatImport'])->name('absensi.jadwal.import.format');
+        Route::post('absensi-jadwal/import', [AdminAbsensiController::class, 'jadwalImport'])->name('absensi.jadwal.import');
         Route::post('absensi-jadwal', [AdminAbsensiController::class, 'jadwalStore'])->name('absensi.jadwal.store');
         Route::delete('absensi-jadwal/{id}', [AdminAbsensiController::class, 'jadwalDestroy'])->name('absensi.jadwal.destroy');
 

@@ -47,7 +47,7 @@
         <div class="col-md-9">: {{ $ekskul->nama_ekskul ?? $ekskul->nama_ekstrakurikuler ?? '-' }}</div>
 
         <div class="col-md-3 font-weight-bold mt-2">Pembina</div>
-        <div class="col-md-9 mt-2">: {{ $ekskul->pembina_nama ?? ($ekskul->pembina?->pengguna?->nama ?? '-') }}</div>
+        <div class="col-md-9 mt-2">: {{ $ekskul->pembina_nama ?? ($ekskul->pembina?->nama ?? '-') }}</div>
       </div>
     </div>
   </div>

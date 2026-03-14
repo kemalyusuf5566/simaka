@@ -1,0 +1,2405 @@
+[
+    {
+        "nis": "23241002",
+        "nama_siswa": "Abdullah Azzam",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241002",
+        "nama_siswa": "Ahmad Rizky Firdaus",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241003",
+        "nama_siswa": "Alif Adi Gunanto",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241004",
+        "nama_siswa": "Andhika Maulana Pratama",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241005",
+        "nama_siswa": "Andhika Zaelani",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241006",
+        "nama_siswa": "Arfan Fadlan Ma'arij",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241007",
+        "nama_siswa": "Bagas Maulana  Nurhakim",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241008",
+        "nama_siswa": "Dean Mulia",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241009",
+        "nama_siswa": "Dimas Priatna",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241010",
+        "nama_siswa": "Farel Miftakhur Risqi",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241011",
+        "nama_siswa": "Iman Pasha Rahman",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241012",
+        "nama_siswa": "Indah Maryani",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241013",
+        "nama_siswa": "Ira Sapitri",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241014",
+        "nama_siswa": "Kevin Andrian",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241015",
+        "nama_siswa": "M Ikhsan Al Farizi",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241016",
+        "nama_siswa": "Muchammad Farrel Jonaidi",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241017",
+        "nama_siswa": "Muhamad Rafli",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241018",
+        "nama_siswa": "Muhamad Rasya Gading",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241019",
+        "nama_siswa": "Muhammad Ayatuloh Khomeini",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241020",
+        "nama_siswa": "Muhammad Bintang Arya Fardhana",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241021",
+        "nama_siswa": "Muhammad Gibran",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241022",
+        "nama_siswa": "Muhammad Haikal",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241023",
+        "nama_siswa": "Muhammad Syamsul Arifin",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241024",
+        "nama_siswa": "Nabil Permana",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241025",
+        "nama_siswa": "Naila Tazziatun Nufus",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241026",
+        "nama_siswa": "Randy Novael Putra",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241027",
+        "nama_siswa": "Rasli Nimas Larasati",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241028",
+        "nama_siswa": "Raya Surya Tama",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241029",
+        "nama_siswa": "Salwa Arensta",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241030",
+        "nama_siswa": "Syafa Oktavia Pratiwi",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241031",
+        "nama_siswa": "Timotius Geloir Making",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241032",
+        "nama_siswa": "Wildan Salsabil",
+        "tingkat": "XII",
+        "kelas": "XII-PNC",
+        "jurusan": "TITL",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241033",
+        "nama_siswa": "Abil Fida Ismail",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241034",
+        "nama_siswa": "Ahmad Indra Saputra Jaya",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241035",
+        "nama_siswa": "Dahlia Febrianti",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241036",
+        "nama_siswa": "Dio Apriyansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241037",
+        "nama_siswa": "Fadhil Ahmad Muzakki",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241038",
+        "nama_siswa": "Ilham Lulzaki",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241039",
+        "nama_siswa": "Jehan Hariyanto Ramadhani",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241040",
+        "nama_siswa": "Kevin Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241041",
+        "nama_siswa": "Mohamad Rizki",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241042",
+        "nama_siswa": "Muhamad Farish Herdiansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241043",
+        "nama_siswa": "Muhammad  Majid Aldiyansah",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241044",
+        "nama_siswa": "Muhammad Adhitya Mubarok",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241045",
+        "nama_siswa": "Muhammad Aksa Saptudi Maulana",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241046",
+        "nama_siswa": "Niken Rusdiyanto",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241047",
+        "nama_siswa": "Putra  Wijaya Kusuma  Pane",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241048",
+        "nama_siswa": "Rangga Pratama Sukmawardana",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241049",
+        "nama_siswa": "Rasya Adi Saputra",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241050",
+        "nama_siswa": "Rasya De Silva Putra Cahya Nirwana",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241051",
+        "nama_siswa": "Restu Hadyka Wildan",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241052",
+        "nama_siswa": "Riski Darmawan",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241053",
+        "nama_siswa": "Sony Adipurnama",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241054",
+        "nama_siswa": "Supriyatna",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241055",
+        "nama_siswa": "Teja Adiatna",
+        "tingkat": "XII",
+        "kelas": "XII_TP",
+        "jurusan": "TP",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241056",
+        "nama_siswa": "Aang Kurniawan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241057",
+        "nama_siswa": "Aditya Sebastian",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241058",
+        "nama_siswa": "Aji Nugroho",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241059",
+        "nama_siswa": "Akhdan As'ad",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241060",
+        "nama_siswa": "Alvin Rahman Febriansyah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241061",
+        "nama_siswa": "Arya Jayadi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241062",
+        "nama_siswa": "Arya Khoerul Muna",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241063",
+        "nama_siswa": "Chandra Bayu Aji",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241064",
+        "nama_siswa": "Dimas Mahar Muharram",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241065",
+        "nama_siswa": "El Shirazy Adistyan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241066",
+        "nama_siswa": "Fadlan Maulana Azis",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241067",
+        "nama_siswa": "Fadli Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241068",
+        "nama_siswa": "Fahreza Prasetya",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241069",
+        "nama_siswa": "Fahrul  Rozi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241070",
+        "nama_siswa": "Farhan Nur Arifin",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241071",
+        "nama_siswa": "Fatir Muhamad",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241072",
+        "nama_siswa": "Fausi Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241073",
+        "nama_siswa": "Galang Adi Sujatmiko",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241074",
+        "nama_siswa": "Hafis Aditya Dwi Nugraha",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241075",
+        "nama_siswa": "Hamka Hamzah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241076",
+        "nama_siswa": "Kahfi Fauziah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241077",
+        "nama_siswa": "M. Rizki Firdaus",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241078",
+        "nama_siswa": "Muhamad Triwahyudi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241079",
+        "nama_siswa": "Muhammad Arifin Ilham",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241080",
+        "nama_siswa": "Muhammad Fahri Dzakwan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241081",
+        "nama_siswa": "Muhammad Fikri Alfarizi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241082",
+        "nama_siswa": "Muhammad Fiqri Zinedin Abdillah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241083",
+        "nama_siswa": "Muhammad Izwa  Jaga Bangsa",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241084",
+        "nama_siswa": "Muhammad Noval Riyadi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241085",
+        "nama_siswa": "Muhammad Rizky Nurul Huda",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241086",
+        "nama_siswa": "Muhammad Satria Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241087",
+        "nama_siswa": "Nofaizal Santoso",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241088",
+        "nama_siswa": "Pavel Zupar Setiadi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241089",
+        "nama_siswa": "Rangga Yudi Prasetyo",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241090",
+        "nama_siswa": "Rido Andika Pratama",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241091",
+        "nama_siswa": "Riky Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241092",
+        "nama_siswa": "Steven Rasyahadi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241093",
+        "nama_siswa": "Surya Dwi Andira",
+        "tingkat": "XII",
+        "kelas": "XII-PBD1",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241094",
+        "nama_siswa": "Ade Rahmat Hidayat",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241095",
+        "nama_siswa": "Agung Hadi Wijaji",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241096",
+        "nama_siswa": "Ahmad Rifai",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241097",
+        "nama_siswa": "Ahmad Rizik",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241098",
+        "nama_siswa": "Adji Restu",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241099",
+        "nama_siswa": "Akbar Al- Ayyubi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241100",
+        "nama_siswa": "Ali Zainur Rahman",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241101",
+        "nama_siswa": "Alvin Surachman",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241102",
+        "nama_siswa": "Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241103",
+        "nama_siswa": "Dhirham Fadhillah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241104",
+        "nama_siswa": "Dimas Nadhar Pambudi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241105",
+        "nama_siswa": "Eka Rizky Maulidan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241106",
+        "nama_siswa": "Fathi Aryu Tanjung",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241107",
+        "nama_siswa": "Fathir Syahid Albany",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241108",
+        "nama_siswa": "Ilyas Dwi Dharmawan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241109",
+        "nama_siswa": "Khafka Handi Saputra",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241110",
+        "nama_siswa": "M. Alfi Fahlevi",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241111",
+        "nama_siswa": "M. Faray Al Farizi R",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241112",
+        "nama_siswa": "M. Fauzi Romadoni",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241113",
+        "nama_siswa": "M. Satria Al-Fazri",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241114",
+        "nama_siswa": "Muhamad Akmaludin",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241115",
+        "nama_siswa": "Muhammad Ilham Hartawan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241116",
+        "nama_siswa": "Muhammad Ja'far Al Furqon",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241117",
+        "nama_siswa": "Muhammad Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241118",
+        "nama_siswa": "Muhammad Reyhan Azwir",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241119",
+        "nama_siswa": "Nural Shadiqa Rinjani",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241120",
+        "nama_siswa": "Rafa Zatrya Firlandariez",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241121",
+        "nama_siswa": "Raihan Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241122",
+        "nama_siswa": "Rendy Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241123",
+        "nama_siswa": "Reyvan Al Habsy",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241124",
+        "nama_siswa": "Riffaan Ramadhani",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241125",
+        "nama_siswa": "Rochman Saputra",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241126",
+        "nama_siswa": "Saripudin",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241127",
+        "nama_siswa": "Yusuf Maulana",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241128",
+        "nama_siswa": "Zaki Al Bukhory",
+        "tingkat": "XII",
+        "kelas": "XII-PBD2",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241129",
+        "nama_siswa": "Abdul Latif Bafadal",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241130",
+        "nama_siswa": "Agung",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241131",
+        "nama_siswa": "Alviano Aji Pamungkas",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241132",
+        "nama_siswa": "Andriansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241133",
+        "nama_siswa": "Ardhian Syahputra",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241134",
+        "nama_siswa": "Ardian Fajar Maulana",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241135",
+        "nama_siswa": "Awan Apriyansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241136",
+        "nama_siswa": "Bayu Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241137",
+        "nama_siswa": "Ega Syeptiyah Ramdan",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241138",
+        "nama_siswa": "Faaiz Ibnu Abdullah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241139",
+        "nama_siswa": "Fatwa Maulana Sidiq",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241140",
+        "nama_siswa": "Ferry Harliansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241141",
+        "nama_siswa": "Fikri Maulana",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241142",
+        "nama_siswa": "Fradiva Aldy  Pasha",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241143",
+        "nama_siswa": "Gur Darta",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241144",
+        "nama_siswa": "Hari Bukori",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241145",
+        "nama_siswa": "Hendika Santoso",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241146",
+        "nama_siswa": "Ihsan Kamal",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241147",
+        "nama_siswa": "Mardani",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241148",
+        "nama_siswa": "Maulana Hasan",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241149",
+        "nama_siswa": "Moh. Diki Samintra",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241150",
+        "nama_siswa": "Muhammad Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241151",
+        "nama_siswa": "Nadia Putri Nugraha",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241152",
+        "nama_siswa": "Nurul Aini Zeta",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241153",
+        "nama_siswa": "Putra Kusuma Marta Dipraja",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241154",
+        "nama_siswa": "Raka Aditya Pratama",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241155",
+        "nama_siswa": "Raka Dwi Hedriyan",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241156",
+        "nama_siswa": "Ramdan Maulana",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241157",
+        "nama_siswa": "Rio Firmansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241158",
+        "nama_siswa": "Rizal Agustian",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241159",
+        "nama_siswa": "Roma Irama",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241160",
+        "nama_siswa": "Sabilillah Darmawan",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241161",
+        "nama_siswa": "Sahrul Ardiansyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241162",
+        "nama_siswa": "Tegar Fahrul M",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241163",
+        "nama_siswa": "Tegar Prayoga",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241164",
+        "nama_siswa": "Yoga Herlangga",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241165",
+        "nama_siswa": "Yusuf Maulana",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241166",
+        "nama_siswa": "Muhammad Faiz Al Ghazi",
+        "tingkat": "XII",
+        "kelas": "XII_TKRO",
+        "jurusan": "TKRO",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241167",
+        "nama_siswa": "Anwar Ibrahim",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241168",
+        "nama_siswa": "Arla Kusmawati Dewi",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241169",
+        "nama_siswa": "Aziz Suryo Wibowo",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241170",
+        "nama_siswa": "Cahaya Dwi Putri Melani",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241171",
+        "nama_siswa": "Cindy Santika",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241172",
+        "nama_siswa": "Daffa Hudi Taufiqul Hakim",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241173",
+        "nama_siswa": "Davina Nurnaini",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241174",
+        "nama_siswa": "Dinda Putri Rahmawati",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241175",
+        "nama_siswa": "Enggar Alif Nansyah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241176",
+        "nama_siswa": "Esti Dwi Anggraeni",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241177",
+        "nama_siswa": "Faishal Alzam Budiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241178",
+        "nama_siswa": "Gladys Jihan Nita",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241179",
+        "nama_siswa": "Indiansyah Rahmadhon",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241180",
+        "nama_siswa": "Kalila Ayumi Hamasaki",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241181",
+        "nama_siswa": "Mayang Sari",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241182",
+        "nama_siswa": "Maysya Maghfirotul Azizah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241183",
+        "nama_siswa": "Muhamad Irfan Maulana",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241184",
+        "nama_siswa": "Muhammad Fardan Wijaya",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241185",
+        "nama_siswa": "Muhammad Hanif",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241186",
+        "nama_siswa": "Muhammad Kahfi",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241187",
+        "nama_siswa": "Muhammad Rizki Muzzaki",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241188",
+        "nama_siswa": "Mutia Larasati Satovic",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241189",
+        "nama_siswa": "Mutiara Ramadina",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241190",
+        "nama_siswa": "Nurul Fadilah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241191",
+        "nama_siswa": "Paramita Mentari",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241192",
+        "nama_siswa": "Fuji Astuti",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241193",
+        "nama_siswa": "Revaldo Milano",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241194",
+        "nama_siswa": "Risti Putri Alpiyani",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241195",
+        "nama_siswa": "Salim",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241196",
+        "nama_siswa": "Sera Putri Ayu",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241197",
+        "nama_siswa": "Suci Anggita Sari",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241198",
+        "nama_siswa": "Tevyra Anindya",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241199",
+        "nama_siswa": "Zaky Ar-Rafii",
+        "tingkat": "XII",
+        "kelas": "XII-ACP1",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241200",
+        "nama_siswa": "Afkar Zain Mubarok",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241201",
+        "nama_siswa": "Ahmad Fauzi Efendi",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241202",
+        "nama_siswa": "Alexa Dwi Anjani",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241203",
+        "nama_siswa": "Arsya Herdiansyah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241204",
+        "nama_siswa": "Chesari Adwa Fadiyah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241205",
+        "nama_siswa": "Egy Nur Rokhim Saputra",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241206",
+        "nama_siswa": "Muhammad Kaka Alfarisi",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241207",
+        "nama_siswa": "Nimas Sekar Kinanti",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241208",
+        "nama_siswa": "Nur Azizah",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241209",
+        "nama_siswa": "Putri Larasati",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241210",
+        "nama_siswa": "Rania Tanjung",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241211",
+        "nama_siswa": "Sendi Saputra",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241212",
+        "nama_siswa": "Sintiya Sari",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241213",
+        "nama_siswa": "Suci Kania Dewi",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241214",
+        "nama_siswa": "Taufik Yahya",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241215",
+        "nama_siswa": "Zachra Tusyita Nur Hermayanti",
+        "tingkat": "XII",
+        "kelas": "XII-ACP2",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241216",
+        "nama_siswa": "Ajeng Roro Yuliani",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241217",
+        "nama_siswa": "Hafidz Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241218",
+        "nama_siswa": "Halima Tussadiyah",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241219",
+        "nama_siswa": "Karmila",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241220",
+        "nama_siswa": "Kholifahtun Nadia",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241221",
+        "nama_siswa": "Muhammad Bayu Shiddiq",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241222",
+        "nama_siswa": "Muhammad Ikhsan",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241223",
+        "nama_siswa": "Nela Purnamasari",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241224",
+        "nama_siswa": "Nia Pratiwi",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241225",
+        "nama_siswa": "Nur Azizah",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241226",
+        "nama_siswa": "Raka Bayu Prasetyo",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241227",
+        "nama_siswa": "Salwa Nuraini",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241228",
+        "nama_siswa": "Syarah Aulia",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241229",
+        "nama_siswa": "Syifa Hairunisa",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241230",
+        "nama_siswa": "Syuaibah",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241231",
+        "nama_siswa": "Zahra Wulansari",
+        "tingkat": "XII",
+        "kelas": "XII_TKJ",
+        "jurusan": "TKJ",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241232",
+        "nama_siswa": "Aswita Septriani",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241233",
+        "nama_siswa": "Aulia Sabila",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241234",
+        "nama_siswa": "Ayu Agustin",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241235",
+        "nama_siswa": "Cantik Anissa Salsabilla",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241236",
+        "nama_siswa": "Dicka Hurairoh",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241237",
+        "nama_siswa": "Dicky Hurairoh",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241238",
+        "nama_siswa": "Herliana",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241239",
+        "nama_siswa": "Jelita Meisya Dwi Omandita",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241240",
+        "nama_siswa": "Leli Agustina Herawati Wardoyo",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241241",
+        "nama_siswa": "Luthfiy Dea Faiqotul Himmah",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241242",
+        "nama_siswa": "Mala",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241243",
+        "nama_siswa": "Maidatu Aulia Mazaya",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241244",
+        "nama_siswa": "Naila Zahra Agustin",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241245",
+        "nama_siswa": "Nazwa Apriana",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241246",
+        "nama_siswa": "Rahma Lia Rahmadani",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241247",
+        "nama_siswa": "Raisyah Husnul Hardiana",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241248",
+        "nama_siswa": "Ratu Jagad Pramudita",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241249",
+        "nama_siswa": "Regina Putri Leleulya",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241250",
+        "nama_siswa": "Ririn Darmawati",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241251",
+        "nama_siswa": "Sally Agustin",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241252",
+        "nama_siswa": "Salma Antikah Wahyuni",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241253",
+        "nama_siswa": "Sheina Damayanti",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241254",
+        "nama_siswa": "Saskia Vega",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241255",
+        "nama_siswa": "Shela Aulia",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241256",
+        "nama_siswa": "Sherin Dian Ramadhan",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241257",
+        "nama_siswa": "Sinta Lestari",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241258",
+        "nama_siswa": "Siti Husnul Hotimah",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241259",
+        "nama_siswa": "Siti Laudiya",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241260",
+        "nama_siswa": "Siti Zakiyatusholihah",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241261",
+        "nama_siswa": "Sri Yeni",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241262",
+        "nama_siswa": "Suci Mahdalena",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241263",
+        "nama_siswa": "Tania Catur Indah Sari",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241264",
+        "nama_siswa": "Vira Angellika Prasetia",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241265",
+        "nama_siswa": "Wiwied Widya Ningrum Nurhidayati",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241266",
+        "nama_siswa": "Yulia Hani",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    },
+    {
+        "nis": "23241267",
+        "nama_siswa": "Anisa Reva Oktavia",
+        "tingkat": "XII",
+        "kelas": "XII_MPLB",
+        "jurusan": "MPLB",
+        "agama": "ISLAM",
+        "jk": "LAKI-LAKI"
+    }
+]

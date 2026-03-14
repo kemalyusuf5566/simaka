@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ComprehensiveDummySeeder extends Seeder
 {
@@ -21,6 +22,7 @@ class ComprehensiveDummySeeder extends Seeder
                 );
             }
             $roleIds = DB::table('peran')->pluck('id', 'nama_peran');
+            $this->resetAcademicSeedData((int) ($roleIds['guru_mapel'] ?? 0));
 
             $users = [
                 ['email' => 'admin@simaka.test', 'nama' => 'Administrator', 'role' => 'admin'],
@@ -123,6 +125,7 @@ class ComprehensiveDummySeeder extends Seeder
                     ]
                 );
             }
+            $guruRealIds = $this->seedRealTeachers((int) ($roleIds['guru_mapel'] ?? 0), $now);
 
             $kelasRows = [
                 ['nama_kelas' => 'X RPL 1', 'tingkat' => 'X', 'jurusan_id' => $jurusan['RPL'], 'wali_kelas_id' => $pengguna['wali@simaka.test']],
@@ -398,7 +401,575 @@ class ComprehensiveDummySeeder extends Seeder
                     ['status_monitoring' => 'Baik', 'topik_monitoring' => 'Disiplin dan teknis', 'catatan' => 'Perkembangan baik.', 'skor_kinerja' => 85, 'tindak_lanjut' => 'Lanjutkan target berikutnya.', 'created_by' => $pengguna['bk@simaka.test'], 'updated_by' => $pengguna['bk@simaka.test'], 'created_at' => $now, 'updated_at' => $now]
                 );
             }
+
+            $this->seedRealStudentsFromJson($tahunId, $sekolahId, $guruRealIds, $now);
+            $this->seedRealJadwalFromExtract($tahunId, $sekolahId, $guruRealIds, $now);
         });
+    }
+
+    private function resetAcademicSeedData(int $guruRoleId): void
+    {
+        // Hapus data turunan dulu agar aman terhadap foreign key.
+        $tables = [
+            'absensi_jam_siswa',
+            'jadwal_pelajaran',
+            'nilai_mapel_siswa_tujuan',
+            'nilai_mapel_siswa',
+            'leger_nilai',
+            'tujuan_pembelajaran',
+            'data_pembelajaran',
+            'kk_nilai',
+            'kk_capaian_akhir',
+            'kk_kelompok_kegiatan',
+            'kk_kelompok_anggota',
+            'kk_kelompok',
+            'kk_kegiatan',
+            'kk_dimensi',
+            'ekskul_anggota',
+            'data_ekstrakurikuler',
+            'bk_pelanggaran_siswa',
+            'bk_pembinaan_siswa',
+            'bk_home_visit',
+            'bk_pemanggilan_orang_tua',
+            'bk_perjanjian_siswa',
+            'bk_pengunduran_diri',
+            'bk_peminatan_siswa',
+            'bk_sikap_siswa',
+            'data_bk',
+            'hubin_monitoring_pkl_logs',
+            'hubin_penempatan_pkl',
+            'hubin_dudi',
+            'hubin_rekomendasi_pkl_settings',
+            'catatan_wali_kelas',
+            'data_ketidakhadiran',
+            'hari_libur',
+            'data_siswa',
+            'data_kelas',
+        ];
+
+        foreach ($tables as $table) {
+            DB::table($table)->delete();
+        }
+
+        if ($guruRoleId > 0) {
+            $guruIds = DB::table('pengguna')
+                ->where('peran_id', $guruRoleId)
+                ->pluck('id')
+                ->all();
+
+            if ($guruIds !== []) {
+                DB::table('data_guru')->whereIn('pengguna_id', $guruIds)->delete();
+                DB::table('pengguna_peran')->whereIn('pengguna_id', $guruIds)->delete();
+                DB::table('pengguna')->whereIn('id', $guruIds)->delete();
+            }
+        }
+    }
+
+    private function seedRealTeachers(int $guruRoleId, $now): array
+    {
+        if ($guruRoleId <= 0) {
+            return [];
+        }
+
+        $teacherNames = [
+            'Acep Adit, S.Hum', 'Aditya Rachman Mulana, S.Tr.T', 'Agus Prasetio, S.Pd', 'Agus Sobari',
+            'Ahmad Rafif Fauzi, S.Pd', 'Ai Cahyaningsih, S.Pd', 'Aldi Ridwan, S.E', 'Amelia Sugiharti',
+            'Anggita Eka Sowandini, S.Li', 'Annisa Luthfiastuti, S.Pd', 'Aris Makmudin', 'Arya Wijaya Kusuma',
+            'Astina, SE', 'Bisri Mustofa, S.Pd', 'Baskoro Ahnaf Nugroho, S.Kom', 'Diah Lutfi Khasani, S.Pd',
+            'Dian Resti Kurniawati, S.S', 'Dimas Riki Adam', 'Dra. Mulyati', 'Dwiayu Hadilawati, S.Pi',
+            'Eva Farhati, S.H.I, S.Pd.I', 'Finny Robbyatul Adawaiyah, S.Pd', 'Ida Zubaedah, S.Psi',
+            'Imam Al Muharramain, S.Pd', 'Isna Ahwati, S.Pd', 'Kemal Yusuf Noviandi, S.Kom',
+            'M. Estty Mei Indrayani, S.Pd', 'Muhammad Mahmudin, ST', 'Muhammad Febriansyah. M, S.Kom',
+            'Muhammad Robi Sani', 'Murjiyanto', 'Nisa Farra Ulya, S.Pd', 'Nur Auliya Rahmawati, S.Pd',
+            'Nurul Fauziah, S. I.Kom', 'Purwanti Hersriasih, SE', 'Rezza Denis Setiawan', 'Ria Mariana, S.Pd',
+            'Rifda Zulfiana, S.Pd', 'Rizal Eko Mustofa, S.Pd', 'Saepul Hiar', 'Sapto Adi Putro, ST',
+            'Siti Musyifah, S.Pd', 'Siti Zubaedah', 'Ujang Saepul Bahri, ST', 'Umin, ST',
+            'Wachyudin, S.Pd.I', 'Wahyu Adi Luhur Prinanto, A.Md', 'Yogi Prasetyo',
+        ];
+
+        $ids = [];
+        foreach ($teacherNames as $i => $name) {
+            $slug = Str::slug(Str::limit($name, 40, ''), '.');
+            $email = ($slug !== '' ? $slug : ('guru.' . ($i + 1))) . '@simaka.test';
+
+            DB::table('pengguna')->updateOrInsert(
+                ['email' => $email],
+                [
+                    'peran_id' => $guruRoleId,
+                    'nama' => $name,
+                    'password' => Hash::make('password'),
+                    'status_aktif' => true,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+
+            $penggunaId = (int) DB::table('pengguna')->where('email', $email)->value('id');
+            if ($penggunaId > 0) {
+                DB::table('data_guru')->updateOrInsert(
+                    ['pengguna_id' => $penggunaId],
+                    [
+                        'nip' => null,
+                        'nuptk' => null,
+                        'tempat_lahir' => null,
+                        'tanggal_lahir' => null,
+                        'jenis_kelamin' => 'L',
+                        'alamat' => null,
+                        'telepon' => null,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]
+                );
+                $ids[] = $penggunaId;
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    private function seedRealStudentsFromJson(int $tahunId, int $sekolahId, array $guruIds, $now): void
+    {
+        $files = [
+            base_path('database/data/siswa_x.json'),
+            base_path('database/data/siswa_xi.json'),
+            base_path('database/data/siswa_xii.json'),
+        ];
+
+        $students = [];
+        foreach ($files as $file) {
+            if (!is_file($file)) {
+                continue;
+            }
+            $decoded = json_decode((string) file_get_contents($file), true);
+            if (is_array($decoded)) {
+                $students = array_merge($students, $decoded);
+            }
+        }
+
+        if ($students === [] || $guruIds === []) {
+            return;
+        }
+
+        $jurusanCodes = [];
+        foreach ($students as $row) {
+            $code = strtoupper(trim((string) ($row['jurusan'] ?? '')));
+            if ($code !== '') {
+                $jurusanCodes[$code] = true;
+            }
+        }
+        foreach (array_keys($jurusanCodes) as $code) {
+            DB::table('data_jurusan')->updateOrInsert(
+                ['kode_jurusan' => $code],
+                ['nama_jurusan' => $code, 'status' => 'AKTIF', 'status_aktif' => true, 'created_at' => $now, 'updated_at' => $now]
+            );
+        }
+        $jurusanMap = DB::table('data_jurusan')->pluck('id', 'kode_jurusan')->all();
+
+        $kelasMap = [];
+        $waliIdx = 0;
+        foreach ($students as $row) {
+            $kelas = trim((string) ($row['kelas'] ?? ''));
+            $tingkat = trim((string) ($row['tingkat'] ?? ''));
+            $jurusanCode = strtoupper(trim((string) ($row['jurusan'] ?? '')));
+            if ($kelas === '' || $tingkat === '') {
+                continue;
+            }
+            if (isset($kelasMap[$kelas])) {
+                continue;
+            }
+            $waliId = $guruIds[$waliIdx % count($guruIds)];
+            $waliIdx++;
+
+            DB::table('data_kelas')->updateOrInsert(
+                ['nama_kelas' => $kelas, 'data_tahun_pelajaran_id' => $tahunId],
+                [
+                    'data_sekolah_id' => $sekolahId,
+                    'tingkat' => $tingkat,
+                    'jurusan_id' => $jurusanMap[$jurusanCode] ?? null,
+                    'wali_kelas_id' => $waliId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+            $kelasMap[$kelas] = (int) DB::table('data_kelas')
+                ->where('nama_kelas', $kelas)
+                ->where('data_tahun_pelajaran_id', $tahunId)
+                ->value('id');
+        }
+
+        foreach ($students as $row) {
+            $nis = trim((string) ($row['nis'] ?? ''));
+            $kelas = trim((string) ($row['kelas'] ?? ''));
+            $nama = trim((string) ($row['nama_siswa'] ?? ''));
+            if ($nis === '' || $kelas === '' || !isset($kelasMap[$kelas])) {
+                continue;
+            }
+
+            if ($nama === '' || str_contains($nama, 'System.Xml.XmlElement')) {
+                $nama = 'Siswa ' . $nis;
+            }
+
+            $jkRaw = strtoupper(trim((string) ($row['jk'] ?? '')));
+            $jk = str_contains($jkRaw, 'PEREMPUAN') ? 'P' : 'L';
+            $agama = trim((string) ($row['agama'] ?? 'Islam'));
+            if ($agama === '') {
+                $agama = 'Islam';
+            }
+
+            DB::table('data_siswa')->updateOrInsert(
+                ['nis' => $nis],
+                [
+                    'data_kelas_id' => $kelasMap[$kelas],
+                    'nisn' => null,
+                    'nama_siswa' => $nama,
+                    'jenis_kelamin' => $jk,
+                    'tempat_lahir' => null,
+                    'tanggal_lahir' => null,
+                    'agama' => $agama,
+                    'alamat' => null,
+                    'status_siswa' => 'AKTIF',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+        }
+    }
+
+    private function seedRealJadwalFromExtract(int $tahunId, int $sekolahId, array $guruIds, $now): int
+    {
+        $path = base_path('storage/app/jadwal_xlsx_out.txt');
+        if (!is_file($path)) {
+            return 0;
+        }
+
+        $raw = (string) file_get_contents($path);
+        if (trim($raw) === '') {
+            return 0;
+        }
+
+        $lines = preg_split('/\R/u', $raw) ?: [];
+        $rowTexts = [];
+        $current = null;
+        foreach ($lines as $line) {
+            $line = rtrim($line);
+            if ($line === '' || str_starts_with($line, '===')) {
+                continue;
+            }
+            if (preg_match('/^\d+\|/', $line) === 1) {
+                if ($current !== null) {
+                    $rowTexts[] = $current;
+                }
+                $current = $line;
+            } elseif ($current !== null) {
+                $current .= "\n" . $line;
+            }
+        }
+        if ($current !== null) {
+            $rowTexts[] = $current;
+        }
+
+        $kelasRows = DB::table('data_kelas')
+            ->where('data_tahun_pelajaran_id', $tahunId)
+            ->select('id', 'nama_kelas', 'tingkat', 'jurusan_id')
+            ->get();
+        $kelasByNorm = [];
+        foreach ($kelasRows as $k) {
+            $kelasByNorm[$this->normalizeText((string) $k->nama_kelas)] = [
+                'id' => (int) $k->id,
+                'tingkat' => (string) ($k->tingkat ?? ''),
+                'jurusan_id' => $k->jurusan_id ? (int) $k->jurusan_id : null,
+            ];
+        }
+
+        $jurusanMap = DB::table('data_jurusan')->pluck('id', 'kode_jurusan')->all();
+        $guruIndex = $this->buildGuruNameIndex();
+        $waliIdx = 0;
+        $inserted = 0;
+
+        foreach ($rowTexts as $rowText) {
+            $parts = array_map('trim', explode('|', $rowText));
+            if (count($parts) < 26) {
+                continue;
+            }
+
+            $classRaw = trim((string) ($parts[1] ?? ''));
+            if ($classRaw === '') {
+                continue;
+            }
+            $classUpper = strtoupper($classRaw);
+            if (in_array($classUpper, ['HARI', 'KELAS', 'PIKET'], true) || is_numeric($classRaw) || $classRaw === '\\') {
+                continue;
+            }
+
+            $cells = array_slice($parts, 2, 24);
+            if (count($cells) < 24) {
+                continue;
+            }
+
+            $classNorm = $this->normalizeText($classRaw);
+            $kelasMeta = $kelasByNorm[$classNorm] ?? null;
+            if ($kelasMeta === null) {
+                $meta = $this->inferClassMeta($classRaw);
+                $jurusanCode = $meta['jurusan'];
+                if ($jurusanCode !== null && !isset($jurusanMap[$jurusanCode])) {
+                    DB::table('data_jurusan')->updateOrInsert(
+                        ['kode_jurusan' => $jurusanCode],
+                        ['nama_jurusan' => $jurusanCode, 'status' => 'AKTIF', 'status_aktif' => true, 'created_at' => $now, 'updated_at' => $now]
+                    );
+                    $jurusanMap = DB::table('data_jurusan')->pluck('id', 'kode_jurusan')->all();
+                }
+                $waliId = $guruIds !== [] ? $guruIds[$waliIdx % count($guruIds)] : (int) DB::table('pengguna')->value('id');
+                $waliIdx++;
+
+                DB::table('data_kelas')->updateOrInsert(
+                    ['nama_kelas' => $classRaw, 'data_tahun_pelajaran_id' => $tahunId],
+                    [
+                        'data_sekolah_id' => $sekolahId,
+                        'tingkat' => $meta['tingkat'],
+                        'jurusan_id' => $jurusanCode !== null ? ($jurusanMap[$jurusanCode] ?? null) : null,
+                        'wali_kelas_id' => $waliId,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]
+                );
+                $kelasId = (int) DB::table('data_kelas')
+                    ->where('data_tahun_pelajaran_id', $tahunId)
+                    ->where('nama_kelas', $classRaw)
+                    ->value('id');
+                $kelasMeta = [
+                    'id' => $kelasId,
+                    'tingkat' => $meta['tingkat'],
+                    'jurusan_id' => $jurusanCode !== null ? ($jurusanMap[$jurusanCode] ?? null) : null,
+                ];
+                $kelasByNorm[$classNorm] = $kelasMeta;
+            }
+
+            if (($kelasMeta['id'] ?? 0) <= 0) {
+                continue;
+            }
+
+            for ($slot = 0; $slot < 24; $slot++) {
+                $cell = trim((string) ($cells[$slot] ?? ''));
+                if ($cell === '' || strtoupper($cell) === 'PIKET') {
+                    continue;
+                }
+
+                $slotMeta = $this->jadwalSlotMeta($slot);
+                if ($slotMeta === null) {
+                    continue;
+                }
+
+                $parsed = $this->parseJadwalCell($cell, $guruIndex);
+                if ($parsed['guru_id'] <= 0 || $parsed['mapel'] === '') {
+                    continue;
+                }
+
+                $mapelId = $this->resolveMapelId(
+                    $parsed['mapel'],
+                    (string) ($kelasMeta['tingkat'] ?? 'SEMUA'),
+                    $kelasMeta['jurusan_id'] ?? null,
+                    $now
+                );
+                if ($mapelId <= 0) {
+                    continue;
+                }
+
+                DB::table('jadwal_pelajaran')->updateOrInsert(
+                    [
+                        'data_tahun_pelajaran_id' => $tahunId,
+                        'data_kelas_id' => $kelasMeta['id'],
+                        'hari' => $slotMeta['hari'],
+                        'jam_ke' => $slotMeta['jam_ke'],
+                    ],
+                    [
+                        'data_mapel_id' => $mapelId,
+                        'guru_id' => $parsed['guru_id'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]
+                );
+                $inserted++;
+            }
+        }
+
+        return $inserted;
+    }
+
+    private function buildGuruNameIndex(): array
+    {
+        $rows = DB::table('pengguna')->select('id', 'nama')->get();
+        $index = [];
+
+        $manualAliases = [
+            'rizal eko m' => 'Rizal Eko Mustofa, S.Pd',
+            'm estty mei indriyani' => 'M. Estty Mei Indrayani, S.Pd',
+            'imam al muharamain' => 'Imam Al Muharramain, S.Pd',
+            'baskoro anhaf nugroho' => 'Baskoro Ahnaf Nugroho, S.Kom',
+            'mohammad robi sani' => 'Muhammad Robi Sani',
+            'anisa luthfiastuti' => 'Annisa Luthfiastuti, S.Pd',
+            'siti zubaidah' => 'Siti Zubaedah',
+            'murjianto' => 'Murjiyanto',
+            'dwi ayu hadilawati' => 'Dwiayu Hadilawati, S.Pi',
+            'nurul fauziah, s.ikom' => 'Nurul Fauziah, S. I.Kom',
+            'eva farhati, s.hi, s.pd.i' => 'Eva Farhati, S.H.I, S.Pd.I',
+            'wachyudin, s.pdi' => 'Wachyudin, S.Pd.I',
+            'astina,s.t' => 'Astina, SE',
+            'bisri mustofa,s.t' => 'Bisri Mustofa, S.Pd',
+        ];
+
+        $nameToId = [];
+        foreach ($rows as $r) {
+            $name = trim((string) ($r->nama ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $nameToId[$name] = (int) $r->id;
+        }
+
+        foreach ($rows as $r) {
+            $name = trim((string) ($r->nama ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $base = trim((string) strtok($name, ','));
+            $aliases = [$name, $base];
+            foreach ($aliases as $alias) {
+                $norm = $this->normalizeText($alias);
+                if ($norm !== '') {
+                    $index[] = ['guru_id' => (int) $r->id, 'alias' => $alias, 'norm' => $norm];
+                }
+            }
+        }
+
+        foreach ($manualAliases as $alias => $fullName) {
+            $guruId = $nameToId[$fullName] ?? 0;
+            if ($guruId <= 0) {
+                continue;
+            }
+            $norm = $this->normalizeText($alias);
+            if ($norm === '') {
+                continue;
+            }
+            $index[] = ['guru_id' => $guruId, 'alias' => $alias, 'norm' => $norm];
+        }
+
+        usort($index, static fn ($a, $b) => strlen($b['norm']) <=> strlen($a['norm']));
+        return $index;
+    }
+
+    private function parseJadwalCell(string $cell, array $guruIndex): array
+    {
+        $flat = trim((string) preg_replace('/\s+/u', ' ', $cell));
+        $normCell = $this->normalizeText($flat);
+
+        $guruId = 0;
+        $matchedAlias = '';
+        foreach ($guruIndex as $entry) {
+            if ($entry['norm'] === '') {
+                continue;
+            }
+            if (str_contains($normCell, $entry['norm'])) {
+                $guruId = (int) $entry['guru_id'];
+                $matchedAlias = (string) $entry['alias'];
+                break;
+            }
+        }
+
+        $mapel = $flat;
+        if ($matchedAlias !== '') {
+            $escaped = preg_quote($matchedAlias, '/');
+            $mapel = trim((string) preg_replace('/' . $escaped . '/iu', ' ', $mapel));
+        }
+
+        $mapel = trim((string) preg_replace('/\s+/u', ' ', $mapel));
+        $mapel = trim($mapel, "-,.;: \t\n\r\0\x0B");
+        if ($mapel === '') {
+            $mapel = 'Mapel Umum';
+        }
+
+        return [
+            'guru_id' => $guruId,
+            'mapel' => Str::limit($mapel, 190, ''),
+        ];
+    }
+
+    private function jadwalSlotMeta(int $slot): ?array
+    {
+        if ($slot < 0 || $slot > 23) {
+            return null;
+        }
+
+        if ($slot <= 4) {
+            $idx = $slot;
+            $hari = 'Senin';
+        } elseif ($slot <= 9) {
+            $idx = $slot - 5;
+            $hari = 'Selasa';
+        } elseif ($slot <= 14) {
+            $idx = $slot - 10;
+            $hari = 'Rabu';
+        } elseif ($slot <= 19) {
+            $idx = $slot - 15;
+            $hari = 'Kamis';
+        } else {
+            $idx = $slot - 20;
+            $hari = 'Jumat';
+        }
+
+        $jamKe = 1 + ($idx * 2);
+        return ['hari' => $hari, 'jam_ke' => $jamKe];
+    }
+
+    private function resolveMapelId(string $namaMapel, string $tingkat, ?int $jurusanId, $now): int
+    {
+        $namaMapel = trim($namaMapel);
+        if ($namaMapel === '') {
+            return 0;
+        }
+
+        $mapelId = (int) DB::table('data_mapel')->where('nama_mapel', $namaMapel)->value('id');
+        if ($mapelId > 0) {
+            return $mapelId;
+        }
+
+        $singkatan = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $namaMapel) ?? '', 0, 20));
+        if ($singkatan === '') {
+            $singkatan = 'MAPEL';
+        }
+
+        DB::table('data_mapel')->insert([
+            'nama_mapel' => $namaMapel,
+            'singkatan' => $singkatan,
+            'kelompok_mapel' => $jurusanId ? 'Produktif' : 'Wajib',
+            'tingkat' => $tingkat !== '' ? $tingkat : 'SEMUA',
+            'jurusan_id' => $jurusanId,
+            'urutan_cetak' => null,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        return (int) DB::table('data_mapel')->where('nama_mapel', $namaMapel)->value('id');
+    }
+
+    private function inferClassMeta(string $className): array
+    {
+        $up = strtoupper($className);
+        $tingkat = str_starts_with($up, 'XII') ? 'XII' : (str_starts_with($up, 'XI') ? 'XI' : 'X');
+        $jurusan = null;
+        foreach (['TP', 'TKR', 'TITL', 'TKJ', 'OTKP', 'RPL'] as $kode) {
+            if (str_contains($up, $kode)) {
+                $jurusan = $kode;
+                break;
+            }
+        }
+        return ['tingkat' => $tingkat, 'jurusan' => $jurusan];
+    }
+
+    private function normalizeText(string $text): string
+    {
+        $text = strtolower($text);
+        $text = preg_replace('/[^a-z0-9]+/u', '', $text) ?? '';
+        return $text;
     }
 
     private function seedBk(object $siswa, int $tahunId, int $bkUserId, int $jenisPelanggaranId, $now): void

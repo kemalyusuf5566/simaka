@@ -67,13 +67,10 @@
       </div>
 
       <div class="d-flex">
-        <input type="text" name="q" value="{{ $qVal }}"
+        <input type="text" id="inputCariGuru" name="q" value="{{ $qVal }}"
                class="form-control form-control-sm"
                placeholder="Cari..."
                style="width:220px">
-        <button class="btn btn-sm btn-secondary ml-2" type="submit">
-          <i class="fas fa-search"></i>
-        </button>
       </div>
     </form>
 
@@ -296,6 +293,21 @@
 @push('scripts')
 <script>
 (function () {
+  const formFilterBar = document.getElementById('formFilterBar');
+  const inputCariGuru = document.getElementById('inputCariGuru');
+  let searchTimer = null;
+
+  if (inputCariGuru && formFilterBar) {
+    inputCariGuru.addEventListener('input', function () {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        const pageInput = formFilterBar.querySelector('input[name="page"]');
+        if (pageInput) pageInput.value = '1';
+        formFilterBar.submit();
+      }, 350);
+    });
+  }
+
   const btn = document.getElementById('btnHapusBeberapa');
   const checkAll = document.getElementById('checkAll');
 

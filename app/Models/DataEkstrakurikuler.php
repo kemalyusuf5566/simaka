@@ -16,7 +16,7 @@ class DataEkstrakurikuler extends Model
 
     public function pembina()
     {
-        return $this->belongsTo(DataGuru::class, 'pembina_id');
+        return $this->belongsTo(User::class, 'pembina_id');
     }
 
     public function anggota()
@@ -24,8 +24,14 @@ class DataEkstrakurikuler extends Model
         return $this->hasMany(EkskulAnggota::class, 'data_ekstrakurikuler_id');
     }
 
-    public function getPembinaNamaAttribute(): string 
+    public function getPembinaNamaAttribute(): string
     {
-        return $this->pembina?->pengguna?->nama ?? '-';
+        if ($this->pembina?->nama) {
+            return $this->pembina->nama;
+        }
+
+        // Fallback untuk data lama jika pembina_id pernah terisi data_guru.id
+        $guru = DataGuru::with('pengguna')->find($this->pembina_id);
+        return $guru?->pengguna?->nama ?? '-';
     }
 }

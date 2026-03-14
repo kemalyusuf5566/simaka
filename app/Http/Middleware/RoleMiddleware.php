@@ -62,6 +62,12 @@ class RoleMiddleware
         //     // kalau relasi belum siap, abaikan
         // }
 
-        abort(403, 'Anda tidak memiliki akses untuk halaman ini.');
+        if ($request->expectsJson()) {
+            abort(403, 'Anda tidak memiliki akses untuk halaman ini.');
+        }
+
+        return redirect()
+            ->route('dashboard')
+            ->with('error', 'Akses Anda ke modul ini sudah tidak tersedia.');
     }
 }

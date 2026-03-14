@@ -48,8 +48,9 @@
     </div>
 
     {{-- Bar tampilkan + cari --}}
-    <form method="GET" action="{{ route('admin.mapel.index') }}" class="card-body pt-0 pb-2">
+    <form id="formFilterMapelBar" method="GET" action="{{ route('admin.mapel.index') }}" class="card-body pt-0 pb-2">
       <div class="d-flex justify-content-between align-items-center">
+        <input type="hidden" name="page" value="1">
 
         <div class="d-flex align-items-center" style="gap:10px;">
           <span class="text-muted">Tampilkan</span>
@@ -72,11 +73,8 @@
         <input type="hidden" name="kelompok_mapel" value="{{ $kelompok ?? '' }}">
 
         <div class="d-flex" style="gap:8px; width:260px;">
-          <input type="text" class="form-control form-control-sm" name="q"
+          <input type="text" class="form-control form-control-sm" id="inputCariMapel" name="q"
                 value="{{ $q ?? '' }}" placeholder="Cari...">
-          <button class="btn btn-sm btn-secondary" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
         </div>
 
       </div>
@@ -505,43 +503,20 @@
 @push('scripts')
 <script>
 (function () {
-  const searchInput = document.getElementById('searchMapel');
-  const table = document.getElementById('tableMapel');
-  const rows = () => table.querySelectorAll('tbody tr');
+  const formFilterBar = document.getElementById('formFilterMapelBar');
+  const inputCariMapel = document.getElementById('inputCariMapel');
+  let searchTimer = null;
 
-  const filterKelompok = document.getElementById('filterKelompok');
-  const btnApplyKelompok = document.getElementById('btnApplyKelompok');
-  const btnResetKelompok = document.getElementById('btnResetKelompok');
-
-  let activeKelompok = '';
-
-  function applyFilter() {
-    const q = (searchInput.value || '').toLowerCase().trim();
-
-    rows().forEach(tr => {
-      const nama = tr.getAttribute('data-nama') || '';
-      const singkatan = tr.getAttribute('data-singkatan') || '';
-      const kelompok = tr.getAttribute('data-kelompok') || '';
-
-      const matchSearch = !q || nama.includes(q) || singkatan.includes(q) || kelompok.includes(q);
-      const matchKelompok = !activeKelompok || kelompok === activeKelompok;
-
-      tr.style.display = (matchSearch && matchKelompok) ? '' : 'none';
+  if (formFilterBar && inputCariMapel) {
+    inputCariMapel.addEventListener('input', function () {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        const pageInput = formFilterBar.querySelector('input[name="page"]');
+        if (pageInput) pageInput.value = '1';
+        formFilterBar.submit();
+      }, 350);
     });
   }
-
-  searchInput?.addEventListener('input', applyFilter);
-
-  btnApplyKelompok?.addEventListener('click', function () {
-    activeKelompok = (filterKelompok.value || '').trim();
-    applyFilter();
-  });
-
-  btnResetKelompok?.addEventListener('click', function () {
-    filterKelompok.value = '';
-    activeKelompok = '';
-    applyFilter();
-  });
 
   // ===== modal tambah: checkbox enable simpan
   const chkTambah = document.getElementById('chkYakinTambah');
@@ -573,7 +548,6 @@
     });
   });
 
-  applyFilter();
 })();
 </script>
 @endpush

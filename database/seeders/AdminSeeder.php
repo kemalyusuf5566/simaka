@@ -14,13 +14,22 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminRoleId = DB::table('peran')->where('nama_peran', 'admin')->value('id');
+        if (!$adminRoleId) {
+            DB::table('peran')->updateOrInsert(
+                ['nama_peran' => 'admin'],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+            $adminRoleId = DB::table('peran')->where('nama_peran', 'admin')->value('id');
+        }
+
         DB::table('pengguna')->updateOrInsert(
             // kondisi pencarian
-            ['email' => 'admin@erapor.test'],
+            ['email' => 'admin@simaka.test'],
 
             // data yang diisi / diupdate
             [
-                'peran_id' => DB::table('peran')->where('nama_peran', 'admin')->value('id'),
+                'peran_id' => $adminRoleId,
                 'nama' => 'Administrator',
                 'password' => Hash::make('password'),
                 'status_aktif' => true,

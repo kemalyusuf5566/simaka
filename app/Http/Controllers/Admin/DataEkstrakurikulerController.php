@@ -11,7 +11,7 @@ class DataEkstrakurikulerController extends Controller
 {
     public function index()
     {
-        $ekskul = DataEkstrakurikuler::with('pembina.pengguna')
+        $ekskul = DataEkstrakurikuler::with('pembina')
             ->withCount('anggota')
             ->get();
 
@@ -34,7 +34,7 @@ class DataEkstrakurikulerController extends Controller
     {
         $data = $request->validate([
             'nama_ekskul'  => 'required',
-            'pembina_id'   => 'nullable|exists:data_guru,id',
+            'pembina_id'   => 'nullable|exists:data_guru,pengguna_id',
             'status_aktif' => 'required|boolean',
         ]);
 
@@ -71,7 +71,7 @@ class DataEkstrakurikulerController extends Controller
 
         $data = $request->validate([
             'nama_ekskul'  => 'required',
-            'pembina_id'   => 'nullable|exists:data_guru,id',
+            'pembina_id'   => 'nullable|exists:data_guru,pengguna_id',
             'status_aktif' => 'required|boolean',
         ]);
 

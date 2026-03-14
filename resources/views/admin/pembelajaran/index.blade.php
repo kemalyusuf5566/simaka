@@ -28,7 +28,10 @@
           <i class="fas fa-plus"></i> Tambah Pembelajaran
         </button>
       </div>
-      <div>
+      <div class="d-flex" style="gap:8px;">
+        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalImportPembelajaran">
+          <i class="fas fa-file-import"></i> Import Data
+        </button>
         <button type="button" class="btn btn-info btn-sm" id="btn-open-filter">
           <i class="fas fa-filter"></i> Filter Data
         </button>
@@ -80,6 +83,47 @@
       </table>
     </div>
 
+  </div>
+</div>
+
+{{-- ========================= MODAL IMPORT ========================= --}}
+<div class="modal fade" id="modalImportPembelajaran" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Import Data Pembelajaran (XLSX)</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <form method="POST" action="{{ route('admin.pembelajaran.import') }}" enctype="multipart/form-data" id="formImportPembelajaran">
+        @csrf
+        <div class="modal-body">
+          <div class="alert alert-warning">
+            <b>Penting!</b> File harus berformat <b>.xlsx</b><br>
+            <a href="{{ route('admin.pembelajaran.import.format') }}">Download Format Import</a>
+          </div>
+
+          <div class="form-group">
+            <label>File XLSX</label>
+            <input type="file" name="file" class="form-control" accept=".xlsx" required>
+          </div>
+
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="check-import" name="yakin" value="1" required>
+            <label class="custom-control-label" for="check-import">
+              Saya yakin sudah mengisi dengan benar
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-import" disabled>Simpan</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -339,9 +383,13 @@ $(function () {
   $('#check-edit').on('change', function(){
     $('#btn-submit-edit').prop('disabled', !this.checked);
   });
+  $('#check-import').on('change', function(){
+    $('#btn-submit-import').prop('disabled', !this.checked);
+  });
 
   // Edit modal (fetch json)
-  $('.btn-edit').on('click', function () {
+  // Gunakan delegated event karena baris DataTable bisa di-redraw setelah filter/search/sort.
+  $('#table-pembelajaran tbody').on('click', '.btn-edit', function () {
     const id = $(this).data('id');
 
     // action update tetap ke route resource

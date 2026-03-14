@@ -228,6 +228,8 @@
       @php
         $user = auth()->user();
         $role = $user?->peran?->nama_peran;
+        $hasBkRole = $user && $user->hasRole('bk');
+        $hasHubinRole = $user && $user->hasRole('pembimbing_pkl');
 
         // ====== ROLE DINAMIS (SAMAKAN POLA WALI KELAS) ======
         $isWali = $user
@@ -582,14 +584,59 @@
           {{-- =============== END ADMIN =============== --}}
 
           {{-- ================= BK ================= --}}
-          @if($role === 'bk' || ($role === 'guru_mapel' && $user && $user->hasRole('bk')))
+          @if($role === 'bk' || ($role === 'guru_mapel' && $hasBkRole))
+          @if($role === 'bk')
           <li class="nav-item">
             <a href="{{ route('bk.dashboard') }}" class="nav-link">
               <i class="nav-icon fas fa-home"></i>
               <p>Dashboard BK</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('bk.data-bk.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-user-shield"></i>
+              <p>Catatan BK</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ route('bk.rekomendasi-pkl.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-industry"></i>
+              <p>Hubin & PKL</p>
+            </a>
+          </li>
+          @endif
+          @endif
 
+          
+
+
+          {{-- ================= GURU ================= --}}
+          @if($role === 'guru_mapel')
+
+          {{-- DASHBOARD GURU --}}
+          <li class="nav-item">
+            <a href="{{ route('guru.dashboard') }}" class="nav-link">
+              <i class="nav-icon fas fa-home"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+
+          {{-- GURU MAPEL (WAJIB) --}}
+          <li class="nav-item">
+            <a href="{{ route('guru.pembelajaran.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>Guru Mapel</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ route('guru.absensi.index') }}" class="nav-link">
+              <i class="nav-icon fas fa-clipboard-check"></i>
+              <p>Absensi Mapel</p>
+            </a>
+          </li>
+
+          @if($hasBkRole)
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-user-shield"></i>
@@ -599,6 +646,12 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('bk.dashboard') }}" class="nav-link">
+                  <i class="nav-icon fas fa-home"></i>
+                  <p>Dashboard BK</p>
+                </a>
+              </li>
               <li class="nav-item">
                 <a href="{{ route('bk.data-bk.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -661,74 +714,11 @@
               </li>
             </ul>
           </li>
+          {{-- =============== END BK =============== --}}
+          @endif
 
           {{-- HUBIN --}}
-          <li class="nav-item has-treeview">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-industry"></i>
-              <p>
-                Hubin
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{{ route('bk.rekomendasi-pkl.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Rekomendasi PKL</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ route('bk.hubin.data-dudi.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Data DU/DI</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ route('bk.hubin.penempatan-pkl.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Penempatan PKL</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ route('bk.hubin.monitoring-pkl.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Monitoring PKL</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          @endif
-          {{-- =============== END BK =============== --}}
-
-
-          {{-- ================= GURU ================= --}}
-          @if($role === 'guru_mapel')
-
-          {{-- DASHBOARD GURU --}}
-          <li class="nav-item">
-            <a href="{{ route('guru.dashboard') }}" class="nav-link">
-              <i class="nav-icon fas fa-home"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-
-          {{-- GURU MAPEL (WAJIB) --}}
-          <li class="nav-item">
-            <a href="{{ route('guru.pembelajaran.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-book"></i>
-              <p>Guru Mapel</p>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a href="{{ route('guru.absensi.index') }}" class="nav-link">
-              <i class="nav-icon fas fa-clipboard-check"></i>
-              <p>Absensi Mapel</p>
-            </a>
-          </li>
-
-          @if($user && ($user->hasRole('pembimbing_pkl') || $user->hasRole('wali_kelas') || $isWali))
+          @if($hasHubinRole)
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-industry"></i>
@@ -765,7 +755,9 @@
             </ul>
           </li>
           @endif
-
+          
+          {{-- =============== END HUBIN =============== --}}
+        
           {{-- KOKURIKULER --}}
           @if($isKoordinator)
           <li class="nav-item">

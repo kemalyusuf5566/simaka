@@ -1,6 +1,27 @@
 @extends('layouts.adminlte')
 @section('title','Rekapitulasi Absensi')
 
+@push('styles')
+<style>
+  .rekap-absensi-table thead th {
+    background: linear-gradient(90deg, #1f6fb2 0%, #2d8fd6 100%);
+    color: #fff;
+    border-color: #1f6fb2;
+  }
+  .rekap-absensi-table tbody tr:nth-child(even) {
+    background-color: #f8fbff;
+  }
+  .rekap-absensi-table td {
+    vertical-align: middle;
+  }
+  .rekap-head-badge {
+    min-width: 26px;
+    display: inline-block;
+    font-weight: 700;
+  }
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid">
   <div class="d-flex align-items-center mb-3">
@@ -66,17 +87,17 @@
         <b>{{ $periodeLabel }}</b> | {{ $startDate }} s/d {{ $endDate }}
       </div>
       <div class="table-responsive">
-        <table class="table table-bordered table-sm mb-0">
-          <thead class="bg-dark text-white">
+        <table class="table table-bordered table-sm table-hover mb-0 rekap-absensi-table">
+          <thead>
             <tr>
               <th style="width:50px;">#</th>
               <th>NIS</th>
               <th>Nama Siswa</th>
               <th style="width:70px;">L/P</th>
-              <th style="width:70px;">H</th>
-              <th style="width:70px;">S</th>
-              <th style="width:70px;">I</th>
-              <th style="width:70px;">A</th>
+              <th style="width:70px;"><span class="badge badge-success rekap-head-badge">H</span></th>
+              <th style="width:70px;"><span class="badge badge-warning rekap-head-badge text-dark">S</span></th>
+              <th style="width:70px;"><span class="badge badge-info rekap-head-badge">I</span></th>
+              <th style="width:70px;"><span class="badge badge-danger rekap-head-badge">A</span></th>
             </tr>
           </thead>
           <tbody>
@@ -103,4 +124,3 @@
   </div>
 </div>
 @endsection
-

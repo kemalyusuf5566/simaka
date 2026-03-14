@@ -59,6 +59,19 @@ class DataSiswaController extends Controller
         if (!in_array($limit, [10, 25, 50, 100])) $limit = 10;
 
         $q = trim((string) $request->get('q', ''));
+        $kelas = trim((string) $request->get('kelas', ''));
+        $jk = strtoupper(trim((string) $request->get('jk', '')));
+        if (!in_array($jk, ['', 'L', 'P'], true)) {
+            $jk = '';
+        }
+
+        $status = strtolower(trim((string) $request->get('status', '')));
+        if (in_array($status, ['nonaktif', 'non aktif'], true)) {
+            $status = 'tidak aktif';
+        }
+        if (!in_array($status, ['', 'aktif', 'tidak aktif'], true)) {
+            $status = '';
+        }
 
         $siswa = DataSiswa::with('kelas')
             ->when($q !== '', function ($query) use ($q) {
@@ -68,11 +81,23 @@ class DataSiswaController extends Controller
                         ->orWhere('nisn', 'like', "%{$q}%");
                 });
             })
+            ->when($kelas !== '', function ($query) use ($kelas) {
+                $query->whereHas('kelas', function ($k) use ($kelas) {
+                    $k->where('nama_kelas', 'like', "%{$kelas}%");
+                });
+            })
+            ->when($jk !== '', fn($query) => $query->where('jenis_kelamin', $jk))
+            ->when($status === 'aktif', function ($query) {
+                $query->whereRaw("UPPER(COALESCE(status_siswa, 'AKTIF')) = 'AKTIF'");
+            })
+            ->when($status === 'tidak aktif', function ($query) {
+                $query->whereRaw("UPPER(COALESCE(status_siswa, 'AKTIF')) <> 'AKTIF'");
+            })
             ->orderBy('nama_siswa')
             ->paginate($limit)
             ->withQueryString();
 
-        return view('admin.siswa.index', compact('siswa', 'limit', 'q'));
+        return view('admin.siswa.index', compact('siswa', 'limit', 'q', 'kelas', 'jk', 'status'));
     }
 
     public function create()
@@ -203,6 +228,7 @@ class DataSiswaController extends Controller
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Format Import Siswa');
 
         // Header row
         foreach ($headers as $i => $h) {
@@ -210,40 +236,76 @@ class DataSiswaController extends Controller
             $sheet->setCellValue($col . '1', $h);
         }
 
-        // Contoh 1 baris (kelas VII A)
-        $sample = [
-            'Aghnia Issabella',
-            'VII A',
-            '5037685438',
-            '0530669602',
-            'Jakarta',
-            '2015-07-18',
-            'L',
-            'Islam',
-            'Anak Kandung',
-            '2',
-            'Jl. Mekarsari No.13',
-            '088896286356',
-            'PAUD NURUL IHSAN',
-            'I',
-            '2023-07-18',
-            'MUKHLIS',
-            'POLRI',
-            'DEDE',
-            'BIDAN',
-            'Jl. HZ Mustofa',
-            '083303993991',
-            '',
-            '',
-            '',
-            '',
-            'AKTIF',
+        // Contoh 2 baris data.
+        $kelasContoh = DataKelas::orderBy('id')->value('nama_kelas') ?? 'X TKJ 1';
+        $samples = [
+            [
+                'Ahmad Fauzan',
+                $kelasContoh,
+                '24010001',
+                '0076543211',
+                'Bekasi',
+                '2008-05-12',
+                'L',
+                'Islam',
+                'Anak Kandung',
+                '1',
+                'Jl. Melati No. 10',
+                '081234567890',
+                'SMPN 1 Bekasi',
+                'X',
+                '2024-07-15',
+                'Budi Santoso',
+                'Karyawan',
+                'Siti Aminah',
+                'Ibu Rumah Tangga',
+                'Jl. Melati No. 10',
+                '081298765432',
+                '',
+                '',
+                '',
+                '',
+                'AKTIF',
+            ],
+            [
+                'Nabila Putri',
+                $kelasContoh,
+                '24010002',
+                '0076543212',
+                'Jakarta',
+                '2008-11-03',
+                'P',
+                'Islam',
+                'Anak Kandung',
+                '2',
+                'Jl. Kenanga No. 22',
+                '082233445566',
+                'SMPN 5 Jakarta',
+                'X',
+                '2024-07-15',
+                'Rahmat Hidayat',
+                'Wiraswasta',
+                'Dewi Lestari',
+                'Guru',
+                'Jl. Kenanga No. 22',
+                '082211009988',
+                '',
+                '',
+                '',
+                '',
+                'AKTIF',
+            ],
         ];
 
-        foreach ($headers as $i => $h) {
-            $col = Coordinate::stringFromColumnIndex($i + 1); // 1->A, 2->B, dst
-            $sheet->setCellValue($col . '1', $h);
+        foreach ($samples as $rowIdx => $sample) {
+            $excelRow = $rowIdx + 2;
+            foreach ($sample as $i => $val) {
+                $col = Coordinate::stringFromColumnIndex($i + 1);
+                $sheet->setCellValue($col . $excelRow, $val);
+            }
         }
+
+        $sheet->freezePane('A2');
 
         $filename = 'format_import_data_siswa.xlsx';
 
@@ -308,137 +370,149 @@ class DataSiswaController extends Controller
         }
 
         $success = 0;
+        $updated = 0;
         $errors = [];
 
-        DB::beginTransaction();
-        try {
-            // mulai dari baris 2
-            for ($i = 2; $i <= count($rows); $i++) {
-                $row = $rows[$i] ?? null;
-                if (!$row) continue;
+        // mulai dari baris 2
+        for ($i = 2; $i <= count($rows); $i++) {
+            $row = $rows[$i] ?? null;
+            if (!$row) continue;
 
-                // helper ambil value berdasarkan nama header
-                $get = function (string $key) use ($headers, $row) {
-                    $col = array_search($key, $headers, true);
-                    if ($col === false) return null;
-                    $val = $row[$col] ?? null;
-                    if (is_string($val)) $val = trim($val);
-                    return $val === '' ? null : $val;
-                };
+            $get = function (string $key) use ($headers, $row) {
+                $col = array_search($key, $headers, true);
+                if ($col === false) return null;
+                $val = $row[$col] ?? null;
+                if (is_string($val)) $val = trim($val);
+                return $val === '' ? null : $val;
+            };
 
-                // skip kalau baris benar2 kosong
-                $nama = $get('nama_siswa');
-                $kelasNama = $get('kelas');
-                if (!$nama && !$kelasNama) continue;
+            $nama = $get('nama_siswa');
+            $kelasNama = $get('kelas');
+            if (!$nama && !$kelasNama) continue;
 
-                // wajib
-                $tempatLahir = $get('tempat_lahir');
-                $tglLahirRaw = $get('tanggal_lahir');
-                $jk = $get('jenis_kelamin');
-                $agama = $get('agama');
+            $tempatLahir = $get('tempat_lahir');
+            $tglLahirRaw = $get('tanggal_lahir');
+            $jk = $get('jenis_kelamin');
+            $agama = $get('agama');
 
-                if (!$nama || !$kelasNama || !$tempatLahir || !$tglLahirRaw || !$jk || !$agama) {
-                    $errors[] = "Baris {$i}: kolom wajib kosong (nama_siswa/kelas/tempat_lahir/tanggal_lahir/jenis_kelamin/agama).";
-                    continue;
-                }
-
-                // cari kelas by nama_kelas (VII A)
-                $kelas = DataKelas::where('nama_kelas', $kelasNama)->first();
-                if (!$kelas) {
-                    $errors[] = "Baris {$i}: kelas '{$kelasNama}' tidak ditemukan di master Data Kelas.";
-                    continue;
-                }
-
-                // tanggal lahir bisa string atau numeric excel date
-                $tanggalLahir = null;
-                try {
-                    if (is_numeric($tglLahirRaw)) {
-                        $tanggalLahir = ExcelDate::excelToDateTimeObject($tglLahirRaw)->format('Y-m-d');
-                    } else {
-                        $tanggalLahir = date('Y-m-d', strtotime((string) $tglLahirRaw));
-                    }
-                } catch (\Throwable $e) {
-                    $errors[] = "Baris {$i}: tanggal_lahir tidak valid.";
-                    continue;
-                }
-
-                if (!in_array($jk, ['L', 'P'])) {
-                    $errors[] = "Baris {$i}: jenis_kelamin harus L atau P.";
-                    continue;
-                }
-
-                // tanggal diterima optional
-                $tglTerimaRaw = $get('tanggal_diterima');
-                $tanggalDiterima = null;
-                if ($tglTerimaRaw !== null) {
-                    try {
-                        if (is_numeric($tglTerimaRaw)) {
-                            $tanggalDiterima = ExcelDate::excelToDateTimeObject($tglTerimaRaw)->format('Y-m-d');
-                        } else {
-                            $tanggalDiterima = date('Y-m-d', strtotime((string) $tglTerimaRaw));
-                        }
-                    } catch (\Throwable $e) {
-                        $errors[] = "Baris {$i}: tanggal_diterima tidak valid.";
-                        continue;
-                    }
-                }
-
-                $statusSiswa = $get('status_siswa') ?? 'AKTIF';
-                $statusSiswa = strtoupper((string) $statusSiswa);
-                if (!in_array($statusSiswa, ['AKTIF', 'TIDAK AKTIF'])) {
-                    $errors[] = "Baris {$i}: status_siswa harus AKTIF atau TIDAK AKTIF.";
-                    continue;
-                }
-
-                $payload = [
-                    'data_kelas_id' => $kelas->id,
-                    'nama_siswa' => $nama,
-                    'nis' => $get('nis'),
-                    'nisn' => $get('nisn'),
-                    'tempat_lahir' => $tempatLahir,
-                    'tanggal_lahir' => $tanggalLahir,
-                    'jenis_kelamin' => $jk,
-                    'agama' => $agama,
-                    'status_dalam_keluarga' => $get('status_dalam_keluarga'),
-                    'anak_ke' => $get('anak_ke'),
-                    'alamat' => $get('alamat'),
-                    'telepon' => $get('telepon'),
-                    'sekolah_asal' => $get('sekolah_asal'),
-                    'diterima_di_kelas' => $get('diterima_di_kelas'),
-                    'tanggal_diterima' => $tanggalDiterima,
-                    'nama_ayah' => $get('nama_ayah'),
-                    'pekerjaan_ayah' => $get('pekerjaan_ayah'),
-                    'nama_ibu' => $get('nama_ibu'),
-                    'pekerjaan_ibu' => $get('pekerjaan_ibu'),
-                    'alamat_orang_tua' => $get('alamat_orang_tua'),
-                    'telepon_orang_tua' => $get('telepon_orang_tua'),
-                    'nama_wali' => $get('nama_wali'),
-                    'pekerjaan_wali' => $get('pekerjaan_wali'),
-                    'alamat_wali' => $get('alamat_wali'),
-                    'telepon_wali' => $get('telepon_wali'),
-                    'status_siswa' => $statusSiswa,
-                ];
-
-                DataSiswa::create($payload);
-                $success++;
+            if (!$nama || !$kelasNama || !$tempatLahir || !$tglLahirRaw || !$jk || !$agama) {
+                $errors[] = "Baris {$i}: kolom wajib kosong (nama_siswa/kelas/tempat_lahir/tanggal_lahir/jenis_kelamin/agama).";
+                continue;
             }
 
-            // Kalau semua baris gagal, tetap commit tidak apa2, tapi kita balikin error
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return back()->with('error', 'Import gagal: ' . $e->getMessage());
+            $kelas = DataKelas::where('nama_kelas', $kelasNama)->first();
+            if (!$kelas) {
+                $errors[] = "Baris {$i}: kelas '{$kelasNama}' tidak ditemukan di master Data Kelas.";
+                continue;
+            }
+
+            try {
+                $tanggalLahir = is_numeric($tglLahirRaw)
+                    ? ExcelDate::excelToDateTimeObject($tglLahirRaw)->format('Y-m-d')
+                    : date('Y-m-d', strtotime((string) $tglLahirRaw));
+            } catch (\Throwable $e) {
+                $errors[] = "Baris {$i}: tanggal_lahir tidak valid.";
+                continue;
+            }
+
+            if (!in_array($jk, ['L', 'P'], true)) {
+                $errors[] = "Baris {$i}: jenis_kelamin harus L atau P.";
+                continue;
+            }
+
+            $tglTerimaRaw = $get('tanggal_diterima');
+            $tanggalDiterima = null;
+            if ($tglTerimaRaw !== null) {
+                try {
+                    $tanggalDiterima = is_numeric($tglTerimaRaw)
+                        ? ExcelDate::excelToDateTimeObject($tglTerimaRaw)->format('Y-m-d')
+                        : date('Y-m-d', strtotime((string) $tglTerimaRaw));
+                } catch (\Throwable $e) {
+                    $errors[] = "Baris {$i}: tanggal_diterima tidak valid.";
+                    continue;
+                }
+            }
+
+            $statusSiswa = strtoupper((string) ($get('status_siswa') ?? 'AKTIF'));
+            if (!in_array($statusSiswa, ['AKTIF', 'TIDAK AKTIF'], true)) {
+                $errors[] = "Baris {$i}: status_siswa harus AKTIF atau TIDAK AKTIF.";
+                continue;
+            }
+
+            $nis = $get('nis');
+            $nisn = $get('nisn');
+            $nis = $nis !== null ? trim((string) $nis) : null;
+            $nisn = $nisn !== null ? trim((string) $nisn) : null;
+            $nis = $nis === '' ? null : $nis;
+            $nisn = $nisn === '' ? null : $nisn;
+
+            $payload = [
+                'data_kelas_id' => $kelas->id,
+                'nama_siswa' => $nama,
+                'nis' => $nis,
+                'nisn' => $nisn,
+                'tempat_lahir' => $tempatLahir,
+                'tanggal_lahir' => $tanggalLahir,
+                'jenis_kelamin' => $jk,
+                'agama' => $agama,
+                'status_dalam_keluarga' => $get('status_dalam_keluarga'),
+                'anak_ke' => $get('anak_ke'),
+                'alamat' => $get('alamat'),
+                'telepon' => $get('telepon'),
+                'sekolah_asal' => $get('sekolah_asal'),
+                'diterima_di_kelas' => $get('diterima_di_kelas'),
+                'tanggal_diterima' => $tanggalDiterima,
+                'nama_ayah' => $get('nama_ayah'),
+                'pekerjaan_ayah' => $get('pekerjaan_ayah'),
+                'nama_ibu' => $get('nama_ibu'),
+                'pekerjaan_ibu' => $get('pekerjaan_ibu'),
+                'alamat_orang_tua' => $get('alamat_orang_tua'),
+                'telepon_orang_tua' => $get('telepon_orang_tua'),
+                'nama_wali' => $get('nama_wali'),
+                'pekerjaan_wali' => $get('pekerjaan_wali'),
+                'alamat_wali' => $get('alamat_wali'),
+                'telepon_wali' => $get('telepon_wali'),
+                'status_siswa' => $statusSiswa,
+            ];
+
+            try {
+                $existing = null;
+                if ($nis !== null) {
+                    $existing = DataSiswa::where('nis', $nis)->first();
+                }
+                if (!$existing && $nisn !== null) {
+                    $existing = DataSiswa::where('nisn', $nisn)->first();
+                }
+
+                if ($existing) {
+                    if ($nis !== null && DataSiswa::where('nis', $nis)->where('id', '!=', $existing->id)->exists()) {
+                        $errors[] = "Baris {$i}: NIS {$nis} sudah dipakai siswa lain.";
+                        continue;
+                    }
+                    if ($nisn !== null && DataSiswa::where('nisn', $nisn)->where('id', '!=', $existing->id)->exists()) {
+                        $errors[] = "Baris {$i}: NISN {$nisn} sudah dipakai siswa lain.";
+                        continue;
+                    }
+
+                    $existing->update($payload);
+                    $updated++;
+                } else {
+                    DataSiswa::create($payload);
+                    $success++;
+                }
+            } catch (\Throwable $e) {
+                $errors[] = "Baris {$i}: gagal diproses ({$e->getMessage()}).";
+            }
         }
 
         if (count($errors) > 0) {
-            // tampilkan maksimal 15 error biar tidak kepanjangan
             $preview = array_slice($errors, 0, 15);
-            $msg = "Import selesai. Berhasil: {$success}. Gagal: " . count($errors) . ".\n- " . implode("\n- ", $preview);
+            $msg = "Import selesai. Ditambah: {$success}, Diupdate: {$updated}, Gagal: " . count($errors) . ".\n- " . implode("\n- ", $preview);
             if (count($errors) > 15) $msg .= "\n...dan lainnya.";
-            return back()->with('warning', nl2br(e($msg)));
+            return back()->with('error', nl2br(e($msg)));
         }
 
-        return back()->with('success', "Import berhasil. Total siswa masuk: {$success}");
+        return back()->with('success', "Import berhasil. Ditambah: {$success}, Diupdate: {$updated}");
     }
 
     private function validatedData(Request $request): array

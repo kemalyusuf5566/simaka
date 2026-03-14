@@ -68,6 +68,7 @@
     {{-- FILTER BAR (SERVER SIDE) --}}
     <form id="formFilterBar" method="GET" action="{{ route('admin.siswa.index') }}"
           class="d-flex justify-content-between align-items-center mb-2">
+      <input type="hidden" name="page" value="1">
 
       <div>
         <label class="mb-0">
@@ -88,13 +89,10 @@
       </div>
 
       <div class="d-flex">
-        <input type="text" name="q" value="{{ $q }}"
+        <input type="text" id="inputCariSiswa" name="q" value="{{ $q }}"
                class="form-control form-control-sm"
                placeholder="Cari nama / NIS / NISN..."
                style="width:260px">
-        <button class="btn btn-sm btn-secondary ml-2" type="submit">
-          <i class="fas fa-search"></i>
-        </button>
       </div>
     </form>
 
@@ -111,13 +109,13 @@
                 <input type="checkbox" id="checkAll">
               </th>
               <th width="60">No</th>
-              <th>Nama</th>
+              <th width="500">Nama</th>
               <th width="90">Kelas</th>
               <th>NIS</th>
               <th>NISN</th>
               <th width="60" class="text-center">L/P</th>
               <th width="110" class="text-center">Status</th>
-              <th width="200">Aksi</th>
+              <th width="300">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -315,6 +313,21 @@
 @push('scripts')
 <script>
 (function(){
+  const formFilterBar = document.getElementById('formFilterBar');
+  const inputCariSiswa = document.getElementById('inputCariSiswa');
+  let searchTimer = null;
+
+  if (inputCariSiswa && formFilterBar) {
+    inputCariSiswa.addEventListener('input', function () {
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        const pageInput = formFilterBar.querySelector('input[name="page"]');
+        if (pageInput) pageInput.value = '1';
+        formFilterBar.submit();
+      }, 350);
+    });
+  }
+
   const btnHapusBeberapa = document.getElementById('btnHapusBeberapa');
   const formHapusMassal  = document.getElementById('formHapusMassal');
   const checkAll         = document.getElementById('checkAll');

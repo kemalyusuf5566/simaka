@@ -39,9 +39,9 @@
         <select name="pembina_id" class="form-control">
           <option value="">-- Pilih Guru --</option>
           @foreach($pembina as $g)
-            <option value="{{ $g->id }}"
-              @selected(old('pembina_id', $ekskul->pembina_id ?? '') == $g->id)>
-              {{ $g->pengguna->nama }}
+            <option value="{{ $g->pengguna_id }}"
+              @selected(old('pembina_id', $ekskul->pembina_id ?? '') == $g->pengguna_id)>
+              {{ $g->pengguna->nama ?? '-' }}
             </option>
           @endforeach
         </select>
